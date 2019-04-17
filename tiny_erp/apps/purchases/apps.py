@@ -14,9 +14,5 @@ class PurchasesConfig(AppConfig):
 
     def ready(self):
         # set up app settings
-        from django.conf import settings
-        import tiny_erp.settings as defaults
-
-        for name in dir(defaults):
-            if name.isupper() and not hasattr(settings, name):
-                setattr(settings, name, getattr(defaults, name))
+        from tiny_erp.anza import setup_settings  # noqa
+        setup_settings()
