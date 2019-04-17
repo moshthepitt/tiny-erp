@@ -22,6 +22,9 @@ INSTALLED_APPS = [
     'crispy_forms',
     'rest_framework',
     'small_small_hr',
+    # custom
+    'tiny_erp.apps.locations',
+    'tiny_erp.apps.purchases',
 ]
 
 DATABASES = {
