@@ -9,8 +9,9 @@ class Business(TimeStampedAbstractEntity):
 
     class Meta:
         """Meta definition for Location."""
-        verbose_name = _('Business')
-        verbose_name_plural = _('Businesses')
+
+        verbose_name = _("Business")
+        verbose_name_plural = _("Businesses")
         abstract = False
 
 
@@ -19,8 +20,9 @@ class Department(TimeStampedAbstractEntity):
 
     class Meta:
         """Meta definition for Location."""
-        verbose_name = _('Department')
-        verbose_name_plural = _('Departments')
+
+        verbose_name = _("Department")
+        verbose_name_plural = _("Departments")
         abstract = False
 
 
@@ -29,6 +31,7 @@ class Location(TimeStampedAbstractEntity):
 
     class Meta:
         """Meta definition for Location."""
-        verbose_name = _('Location')
-        verbose_name_plural = _('Locations')
+
+        verbose_name = _("Location")
+        verbose_name_plural = _("Locations")
         abstract = False
