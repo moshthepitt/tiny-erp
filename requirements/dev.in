@@ -17,3 +17,4 @@ psycopg2-binary
 ipdb
 model_mommy
 black
+mypy
