@@ -1,7 +1,6 @@
 """Models module for locations app"""
 from django.db import models
 from django.utils.translation import ugettext as _
-from django.conf import settings
 from small_small_hr.models import TimeStampedModel
 
 
@@ -19,15 +18,15 @@ class Requisition(TimeStampedModel):
 
     name = models.CharField(_("Title"), max_length=255)
     staff = models.ForeignKey(
-        settings.USERPROFILE_MODEL, verbose_name=_('Staff Member'),
+        "small_small_hr.StaffProfile", verbose_name=_('Staff Member'),
         on_delete=models.PROTECT)
-    business = models.ForeignKey("tiny_erp.apps.locations.Business",
+    business = models.ForeignKey("locations.Business",
                                  verbose_name=_('Business'),
                                  on_delete=models.PROTECT)
-    location = models.ForeignKey("tiny_erp.apps.locations.Location",
+    location = models.ForeignKey("locations.Location",
                                  verbose_name=_('Location'),
                                  on_delete=models.PROTECT)
-    department = models.ForeignKey("tiny_erp.apps.locations.Department",
+    department = models.ForeignKey("locations.Department",
                                    verbose_name=_('Department'),
                                    on_delete=models.PROTECT)
     reason = models.TextField(_('Reason'), blank=False, default='')
