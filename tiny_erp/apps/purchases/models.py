@@ -36,6 +36,7 @@ class Requisition(TimeStampedModel):
     comments = models.TextField(_('Comments'), blank=True, default='')
     date_placed = models.DateField(_("Date Placed"))
     date_required = models.DateField(_("Date Required"))
+    total = models.DecimalField(_("Total"), max_digits=64, decimal_places=2)
 
     class Meta:
         """Meta definition for Requisition."""
