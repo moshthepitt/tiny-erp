@@ -2,6 +2,7 @@
 from django.db import models
 from django.utils.translation import ugettext as _
 from small_small_hr.models import TimeStampedModel
+from tiny_erp.abstract_models import AbstractLineItem
 
 
 class Requisition(TimeStampedModel):
@@ -47,3 +48,20 @@ class Requisition(TimeStampedModel):
     def __str__(self):
         """Unicode representation of Requisition."""
         return self.name
+
+
+class RequisitionLineItem(AbstractLineItem):
+    """Model definition for RequisitionLineItem."""
+    requisition = models.ForeignKey(
+        Requisition, verbose_name=_("Requisition"), on_delete=models.CASCADE)
+
+    class Meta:
+        """Meta definition for RequisitionLineItem."""
+
+        verbose_name = _('Requisition Line Item')
+        verbose_name_plural = _('Requisition Line Items')
+        abstract = False
+
+    def __str__(self):
+        """Unicode representation of RequisitionLineItem."""
+        return f"{self.name} - #{self.requisition.name}"
