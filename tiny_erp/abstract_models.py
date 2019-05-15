@@ -55,9 +55,18 @@ class AbstractLineItem(models.Model):
 
 
 class TimeStampedAbstractEntity(TimeStampedModel, AbstractEntity):
-    """Model definition for Business."""
+    """Model definition for TimeStampedAbstractEntity."""
 
     class Meta:
-        """Meta definition for Location."""
+        """Meta definition for TimeStampedAbstractEntity."""
+
+        abstract = True
+
+
+class TimeStampedAbstractLineItem(TimeStampedModel, AbstractLineItem):
+    """Model definition for AbstractLineItem."""
+
+    class Meta:
+        """Meta definition for AbstractLineItem."""
 
         abstract = True
