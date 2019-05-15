@@ -1,8 +1,10 @@
 """Models module for locations app"""
 from django.db import models
 from django.utils.translation import ugettext as _
+
 from small_small_hr.models import TimeStampedModel
-from tiny_erp.abstract_models import AbstractLineItem
+
+from tiny_erp.abstract_models import TimeStampedAbstractLineItem
 
 
 class Requisition(TimeStampedModel):
@@ -50,7 +52,7 @@ class Requisition(TimeStampedModel):
         return self.name
 
 
-class RequisitionLineItem(AbstractLineItem):
+class RequisitionLineItem(TimeStampedAbstractLineItem):
     """Model definition for RequisitionLineItem."""
     requisition = models.ForeignKey(
         Requisition, verbose_name=_("Requisition"), on_delete=models.CASCADE)
