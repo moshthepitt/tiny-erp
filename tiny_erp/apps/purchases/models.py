@@ -67,6 +67,9 @@ class RequisitionLineItem(TimeStampedAbstractLineItem):
     requisition = models.ForeignKey(
         Requisition, verbose_name=_("Requisition"), on_delete=models.CASCADE
     )
+    item = models.CharField(_("Item"), max_length=255)
+    quantity = models.DecimalField(_("Quantity"), max_digits=64, decimal_places=2)
+    price = models.DecimalField(_("Price"), max_digits=64, decimal_places=2)
 
     class Meta:
         """Meta definition for RequisitionLineItem."""
