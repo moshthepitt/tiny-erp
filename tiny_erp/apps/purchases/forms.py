@@ -1,6 +1,4 @@
-"""
-Forms module for tiny erp
-"""
+"""Forms module for tiny erp"""
 from django import forms
 from django.forms.models import inlineformset_factory
 
