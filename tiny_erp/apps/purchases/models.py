@@ -8,6 +8,7 @@ from tiny_erp.abstract_models import TimeStampedAbstractLineItem
 from tiny_erp.apps.locations.models import Business, Department, Location
 
 
+# pylint: disable=no-member
 class Requisition(TimeStampedModel):
     """Model definition for Requisition."""
 
@@ -21,7 +22,6 @@ class Requisition(TimeStampedModel):
         (REJECTED, _("Rejected")),
     )
 
-    name = models.CharField(_("Name"), max_length=255)
     staff = models.ForeignKey(
         "small_small_hr.StaffProfile",
         verbose_name=_("Staff Member"),
