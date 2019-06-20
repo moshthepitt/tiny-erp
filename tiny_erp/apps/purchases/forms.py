@@ -16,7 +16,7 @@ class RequisitionLineItemForm(forms.ModelForm):
         """Meta definition for RequisitionLineItemform."""
 
         model = RequisitionLineItem
-        fields = ["item", "quantity", "price"]
+        fields = ["requisition", "item", "quantity", "price"]
 
 
 RequisitionItemFormSet = inlineformset_factory(  # pylint: disable=invalid-name
