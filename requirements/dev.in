@@ -13,6 +13,7 @@ pep8
 coverage
 yapf
 isort
+pre-commit
 psycopg2-binary
 ipdb
 model_mommy
