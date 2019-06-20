@@ -20,9 +20,9 @@ class TestForms(TestCase):
         """
         self.factory = RequestFactory()
 
-    def test_role_form(self):
+    def test_requisition_form(self):
         """
-        Test RoleForm
+        Test RequisitionForm
         """
         request = self.factory.get("/")
         request.session = {}
