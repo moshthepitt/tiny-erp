@@ -37,7 +37,6 @@ class RequisitionForm(forms.ModelForm):
 
         model = Requisition
         fields = [
-            "name",
             "staff",
             "business",
             "location",
@@ -63,7 +62,6 @@ class RequisitionForm(forms.ModelForm):
         self.helper.field_class = "col-md-9"
         self.helper.layout = Layout(
             Div(
-                Field("name"),
                 Field("staff"),
                 Field("business"),
                 Field("location"),
