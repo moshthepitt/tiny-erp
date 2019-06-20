@@ -9,34 +9,48 @@ from tiny_erp.abstract_models import TimeStampedAbstractLineItem
 
 class Requisition(TimeStampedModel):
     """Model definition for Requisition."""
-    APPROVED = '1'
-    REJECTED = '2'
-    PENDING = '3'
+
+    APPROVED = "1"
+    REJECTED = "2"
+    PENDING = "3"
 
     STATUS_CHOICES = (
-        (APPROVED, _('Approved')),
-        (PENDING, _('Pending')),
-        (REJECTED, _('Rejected'))
+        (APPROVED, _("Approved")),
+        (PENDING, _("Pending")),
+        (REJECTED, _("Rejected")),
     )
 
-    name = models.CharField(_("Title"), max_length=255)
+    name = models.CharField(_("Name"), max_length=255)
     staff = models.ForeignKey(
-        "small_small_hr.StaffProfile", verbose_name=_('Staff Member'),
-        on_delete=models.PROTECT)
-    business = models.ForeignKey("locations.Business",
-                                 verbose_name=_('Business'),
-                                 on_delete=models.PROTECT)
-    location = models.ForeignKey("locations.Location",
-                                 verbose_name=_('Location'),
-                                 on_delete=models.PROTECT)
-    department = models.ForeignKey("locations.Department",
-                                   verbose_name=_('Department'),
-                                   on_delete=models.PROTECT)
-    reason = models.TextField(_('Reason'), blank=False, default='')
+        "small_small_hr.StaffProfile",
+        verbose_name=_("Staff Member"),
+        on_delete=models.PROTECT,
+    )
+    business = models.ForeignKey(
+        "tiny_erp.apps.locations.Business",
+        verbose_name=_("Business"),
+        on_delete=models.PROTECT,
+    )
+    location = models.ForeignKey(
+        "tiny_erp.apps.locations.Location",
+        verbose_name=_("Location"),
+        on_delete=models.PROTECT,
+    )
+    department = models.ForeignKey(
+        "tiny_erp.apps.locations.Department",
+        verbose_name=_("Department"),
+        on_delete=models.PROTECT,
+    )
+    reason = models.TextField(_("Reason"), blank=False, default="")
     status = models.CharField(
-        _('Status'), max_length=1, choices=STATUS_CHOICES, default=PENDING,
-        blank=True, db_index=True)
-    comments = models.TextField(_('Comments'), blank=True, default='')
+        _("Status"),
+        max_length=1,
+        choices=STATUS_CHOICES,
+        default=PENDING,
+        blank=True,
+        db_index=True,
+    )
+    comments = models.TextField(_("Comments"), blank=True, default="")
     date_placed = models.DateField(_("Date Placed"))
     date_required = models.DateField(_("Date Required"))
     total = models.DecimalField(_("Total"), max_digits=64, decimal_places=2)
@@ -44,8 +58,8 @@ class Requisition(TimeStampedModel):
     class Meta:
         """Meta definition for Requisition."""
 
-        verbose_name = _('Requisition')
-        verbose_name_plural = _('Requisitions')
+        verbose_name = _("Requisition")
+        verbose_name_plural = _("Requisitions")
 
     def __str__(self):
         """Unicode representation of Requisition."""
@@ -54,14 +68,16 @@ class Requisition(TimeStampedModel):
 
 class RequisitionLineItem(TimeStampedAbstractLineItem):
     """Model definition for RequisitionLineItem."""
+
     requisition = models.ForeignKey(
-        Requisition, verbose_name=_("Requisition"), on_delete=models.CASCADE)
+        Requisition, verbose_name=_("Requisition"), on_delete=models.CASCADE
+    )
 
     class Meta:
         """Meta definition for RequisitionLineItem."""
 
-        verbose_name = _('Requisition Line Item')
-        verbose_name_plural = _('Requisition Line Items')
+        verbose_name = _("Requisition Line Item")
+        verbose_name_plural = _("Requisition Line Items")
         abstract = False
 
     def __str__(self):
