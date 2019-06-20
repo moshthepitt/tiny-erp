@@ -6,7 +6,7 @@ from django.test import RequestFactory, TestCase
 
 from model_mommy import mommy
 
-from tiny_erp.apps.purchases.forms import RequisitionForm
+from tiny_erp.apps.purchases.forms import RequisitionForm, RequisitionLineItemForm
 
 
 class TestForms(TestCase):
@@ -54,3 +54,30 @@ class TestForms(TestCase):
         self.assertEqual(date(2019, 1, 1), requisition.date_placed)
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
         self.assertEqual("Science, bitch", requisition.reason)
+
+    def test_requisition_lineitem_form(self):
+        """
+        Test RequisitionLineItemForm
+        """
+        request = self.factory.get("/")
+        request.session = {}
+        request.user = AnonymousUser()
+
+        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        requisition = mommy.make("purchases.Requisition", staff=staffprofile)
+
+        data = {
+            "requisition": requisition.id,
+            "item": "Tubes",
+            "quantity": 3,
+            "price": 200,
+        }
+
+        form = RequisitionLineItemForm(data=data)
+        self.assertTrue(form.is_valid())
+        item = form.save()
+        self.assertEqual(requisition, item.requisition)
+        self.assertEqual("Tubes", item.item)
+        self.assertEqual(3, item.quantity)
+        self.assertEqual(200, item.price)
