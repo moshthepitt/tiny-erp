@@ -5,6 +5,7 @@ from django.utils.translation import ugettext as _
 from small_small_hr.models import TimeStampedModel
 
 from tiny_erp.abstract_models import TimeStampedAbstractLineItem
+from tiny_erp.apps.locations.models import Business, Department, Location
 
 
 class Requisition(TimeStampedModel):
@@ -27,19 +28,13 @@ class Requisition(TimeStampedModel):
         on_delete=models.PROTECT,
     )
     business = models.ForeignKey(
-        "tiny_erp.apps.locations.Business",
-        verbose_name=_("Business"),
-        on_delete=models.PROTECT,
+        Business, verbose_name=_("Business"), on_delete=models.PROTECT
     )
     location = models.ForeignKey(
-        "tiny_erp.apps.locations.Location",
-        verbose_name=_("Location"),
-        on_delete=models.PROTECT,
+        Location, verbose_name=_("Location"), on_delete=models.PROTECT
     )
     department = models.ForeignKey(
-        "tiny_erp.apps.locations.Department",
-        verbose_name=_("Department"),
-        on_delete=models.PROTECT,
+        Department, verbose_name=_("Department"), on_delete=models.PROTECT
     )
     reason = models.TextField(_("Reason"), blank=False, default="")
     status = models.CharField(
