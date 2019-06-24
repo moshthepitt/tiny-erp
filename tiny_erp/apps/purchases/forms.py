@@ -59,9 +59,6 @@ class RequisitionForm(forms.ModelForm):
         self.helper.form_show_labels = True
         self.helper.html5_required = True
         self.helper.form_id = "requisition-form"
-        self.helper.form_class = "form-horizontal"
-        self.helper.label_class = "col-md-3"
-        self.helper.field_class = "col-md-9"
         self.helper.layout = Layout(
             Div(
                 Field("staff"),
