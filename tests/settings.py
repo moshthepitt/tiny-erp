@@ -8,71 +8,72 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 INSTALLED_APPS = [
     # core django apps
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.sites',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.sites",
     # third party
-    'sorl.thumbnail',
-    'private_storage',
-    'phonenumber_field',
-    'crispy_forms',
-    'rest_framework',
-    'small_small_hr',
+    "sorl.thumbnail",
+    "private_storage",
+    "phonenumber_field",
+    "crispy_forms",
+    "rest_framework",
+    "small_small_hr",
+    "vega_admin",
     # custom
-    'tiny_erp.apps.locations',
-    'tiny_erp.apps.purchases',
+    "tiny_erp.apps.locations",
+    "tiny_erp.apps.purchases",
 ]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tiny_erp',
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1'
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "tiny_erp",
+        "USER": "postgres",
+        "PASSWORD": "",
+        "HOST": "127.0.0.1",
     }
 }
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ]
         },
-    },
+    }
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-TIME_ZONE = 'Africa/Nairobi'
+TIME_ZONE = "Africa/Nairobi"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
 SECRET_KEY = "i love oov"
 
-PRIVATE_STORAGE_ROOT = '/tmp/'
-MEDIA_ROOT = '/tmp/'
-PRIVATE_STORAGE_AUTH_FUNCTION = 'private_storage.permissions.allow_staff'
+PRIVATE_STORAGE_ROOT = "/tmp/"
+MEDIA_ROOT = "/tmp/"
+PRIVATE_STORAGE_AUTH_FUNCTION = "private_storage.permissions.allow_staff"
 
 SITE_ID = 1
 
