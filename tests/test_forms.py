@@ -556,6 +556,8 @@ class TestForms(TestCase):
             location=location,
             department=department,
             business=business,
+            date_placed="2019-06-24",
+            date_required="2019-06-24",
         )
         mommy.make(
             "purchases.RequisitionLineItem",
