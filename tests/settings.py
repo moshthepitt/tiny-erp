@@ -77,6 +77,10 @@ PRIVATE_STORAGE_AUTH_FUNCTION = "private_storage.permissions.allow_staff"
 
 SITE_ID = 1
 
+# vega settings
+CRISPY_TEMPLATE_PACK = "bootstrap3"
+VEGA_TEMPLATE = "badmin"
+
 # try and load local_settings if present
 try:
     # pylint: disable=wildcard-import
