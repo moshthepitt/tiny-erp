@@ -4,6 +4,9 @@
 # allauth
 django-allauth
 
+# vega admin
+git+git://github.com/moshthepitt/django-vega-admin.git@v0.0.7#egg=django_vega_admin
+
 # others
 pylint
 pylint-django
