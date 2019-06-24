@@ -60,7 +60,7 @@ class Requisition(TimeStampedModel):
 
     def __str__(self):
         """Unicode representation of Requisition."""
-        return self.name
+        return f"{self.id}"
 
 
 class RequisitionLineItem(TimeStampedAbstractLineItem):
@@ -82,4 +82,4 @@ class RequisitionLineItem(TimeStampedAbstractLineItem):
 
     def __str__(self):
         """Unicode representation of RequisitionLineItem."""
-        return f"{self.name} - #{self.requisition.name}"
+        return f"{self.item} - #{self.requisition}"
