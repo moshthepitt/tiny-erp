@@ -1,5 +1,6 @@
 """Forms module for tiny erp"""
 from django import forms
+from django.db import transaction
 from django.forms.models import inlineformset_factory
 
 from crispy_forms.helper import FormHelper
@@ -49,12 +50,13 @@ class RequisitionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request", None)
+        self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = True
         self.helper.form_method = "POST"
         self.helper.render_required_fields = True
-        self.helper.form_show_labels = False
+        self.helper.form_show_labels = True
         self.helper.html5_required = True
         self.helper.form_id = "requisition-form"
         self.helper.form_class = "form-horizontal"
@@ -68,10 +70,31 @@ class RequisitionForm(forms.ModelForm):
                 Field("department"),
                 Field("date_placed"),
                 Field("date_required"),
-                Fieldset("Requisition Items", Formset(RequisitionItemFormSet())),
+                Fieldset(
+                    "Requisition Items",
+                    Formset(
+                        formset_in_context=RequisitionItemFormSet(
+                            instance=self.instance
+                        )
+                    ),
+                ),
                 Field("reason"),
                 Field("total"),
                 HTML("<br>"),
                 ButtonHolder(Submit("submit", "save")),
             )
         )
+
+    def save(self, commit=True):
+        """
+        Custom save method
+        """
+        with transaction.atomic():
+            requisition = super().save()
+            if self.request:
+                formset = RequisitionItemFormSet(
+                    self.request.POST, instance=requisition
+                )
+                if formset.is_valid():
+                    formset.save()
+            return requisition
