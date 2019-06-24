@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     "crispy_forms",
     "rest_framework",
     "small_small_hr",
+    "django_tables2",
+    "django_filters",
     "vega_admin",
     # custom
     "tiny_erp.apps.locations",
@@ -74,12 +76,17 @@ SECRET_KEY = "i love oov"
 PRIVATE_STORAGE_ROOT = "/tmp/"
 MEDIA_ROOT = "/tmp/"
 PRIVATE_STORAGE_AUTH_FUNCTION = "private_storage.permissions.allow_staff"
+DEBUG = True
 
 SITE_ID = 1
 
 # vega settings
 CRISPY_TEMPLATE_PACK = "bootstrap3"
 VEGA_TEMPLATE = "badmin"
+
+ROOT_URLCONF = "tests.crud"
+
+STATIC_URL = "/static/"
 
 # try and load local_settings if present
 try:
