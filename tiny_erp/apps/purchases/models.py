@@ -58,6 +58,14 @@ class Requisition(TimeStampedModel):
         verbose_name = _("Requisition")
         verbose_name_plural = _("Requisitions")
 
+    def get_total(self):
+        """Get the total amount"""
+        items = RequisitionLineItem.objects.filter(requisition=self)
+        total = 0
+        for item in items:
+            total = total + (item.quantity * item.price)
+        return total
+
     def __str__(self):
         """Unicode representation of Requisition."""
         return f"{self.id}"
