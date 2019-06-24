@@ -6,6 +6,21 @@ from django.test import TestCase
 from model_mommy import mommy
 
 
+class TestLocationModels(TestCase):
+    """
+    Test class for purchase models
+    """
+
+    def test_model_methods(self):
+        """Test model methods"""
+        business = mommy.make("locations.Business", name="Abc Ltd")
+        location = mommy.make("locations.Location", name="Voi")
+        department = mommy.make("locations.Department", name="Science")
+        self.assertEqual("Abc Ltd", business.__str__())
+        self.assertEqual("Voi", location.__str__())
+        self.assertEqual("Science", department.__str__())
+
+
 class TestPurchaseModels(TestCase):
     """
     Test class for purchase models
