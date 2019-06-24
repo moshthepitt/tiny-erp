@@ -8,15 +8,16 @@
         <td>
             {# Include the hidden fields in the form #}
             {% if forloop.first %}
-            {% for hidden in form.hidden_fields %}
-            {{ hidden }}
-            {% endfor %}
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
             {% endif %}
-            {{ field.errors.as_ul }}
-            {{ field|as_crispy_field }}
+            <div>
+                {{ field.errors.as_ul }}
+                {{ field|as_crispy_field }}
+            </div>
         </td>
         {% endfor %}
     </tr>
     {% endfor %}
-
 </table>
