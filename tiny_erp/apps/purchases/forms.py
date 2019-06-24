@@ -45,7 +45,6 @@ class RequisitionForm(forms.ModelForm):
             "date_placed",
             "date_required",
             "reason",
-            "total",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -79,7 +78,6 @@ class RequisitionForm(forms.ModelForm):
                     ),
                 ),
                 Field("reason"),
-                Field("total"),
                 HTML("<br>"),
                 ButtonHolder(Submit("submit", "save")),
             )
