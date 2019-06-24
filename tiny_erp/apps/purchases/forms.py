@@ -2,6 +2,7 @@
 from django import forms
 from django.db import transaction
 from django.forms.models import inlineformset_factory
+from django.utils.translation import ugettext as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout, Submit
@@ -70,7 +71,7 @@ class RequisitionForm(forms.ModelForm):
                 Field("date_placed"),
                 Field("date_required"),
                 Fieldset(
-                    "Requisition Items",
+                    _("Requisition Items"),
                     Formset(
                         formset_in_context=RequisitionItemFormSet(
                             instance=self.instance
@@ -79,7 +80,7 @@ class RequisitionForm(forms.ModelForm):
                 ),
                 Field("reason"),
                 HTML("<br>"),
-                ButtonHolder(Submit("submit", "save")),
+                ButtonHolder(Submit("submitBtn", _("Submit"), css_class="btn-primary")),
             )
         )
 
