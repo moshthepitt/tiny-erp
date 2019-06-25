@@ -4,6 +4,9 @@
 # allauth
 django-allauth
 
+# vega admin
+git+git://github.com/moshthepitt/django-vega-admin.git@v0.0.7#egg=django_vega_admin
+
 # others
 pylint
 pylint-django
@@ -13,7 +16,10 @@ pep8
 coverage
 yapf
 isort
+pre-commit
 psycopg2-binary
 ipdb
 model_mommy
 black
+mypy
+urllib3>=1.24.2
