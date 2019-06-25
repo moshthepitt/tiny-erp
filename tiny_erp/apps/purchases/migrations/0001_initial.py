@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("small_small_hr", "0007_auto_20190417_2103"),
+        ("small_small_hr", "0007_auto_20190625_2111"),
         ("locations", "0001_initial"),
     ]
 
