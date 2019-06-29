@@ -27,21 +27,20 @@ class TestEmails(TestCase):
             "auth.User", first_name="Bob", last_name="Ndoe", email="bob@example.com"
         )
         self.staffprofile = mommy.make("small_small_hr.StaffProfile", user=self.user)
+        self.business = mommy.make("locations.Business", name="X Inc")
+        self.location = mommy.make("locations.Location", name="Voi")
+        self.department = mommy.make("locations.Department", name="Science")
 
     def test_requisition_filed_email(self):
         """
         Test requisition_filed_email
         """
-        business = mommy.make("locations.Business", name="X Inc")
-        location = mommy.make("locations.Location", name="Voi")
-        department = mommy.make("locations.Department", name="Science")
-
         requisition = mommy.make(
             "purchases.Requisition",
             staff=self.staffprofile,
-            location=location,
-            business=business,
-            department=department,
+            location=self.location,
+            business=self.business,
+            department=self.department,
             date_placed="2019-01-01",
             date_required="2019-02-02",
             reason="Science, bitch",
