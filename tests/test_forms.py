@@ -25,6 +25,8 @@ CREATE_FORM = """
             <div class="controls ">
                 <select name="staff" class="select form-control" required id="id_staff">
                     <option value="" selected>---------</option>
+                    <option value="99">Bob Ndoe</option>
+                    <option value="999">Mosh Pitt</option>
 
                 </select>
             </div>
@@ -536,6 +538,7 @@ class TestForms(TestCase):
 
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
         staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        mommy.make("small_small_hr.StaffProfile", _quantity=2)
         business = mommy.make("locations.Business", name="X Inc")
         location = mommy.make("locations.Location", name="Voi")
         department = mommy.make("locations.Department", name="Science")
@@ -579,6 +582,7 @@ class TestForms(TestCase):
 
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
         staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        mommy.make("small_small_hr.StaffProfile", _quantity=2)
         business = mommy.make("locations.Business", name="X Inc")
         location = mommy.make("locations.Location", name="Voi")
         department = mommy.make("locations.Department", name="Science")
@@ -655,10 +659,12 @@ class TestForms(TestCase):
         """
         Test crispy forms output
         """
-        self.assertHTMLEqual(CREATE_FORM, render_crispy_form(RequisitionForm))
-
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
         staffprofile = mommy.make("small_small_hr.StaffProfile", user=user, id=99)
+        user2 = mommy.make("auth.User", first_name="Mosh", last_name="Pitt")
+        mommy.make("small_small_hr.StaffProfile", user=user2, id=999)
+
+        self.assertHTMLEqual(CREATE_FORM, render_crispy_form(RequisitionForm))
         business = mommy.make("locations.Business", name="Abc Ltd", id=99)
         location = mommy.make("locations.Location", name="Voi", id=99)
         department = mommy.make("locations.Department", name="Science", id=99)
