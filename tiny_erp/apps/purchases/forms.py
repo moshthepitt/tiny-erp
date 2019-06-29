@@ -148,7 +148,7 @@ class UpdateRequisitionForm(RequisitionForm):
         self.helper.form_id = "requisition-update-form"
         self.helper.layout = Layout(
             Div(
-                Field("staff"),
+                Field("staff", type="hidden"),
                 Field("business"),
                 Field("location"),
                 Field("department"),
