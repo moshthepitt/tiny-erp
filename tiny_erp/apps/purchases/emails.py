@@ -22,6 +22,7 @@ def requisition_filed_email(requisition_obj: Requisition):
     subj = getattr(
         settings, "TINY_ERP_REQUISITION_FILED_EMAIL_SUBJ", _("New Purchase Requisition")
     )
+    subj = subj + f" - #{requisition_obj.id}"
     admin_emails = settings.TINY_ERP_ADMIN_EMAILS
 
     for admin_email in admin_emails:
@@ -50,12 +51,42 @@ def requisition_updated_email(requisition_obj: Requisition):
         subj = getattr(
             settings,
             "TINY_ERP_REQUISITION_UPDATED_EMAIL_SUBJ",
-            _(f"Purchase Requisition Updated - {requisition_obj.id}"),
+            _(f"Purchase Requisition Updated"),
         )
+        subj = subj + f" - #{requisition_obj.id}"
 
         send_email(
             name=staff.get_name(),
             email=staff.user.email,
+            subject=subj,
+            message=msg,
+            obj=requisition_obj,
+            template="generic",
+            template_path="tiny_erp/email",
+        )
+
+
+def requisition_approved_email(requisition_obj: Requisition):
+    """
+    Sends an email to admins when a purchase requisition is approved
+    """
+    msg = getattr(
+        settings,
+        "TINY_ERP_REQUISITION_APPROVED_EMAIL_TXT",
+        _("The purchase requisition has been approved.  Please log in to view it."),
+    )
+    subj = getattr(
+        settings,
+        "TINY_ERP_REQUISITION_APPROVED_EMAIL_SUBJ",
+        _("Purchase Requisition Approved"),
+    )
+    subj = subj + f" - #{requisition_obj.id}"
+    accounts_emails = settings.TINY_ERP_ACCOUNTS_EMAILS
+
+    for accounts_email in accounts_emails:
+        send_email(
+            name=settings.TINY_ERP_ADMIN_NAME,
+            email=accounts_email,
             subject=subj,
             message=msg,
             obj=requisition_obj,
