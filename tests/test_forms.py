@@ -1,13 +1,20 @@
 """module to test tiny-erp forms"""
 from datetime import date
+from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 
 from crispy_forms.utils import render_crispy_form
 from model_mommy import mommy
 
-from tiny_erp.apps.purchases.forms import RequisitionForm, RequisitionLineItemForm
+from tiny_erp.apps.locations.models import Business, Department, Location
+from tiny_erp.apps.purchases.forms import (
+    RequisitionForm,
+    RequisitionLineItemForm,
+    UpdateRequisitionForm,
+)
+from tiny_erp.apps.purchases.models import Requisition
 
 CREATE_FORM = """
 <form id="requisition-form" method="post">
@@ -18,6 +25,8 @@ CREATE_FORM = """
             <div class="controls ">
                 <select name="staff" class="select form-control" required id="id_staff">
                     <option value="" selected>---------</option>
+                    <option value="99">Bob Ndoe</option>
+                    <option value="999">Mosh Pitt</option>
 
                 </select>
             </div>
@@ -66,7 +75,7 @@ CREATE_FORM = """
         </div>
         <fieldset>
             <legend>Requisition Items</legend>
-            <table class="table">
+            <table class="table tiny-erp">
                 <input type="hidden" name="requisitionlineitem_set-TOTAL_FORMS" value="3" id="id_requisitionlineitem_set-TOTAL_FORMS">
                 <input type="hidden" name="requisitionlineitem_set-INITIAL_FORMS" value="0" id="id_requisitionlineitem_set-INITIAL_FORMS">
                 <input type="hidden" name="requisitionlineitem_set-MIN_NUM_FORMS" value="0" id="id_requisitionlineitem_set-MIN_NUM_FORMS">
@@ -227,26 +236,16 @@ CREATE_FORM = """
 """  # noqa
 
 EDIT_FORM = """
-<form id="requisition-form" method="post">
+<form id="requisition-update-form" method="post">
     <div>
-        <div id="div_id_staff" class="form-group">
-            <label for="id_staff" class="control-label  requiredField">
-                Staff Member<span class="asteriskField">*</span> </label>
-            <div class="controls ">
-                <select name="staff" class="select form-control" required id="id_staff">
-                    <option value="">---------</option>
-                    <option value="1" selected>Bob Ndoe</option>
-
-                </select>
-            </div>
-        </div>
+        <input type="hidden" name="staff" value="99" id="id_staff">
         <div id="div_id_business" class="form-group">
             <label for="id_business" class="control-label  requiredField">
                 Business<span class="asteriskField">*</span> </label>
             <div class="controls ">
                 <select name="business" class="select form-control" required id="id_business">
                     <option value="">---------</option>
-                    <option value="1" selected>Abc Ltd</option>
+                    <option value="99" selected>Abc Ltd</option>
 
                 </select>
             </div>
@@ -257,7 +256,7 @@ EDIT_FORM = """
             <div class="controls ">
                 <select name="location" class="select form-control" required id="id_location">
                     <option value="">---------</option>
-                    <option value="1" selected>Voi</option>
+                    <option value="99" selected>Voi</option>
 
                 </select>
             </div>
@@ -268,7 +267,7 @@ EDIT_FORM = """
             <div class="controls ">
                 <select name="department" class="select form-control" required id="id_department">
                     <option value="">---------</option>
-                    <option value="1" selected>Science</option>
+                    <option value="99" selected>Science</option>
 
                 </select>
             </div>
@@ -285,9 +284,23 @@ EDIT_FORM = """
             <div class="controls ">
                 <input type="text" name="date_required" value="2019-06-24" class="dateinput form-control" required id="id_date_required"> </div>
         </div>
+        <div id="div_id_status" class="form-group">
+            <label for="id_status" class="control-label ">
+                Status
+            </label>
+            <div class="controls ">
+                <select name="status" class="select form-control" id="id_status">
+                    <option value="">---------</option>
+                    <option value="1">Approved</option>
+                    <option value="3" selected>Pending</option>
+                    <option value="2">Rejected</option>
+
+                </select>
+            </div>
+        </div>
         <fieldset>
             <legend>Requisition Items</legend>
-            <table class="table">
+            <table class="table tiny-erp">
                 <input type="hidden" name="requisitionlineitem_set-TOTAL_FORMS" value="4" id="id_requisitionlineitem_set-TOTAL_FORMS">
                 <input type="hidden" name="requisitionlineitem_set-INITIAL_FORMS" value="1" id="id_requisitionlineitem_set-INITIAL_FORMS">
                 <input type="hidden" name="requisitionlineitem_set-MIN_NUM_FORMS" value="0" id="id_requisitionlineitem_set-MIN_NUM_FORMS">
@@ -295,7 +308,7 @@ EDIT_FORM = """
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-0-id" value="1" id="id_requisitionlineitem_set-0-id">
-                        <input type="hidden" name="requisitionlineitem_set-0-requisition" value="1" id="id_requisitionlineitem_set-0-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-0-requisition" value="99" id="id_requisitionlineitem_set-0-requisition">
                         <div>
                             <div id="div_id_requisitionlineitem_set-0-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-0-item" class="control-label  requiredField">
@@ -340,7 +353,7 @@ EDIT_FORM = """
                 <tr class="row2 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-1-id" id="id_requisitionlineitem_set-1-id">
-                        <input type="hidden" name="requisitionlineitem_set-1-requisition" value="1" id="id_requisitionlineitem_set-1-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-1-requisition" value="99" id="id_requisitionlineitem_set-1-requisition">
                         <div>
                             <div id="div_id_requisitionlineitem_set-1-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-1-item" class="control-label  requiredField">
@@ -385,7 +398,7 @@ EDIT_FORM = """
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-2-id" id="id_requisitionlineitem_set-2-id">
-                        <input type="hidden" name="requisitionlineitem_set-2-requisition" value="1" id="id_requisitionlineitem_set-2-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-2-requisition" value="99" id="id_requisitionlineitem_set-2-requisition">
                         <div>
                             <div id="div_id_requisitionlineitem_set-2-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-2-item" class="control-label  requiredField">
@@ -430,7 +443,7 @@ EDIT_FORM = """
                 <tr class="row2 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-3-id" id="id_requisitionlineitem_set-3-id">
-                        <input type="hidden" name="requisitionlineitem_set-3-requisition" value="1" id="id_requisitionlineitem_set-3-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-3-requisition" value="99" id="id_requisitionlineitem_set-3-requisition">
                         <div>
                             <div id="div_id_requisitionlineitem_set-3-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-3-item" class="control-label  requiredField">
@@ -493,18 +506,29 @@ EDIT_FORM = """
 """  # noqa
 
 
+@override_settings(
+    TINY_ERP_REQUISITION_ITEMS_TXT="Requisition Items", TINY_ERP_SUBMIT_TXT="Submit"
+)
 class TestForms(TestCase):
     """
     Test class for forms
     """
+
+    maxDiff = None
 
     def setUp(self):
         """
         Setup test class
         """
         self.factory = RequestFactory()
+        Business.objects.all().delete()
+        Department.objects.all().delete()
+        Location.objects.all().delete()
 
-    def test_requisition_form(self):
+    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
+    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
+    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
+    def test_requisition_form(self, filed_mock, updated_mock, approved_mock):
         """
         Test RequisitionForm
         """
@@ -514,6 +538,7 @@ class TestForms(TestCase):
 
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
         staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        mommy.make("small_small_hr.StaffProfile", _quantity=2)
         business = mommy.make("locations.Business", name="X Inc")
         location = mommy.make("locations.Location", name="Voi")
         department = mommy.make("locations.Department", name="Science")
@@ -539,15 +564,26 @@ class TestForms(TestCase):
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
         self.assertEqual("Science, bitch", requisition.reason)
 
-    def test_crispy_requisition_form(self):
+        self.assertEqual(1, filed_mock.call_count)
+        self.assertEqual(0, updated_mock.call_count)
+        self.assertEqual(0, approved_mock.call_count)
+        filed_mock.assert_called_with(requisition_obj=requisition)
+
+    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
+    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
+    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
+    def test_updated_requisition_form(self, filed_mock, updated_mock, approved_mock):
         """
-        Test crispy forms output
+        Test UpdateRequisitionForm
         """
-        self.assertHTMLEqual(CREATE_FORM, render_crispy_form(RequisitionForm))
+        request = self.factory.get("/")
+        request.session = {}
+        request.user = AnonymousUser()
 
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
         staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        business = mommy.make("locations.Business", name="Abc Ltd")
+        mommy.make("small_small_hr.StaffProfile", _quantity=2)
+        business = mommy.make("locations.Business", name="X Inc")
         location = mommy.make("locations.Location", name="Voi")
         department = mommy.make("locations.Department", name="Science")
         requisition = mommy.make(
@@ -558,6 +594,89 @@ class TestForms(TestCase):
             business=business,
             date_placed="2019-06-24",
             date_required="2019-06-24",
+            id=99,
+        )
+
+        data = {
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/01/2019",
+            "date_required": "02/02/2019",
+            "reason": "changed this",
+        }
+        form = UpdateRequisitionForm(instance=requisition, data=data)
+        requisition = form.save()
+
+        self.assertEqual("changed this", requisition.reason)
+        self.assertEqual(0, filed_mock.call_count)
+        self.assertEqual(1, updated_mock.call_count)
+        self.assertEqual(0, approved_mock.call_count)
+        updated_mock.assert_called_with(requisition_obj=requisition)
+
+        data = {
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/01/2019",
+            "date_required": "02/02/2019",
+            "status": Requisition.REJECTED,
+            "reason": "Not good",
+        }
+        form = UpdateRequisitionForm(instance=requisition, data=data)
+        requisition = form.save()
+
+        self.assertEqual("Not good", requisition.reason)
+        self.assertEqual(Requisition.REJECTED, requisition.status)
+        self.assertEqual(0, filed_mock.call_count)
+        self.assertEqual(2, updated_mock.call_count)
+        self.assertEqual(0, approved_mock.call_count)
+        updated_mock.assert_called_with(requisition_obj=requisition)
+
+        data = {
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/01/2019",
+            "date_required": "02/02/2019",
+            "status": Requisition.APPROVED,
+            "reason": "Great",
+        }
+        form = UpdateRequisitionForm(instance=requisition, data=data)
+        requisition = form.save()
+
+        self.assertEqual("Great", requisition.reason)
+        self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual(0, filed_mock.call_count)
+        self.assertEqual(2, updated_mock.call_count)
+        self.assertEqual(1, approved_mock.call_count)
+        approved_mock.assert_called_with(requisition_obj=requisition)
+
+    def test_crispy_requisition_form(self):
+        """
+        Test crispy forms output
+        """
+        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user, id=99)
+        user2 = mommy.make("auth.User", first_name="Mosh", last_name="Pitt")
+        mommy.make("small_small_hr.StaffProfile", user=user2, id=999)
+
+        self.assertHTMLEqual(CREATE_FORM, render_crispy_form(RequisitionForm))
+        business = mommy.make("locations.Business", name="Abc Ltd", id=99)
+        location = mommy.make("locations.Location", name="Voi", id=99)
+        department = mommy.make("locations.Department", name="Science", id=99)
+        requisition = mommy.make(
+            "purchases.Requisition",
+            staff=staffprofile,
+            location=location,
+            department=department,
+            business=business,
+            date_placed="2019-06-24",
+            date_required="2019-06-24",
+            id=99,
         )
         mommy.make(
             "purchases.RequisitionLineItem",
@@ -569,7 +688,7 @@ class TestForms(TestCase):
         )
 
         self.assertHTMLEqual(
-            EDIT_FORM, render_crispy_form(RequisitionForm(instance=requisition))
+            EDIT_FORM, render_crispy_form(UpdateRequisitionForm(instance=requisition))
         )
 
     def test_requisition_lineitem_form(self):

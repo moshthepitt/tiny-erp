@@ -79,7 +79,7 @@ pyyaml==5.1.1             # via aspy.yaml, pre-commit, tablib
 requests-oauthlib==1.2.0  # via django-allauth
 requests==2.22.0          # via django-allauth, requests-oauthlib
 six==1.12.0               # via astroid, cfgv, model-mommy, packaging, pre-commit, prompt-toolkit, tox, traitlets
-small_small_hr==0.1.7
+small_small_hr==0.1.8
 sorl-thumbnail==12.5.0    # via small-small-hr
 sqlparse==0.3.0           # via django
 tablib==0.13.0
