@@ -1,5 +1,6 @@
 """module to test tiny-erp forms"""
 from datetime import date
+from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase, override_settings
@@ -513,7 +514,8 @@ class TestForms(TestCase):
         Department.objects.all().delete()
         Location.objects.all().delete()
 
-    def test_requisition_form(self):
+    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
+    def test_requisition_form(self, mock):
         """
         Test RequisitionForm
         """
@@ -547,6 +549,8 @@ class TestForms(TestCase):
         self.assertEqual(date(2019, 1, 1), requisition.date_placed)
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
         self.assertEqual("Science, bitch", requisition.reason)
+
+        mock.assert_called_with(requisition_obj=requisition)
 
     def test_crispy_requisition_form(self):
         """
