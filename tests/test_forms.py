@@ -7,6 +7,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from crispy_forms.utils import render_crispy_form
 from model_mommy import mommy
 
+from tiny_erp.apps.locations.models import Business, Department, Location
 from tiny_erp.apps.purchases.forms import RequisitionForm, RequisitionLineItemForm
 
 CREATE_FORM = """
@@ -235,7 +236,7 @@ EDIT_FORM = """
             <div class="controls ">
                 <select name="staff" class="select form-control" required id="id_staff">
                     <option value="">---------</option>
-                    <option value="1" selected>Bob Ndoe</option>
+                    <option value="99" selected>Bob Ndoe</option>
 
                 </select>
             </div>
@@ -246,7 +247,7 @@ EDIT_FORM = """
             <div class="controls ">
                 <select name="business" class="select form-control" required id="id_business">
                     <option value="">---------</option>
-                    <option value="1" selected>Abc Ltd</option>
+                    <option value="99" selected>Abc Ltd</option>
 
                 </select>
             </div>
@@ -257,7 +258,7 @@ EDIT_FORM = """
             <div class="controls ">
                 <select name="location" class="select form-control" required id="id_location">
                     <option value="">---------</option>
-                    <option value="1" selected>Voi</option>
+                    <option value="99" selected>Voi</option>
 
                 </select>
             </div>
@@ -268,7 +269,7 @@ EDIT_FORM = """
             <div class="controls ">
                 <select name="department" class="select form-control" required id="id_department">
                     <option value="">---------</option>
-                    <option value="1" selected>Science</option>
+                    <option value="99" selected>Science</option>
 
                 </select>
             </div>
@@ -295,7 +296,7 @@ EDIT_FORM = """
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-0-id" value="1" id="id_requisitionlineitem_set-0-id">
-                        <input type="hidden" name="requisitionlineitem_set-0-requisition" value="1" id="id_requisitionlineitem_set-0-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-0-requisition" value="99" id="id_requisitionlineitem_set-0-requisition">
                         <div>
                             <div id="div_id_requisitionlineitem_set-0-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-0-item" class="control-label  requiredField">
@@ -340,7 +341,7 @@ EDIT_FORM = """
                 <tr class="row2 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-1-id" id="id_requisitionlineitem_set-1-id">
-                        <input type="hidden" name="requisitionlineitem_set-1-requisition" value="1" id="id_requisitionlineitem_set-1-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-1-requisition" value="99" id="id_requisitionlineitem_set-1-requisition">
                         <div>
                             <div id="div_id_requisitionlineitem_set-1-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-1-item" class="control-label  requiredField">
@@ -385,7 +386,7 @@ EDIT_FORM = """
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-2-id" id="id_requisitionlineitem_set-2-id">
-                        <input type="hidden" name="requisitionlineitem_set-2-requisition" value="1" id="id_requisitionlineitem_set-2-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-2-requisition" value="99" id="id_requisitionlineitem_set-2-requisition">
                         <div>
                             <div id="div_id_requisitionlineitem_set-2-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-2-item" class="control-label  requiredField">
@@ -430,7 +431,7 @@ EDIT_FORM = """
                 <tr class="row2 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-3-id" id="id_requisitionlineitem_set-3-id">
-                        <input type="hidden" name="requisitionlineitem_set-3-requisition" value="1" id="id_requisitionlineitem_set-3-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-3-requisition" value="99" id="id_requisitionlineitem_set-3-requisition">
                         <div>
                             <div id="div_id_requisitionlineitem_set-3-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-3-item" class="control-label  requiredField">
@@ -508,6 +509,9 @@ class TestForms(TestCase):
         Setup test class
         """
         self.factory = RequestFactory()
+        Business.objects.all().delete()
+        Department.objects.all().delete()
+        Location.objects.all().delete()
 
     def test_requisition_form(self):
         """
@@ -551,10 +555,10 @@ class TestForms(TestCase):
         self.assertHTMLEqual(CREATE_FORM, render_crispy_form(RequisitionForm))
 
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        business = mommy.make("locations.Business", name="Abc Ltd")
-        location = mommy.make("locations.Location", name="Voi")
-        department = mommy.make("locations.Department", name="Science")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user, id=99)
+        business = mommy.make("locations.Business", name="Abc Ltd", id=99)
+        location = mommy.make("locations.Location", name="Voi", id=99)
+        department = mommy.make("locations.Department", name="Science", id=99)
         requisition = mommy.make(
             "purchases.Requisition",
             staff=staffprofile,
@@ -563,6 +567,7 @@ class TestForms(TestCase):
             business=business,
             date_placed="2019-06-24",
             date_required="2019-06-24",
+            id=99,
         )
         mommy.make(
             "purchases.RequisitionLineItem",
