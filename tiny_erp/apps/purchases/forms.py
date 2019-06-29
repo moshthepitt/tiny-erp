@@ -5,6 +5,8 @@ from django.db import transaction
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
 
+from small_small_hr.models import StaffProfile
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout, Submit
 
@@ -58,6 +60,16 @@ class RequisitionForm(forms.ModelForm):
         self.request = kwargs.pop("request", None)
         self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
         super().__init__(*args, **kwargs)
+        if self.request:
+            # pylint: disable=no-member
+            try:
+                self.request.user.staffprofile
+            except StaffProfile.DoesNotExist:
+                pass
+            else:
+                self.fields["staff"].queryset = StaffProfile.objects.filter(
+                    id=self.request.user.staffprofile.id
+                )
         self.helper = FormHelper()
         self.helper.form_tag = True
         self.helper.form_method = "POST"
@@ -139,6 +151,9 @@ class UpdateRequisitionForm(RequisitionForm):
         self.request = kwargs.pop("request", None)
         self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
         super().__init__(*args, **kwargs)
+        self.fields["staff"].queryset = StaffProfile.objects.filter(
+            id=self.instance.staff.id
+        )
         self.helper = FormHelper()
         self.helper.form_tag = True
         self.helper.form_method = "POST"
