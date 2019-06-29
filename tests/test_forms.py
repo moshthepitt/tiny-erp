@@ -2,7 +2,7 @@
 from datetime import date
 
 from django.contrib.auth.models import AnonymousUser
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory, TestCase, override_settings
 
 from crispy_forms.utils import render_crispy_form
 from model_mommy import mommy
@@ -66,7 +66,7 @@ CREATE_FORM = """
         </div>
         <fieldset>
             <legend>Requisition Items</legend>
-            <table class="table">
+            <table class="table tiny-erp">
                 <input type="hidden" name="requisitionlineitem_set-TOTAL_FORMS" value="3" id="id_requisitionlineitem_set-TOTAL_FORMS">
                 <input type="hidden" name="requisitionlineitem_set-INITIAL_FORMS" value="0" id="id_requisitionlineitem_set-INITIAL_FORMS">
                 <input type="hidden" name="requisitionlineitem_set-MIN_NUM_FORMS" value="0" id="id_requisitionlineitem_set-MIN_NUM_FORMS">
@@ -287,7 +287,7 @@ EDIT_FORM = """
         </div>
         <fieldset>
             <legend>Requisition Items</legend>
-            <table class="table">
+            <table class="table tiny-erp">
                 <input type="hidden" name="requisitionlineitem_set-TOTAL_FORMS" value="4" id="id_requisitionlineitem_set-TOTAL_FORMS">
                 <input type="hidden" name="requisitionlineitem_set-INITIAL_FORMS" value="1" id="id_requisitionlineitem_set-INITIAL_FORMS">
                 <input type="hidden" name="requisitionlineitem_set-MIN_NUM_FORMS" value="0" id="id_requisitionlineitem_set-MIN_NUM_FORMS">
@@ -493,10 +493,15 @@ EDIT_FORM = """
 """  # noqa
 
 
+@override_settings(
+    TINY_ERP_REQUISITION_ITEMS_TXT="Requisition Items", TINY_ERP_SUBMIT_TXT="Submit"
+)
 class TestForms(TestCase):
     """
     Test class for forms
     """
+
+    maxDiff = None
 
     def setUp(self):
         """
