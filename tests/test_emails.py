@@ -52,7 +52,7 @@ class TestEmails(TestCase):
             mock.assert_called_with(
                 name="mosh",
                 email="erp@example.com",
-                subject="New Purchase Requisition",
+                subject=f"New Purchase Requisition - #{requisition.id}",
                 message="There has been a new purchase requisition.  Please log in to process it.",  # noqa  pylint: disable=line-too-long
                 obj=requisition,
                 template="generic",
@@ -61,7 +61,9 @@ class TestEmails(TestCase):
 
         requisition_filed_email(requisition)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, "New Purchase Requisition")
+        self.assertEqual(
+            mail.outbox[0].subject, f"New Purchase Requisition - #{requisition.id}"
+        )
         self.assertEqual(mail.outbox[0].to, ["mosh <erp@example.com>"])
         self.assertEqual(
             mail.outbox[0].body,
