@@ -115,3 +115,62 @@ class RequisitionForm(forms.ModelForm):
             else:
                 requisition_updated_email(requisition_obj=requisition)
         return requisition
+
+
+class UpdateRequisitionForm(RequisitionForm):
+    """Form definition for Upodate Requisition."""
+
+    class Meta:
+        """Meta definition for UpdateRequisitionForm."""
+
+        model = Requisition
+        fields = [
+            "staff",
+            "business",
+            "location",
+            "department",
+            "date_placed",
+            "date_required",
+            "reason",
+            "status",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request", None)
+        self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = True
+        self.helper.form_method = "POST"
+        self.helper.render_required_fields = True
+        self.helper.form_show_labels = True
+        self.helper.html5_required = True
+        self.helper.form_id = "requisition-update-form"
+        self.helper.layout = Layout(
+            Div(
+                Field("staff"),
+                Field("business"),
+                Field("location"),
+                Field("department"),
+                Field("date_placed"),
+                Field("date_required"),
+                Field("status"),
+                Fieldset(
+                    _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
+                    Formset(
+                        formset_in_context=RequisitionItemFormSet(
+                            instance=self.instance
+                        )
+                    ),
+                ),
+                Field("reason"),
+                HTML("<br>"),
+                ButtonHolder(
+                    Submit(
+                        "submitBtn",
+                        _(settings.TINY_ERP_SUBMIT_TXT),
+                        css_class="btn-primary",
+                    )
+                ),
+            )
+        )
