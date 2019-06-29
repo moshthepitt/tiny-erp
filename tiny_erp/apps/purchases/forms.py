@@ -106,7 +106,7 @@ class RequisitionForm(forms.ModelForm):
                 if formset.is_valid():
                     formset.save()
 
-        if not self.get_initial_for_field(self.fields["staff"], None):
+        if not self.get_initial_for_field(self.fields["staff"], "staff"):
             # new requisition
             requisition_filed_email(requisition_obj=requisition)
         else:
