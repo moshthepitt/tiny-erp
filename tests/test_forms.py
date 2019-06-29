@@ -9,7 +9,12 @@ from crispy_forms.utils import render_crispy_form
 from model_mommy import mommy
 
 from tiny_erp.apps.locations.models import Business, Department, Location
-from tiny_erp.apps.purchases.forms import RequisitionForm, RequisitionLineItemForm
+from tiny_erp.apps.purchases.forms import (
+    RequisitionForm,
+    RequisitionLineItemForm,
+    UpdateRequisitionForm,
+)
+from tiny_erp.apps.purchases.models import Requisition
 
 CREATE_FORM = """
 <form id="requisition-form" method="post">
@@ -514,8 +519,10 @@ class TestForms(TestCase):
         Department.objects.all().delete()
         Location.objects.all().delete()
 
+    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
+    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
     @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
-    def test_requisition_form(self, mock):
+    def test_requisition_form(self, filed_mock, updated_mock, approved_mock):
         """
         Test RequisitionForm
         """
@@ -550,7 +557,95 @@ class TestForms(TestCase):
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
         self.assertEqual("Science, bitch", requisition.reason)
 
-        mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual(1, filed_mock.call_count)
+        self.assertEqual(0, updated_mock.call_count)
+        self.assertEqual(0, approved_mock.call_count)
+        filed_mock.assert_called_with(requisition_obj=requisition)
+
+    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
+    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
+    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
+    def test_updated_requisition_form(self, filed_mock, updated_mock, approved_mock):
+        """
+        Test UpdateRequisitionForm
+        """
+        request = self.factory.get("/")
+        request.session = {}
+        request.user = AnonymousUser()
+
+        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        business = mommy.make("locations.Business", name="X Inc")
+        location = mommy.make("locations.Location", name="Voi")
+        department = mommy.make("locations.Department", name="Science")
+        requisition = mommy.make(
+            "purchases.Requisition",
+            staff=staffprofile,
+            location=location,
+            department=department,
+            business=business,
+            date_placed="2019-06-24",
+            date_required="2019-06-24",
+            id=99,
+        )
+
+        data = {
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/01/2019",
+            "date_required": "02/02/2019",
+            "reason": "changed this",
+        }
+        form = UpdateRequisitionForm(instance=requisition, data=data)
+        requisition = form.save()
+
+        self.assertEqual("changed this", requisition.reason)
+        self.assertEqual(0, filed_mock.call_count)
+        self.assertEqual(1, updated_mock.call_count)
+        self.assertEqual(0, approved_mock.call_count)
+        updated_mock.assert_called_with(requisition_obj=requisition)
+
+        data = {
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/01/2019",
+            "date_required": "02/02/2019",
+            "status": Requisition.REJECTED,
+            "reason": "Not good",
+        }
+        form = UpdateRequisitionForm(instance=requisition, data=data)
+        requisition = form.save()
+
+        self.assertEqual("Not good", requisition.reason)
+        self.assertEqual(Requisition.REJECTED, requisition.status)
+        self.assertEqual(0, filed_mock.call_count)
+        self.assertEqual(2, updated_mock.call_count)
+        self.assertEqual(0, approved_mock.call_count)
+        updated_mock.assert_called_with(requisition_obj=requisition)
+
+        data = {
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/01/2019",
+            "date_required": "02/02/2019",
+            "status": Requisition.APPROVED,
+            "reason": "Great",
+        }
+        form = UpdateRequisitionForm(instance=requisition, data=data)
+        requisition = form.save()
+
+        self.assertEqual("Great", requisition.reason)
+        self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual(0, filed_mock.call_count)
+        self.assertEqual(2, updated_mock.call_count)
+        self.assertEqual(1, approved_mock.call_count)
+        approved_mock.assert_called_with(requisition_obj=requisition)
 
     def test_crispy_requisition_form(self):
         """
