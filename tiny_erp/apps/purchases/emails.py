@@ -34,3 +34,31 @@ def requisition_filed_email(requisition_obj: Requisition):
             template="generic",
             template_path="tiny_erp/email",
         )
+
+
+def requisition_updated_email(requisition_obj: Requisition):
+    """
+    Sends an email to admins when a purchase requisition is updated
+    """
+    staff = requisition_obj.staff
+    if staff.user.email:
+        msg = getattr(
+            settings,
+            "TINY_ERP_REQUISITION_UPDATED_EMAIL_TXT",
+            _("Your purchase requisition has been updated.  Please log in to view it."),
+        )
+        subj = getattr(
+            settings,
+            "TINY_ERP_REQUISITION_UPDATED_EMAIL_SUBJ",
+            _(f"Purchase Requisition Updated - {requisition_obj.id}"),
+        )
+
+        send_email(
+            name=settings.TINY_ERP_ADMIN_NAME,
+            email=staff.user.email,
+            subject=subj,
+            message=msg,
+            obj=requisition_obj,
+            template="generic",
+            template_path="tiny_erp/email",
+        )
