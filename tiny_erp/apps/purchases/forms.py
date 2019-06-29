@@ -1,5 +1,6 @@
 """Forms module for tiny erp"""
 from django import forms
+from django.conf import settings
 from django.db import transaction
 from django.forms.models import inlineformset_factory
 from django.utils.translation import ugettext as _
@@ -68,7 +69,7 @@ class RequisitionForm(forms.ModelForm):
                 Field("date_placed"),
                 Field("date_required"),
                 Fieldset(
-                    _("Requisition Items"),
+                    _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
                     Formset(
                         formset_in_context=RequisitionItemFormSet(
                             instance=self.instance
@@ -77,7 +78,13 @@ class RequisitionForm(forms.ModelForm):
                 ),
                 Field("reason"),
                 HTML("<br>"),
-                ButtonHolder(Submit("submitBtn", _("Submit"), css_class="btn-primary")),
+                ButtonHolder(
+                    Submit(
+                        "submitBtn",
+                        _(settings.TINY_ERP_SUBMIT_TXT),
+                        css_class="btn-primary",
+                    )
+                ),
             )
         )
 
