@@ -60,20 +60,20 @@ class TestEmails(TestCase):
             )
 
         requisition_filed_email(requisition)
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(1, len(mail.outbox))
         self.assertEqual(
-            mail.outbox[0].subject, f"New Purchase Requisition - #{requisition.id}"
+            f"New Purchase Requisition - #{requisition.id}", mail.outbox[0].subject
         )
-        self.assertEqual(mail.outbox[0].to, ["mosh <erp@example.com>"])
+        self.assertEqual(["mosh <erp@example.com>"], mail.outbox[0].to)
         self.assertEqual(
-            mail.outbox[0].body,
             "Hello,\n\nThere has been a new purchase requisition.  Please "
             "log in to process it.\n\nThank you,\n\n"
             "example.com\n------\nhttp://example.com\n",
+            mail.outbox[0].body,
         )
         self.assertEqual(
-            mail.outbox[0].alternatives[0][0],
             "Hello,<br/><br/><p>There has been a new purchase "
             "requisition.  Please log in to process it.</p><br/><br/>"
             "Thank you,<br/>example.com<br/>------<br/>http://example.com",
+            mail.outbox[0].alternatives[0][0],
         )
