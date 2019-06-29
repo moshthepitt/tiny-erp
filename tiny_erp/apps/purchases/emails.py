@@ -54,7 +54,7 @@ def requisition_updated_email(requisition_obj: Requisition):
         )
 
         send_email(
-            name=settings.TINY_ERP_ADMIN_NAME,
+            name=staff.get_name(),
             email=staff.user.email,
             subject=subj,
             message=msg,
