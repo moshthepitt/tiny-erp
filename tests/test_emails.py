@@ -3,6 +3,7 @@ Module to test tiny_erp Emails
 """
 from unittest.mock import patch
 
+from django.core import mail
 from django.test import TestCase, override_settings
 
 from model_mommy import mommy
@@ -27,8 +28,7 @@ class TestEmails(TestCase):
         )
         self.staffprofile = mommy.make("small_small_hr.StaffProfile", user=self.user)
 
-    @patch("tiny_erp.apps.purchases.emails.send_email")
-    def test_requisition_filed_email(self, mock):
+    def test_requisition_filed_email(self):
         """
         Test requisition_filed_email
         """
@@ -47,14 +47,31 @@ class TestEmails(TestCase):
             reason="Science, bitch",
         )
 
-        requisition_filed_email(requisition)
+        with patch("tiny_erp.apps.purchases.emails.send_email") as mock:
+            requisition_filed_email(requisition)
+            mock.assert_called_with(
+                name="mosh",
+                email="erp@example.com",
+                subject="New Purchase Requisition",
+                message="There has been a new purchase requisition.  Please log in to process it.",  # noqa  pylint: disable=line-too-long
+                obj=requisition,
+                template="generic",
+                template_path="tiny_erp/email",
+            )
 
-        mock.assert_called_with(
-            name="mosh",
-            email="erp@example.com",
-            subject="New Purchase Requisition",
-            message="There has been a new purchase requisition.  Please log in to process it.",  # noqa  pylint: disable=line-too-long
-            obj=requisition,
-            template="generic",
-            template_path="tiny_erp/email",
+        requisition_filed_email(requisition)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, "New Purchase Requisition")
+        self.assertEqual(mail.outbox[0].to, ["mosh <erp@example.com>"])
+        self.assertEqual(
+            mail.outbox[0].body,
+            "Hello,\n\nThere has been a new purchase requisition.  Please "
+            "log in to process it.\n\nThank you,\n\n"
+            "example.com\n------\nhttp://example.com\n",
+        )
+        self.assertEqual(
+            mail.outbox[0].alternatives[0][0],
+            "Hello,<br/><br/><p>There has been a new purchase "
+            "requisition.  Please log in to process it.</p><br/><br/>"
+            "Thank you,<br/>example.com<br/>------<br/>http://example.com",
         )
