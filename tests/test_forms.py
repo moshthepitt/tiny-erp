@@ -234,19 +234,9 @@ CREATE_FORM = """
 """  # noqa
 
 EDIT_FORM = """
-<form id="requisition-form" method="post">
+<form id="requisition-update-form" method="post">
     <div>
-        <div id="div_id_staff" class="form-group">
-            <label for="id_staff" class="control-label  requiredField">
-                Staff Member<span class="asteriskField">*</span> </label>
-            <div class="controls ">
-                <select name="staff" class="select form-control" required id="id_staff">
-                    <option value="">---------</option>
-                    <option value="99" selected>Bob Ndoe</option>
-
-                </select>
-            </div>
-        </div>
+        <input type="hidden" name="staff" value="99" id="id_staff">
         <div id="div_id_business" class="form-group">
             <label for="id_business" class="control-label  requiredField">
                 Business<span class="asteriskField">*</span> </label>
@@ -291,6 +281,20 @@ EDIT_FORM = """
                 Date Required<span class="asteriskField">*</span> </label>
             <div class="controls ">
                 <input type="text" name="date_required" value="2019-06-24" class="dateinput form-control" required id="id_date_required"> </div>
+        </div>
+        <div id="div_id_status" class="form-group">
+            <label for="id_status" class="control-label ">
+                Status
+            </label>
+            <div class="controls ">
+                <select name="status" class="select form-control" id="id_status">
+                    <option value="">---------</option>
+                    <option value="1">Approved</option>
+                    <option value="3" selected>Pending</option>
+                    <option value="2">Rejected</option>
+
+                </select>
+            </div>
         </div>
         <fieldset>
             <legend>Requisition Items</legend>
@@ -678,7 +682,7 @@ class TestForms(TestCase):
         )
 
         self.assertHTMLEqual(
-            EDIT_FORM, render_crispy_form(RequisitionForm(instance=requisition))
+            EDIT_FORM, render_crispy_form(UpdateRequisitionForm(instance=requisition))
         )
 
     def test_requisition_lineitem_form(self):
