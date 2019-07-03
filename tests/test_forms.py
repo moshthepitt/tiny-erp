@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory, TestCase, override_settings
+from django.urls import reverse
 
 from crispy_forms.utils import render_crispy_form
 from model_mommy import mommy
@@ -14,7 +15,7 @@ from tiny_erp.apps.purchases.forms import (
     RequisitionLineItemForm,
     UpdateRequisitionForm,
 )
-from tiny_erp.apps.purchases.models import Requisition
+from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
 
 CREATE_FORM = """
 <form id="requisition-form" method="post">
@@ -654,6 +655,48 @@ class TestForms(TestCase):
         self.assertEqual(2, updated_mock.call_count)
         self.assertEqual(1, approved_mock.call_count)
         approved_mock.assert_called_with(requisition_obj=requisition)
+
+    @override_settings(ROOT_URLCONF="tests.crud")
+    def test_full_requisition_form(self):
+        """
+        Test the full implementation of the requesition form
+        """
+        Requisition.objects.all().delete()
+        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        business = mommy.make("locations.Business", name="X Inc")
+        location = mommy.make("locations.Location", name="Voi")
+        department = mommy.make("locations.Department", name="Science")
+        data = {
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/01/2019",
+            "date_required": "02/02/2019",
+            "reason": "changed this",
+            "requisitionlineitem_set-TOTAL_FORMS": 3,
+            "requisitionlineitem_set-INITIAL_FORMS": 0,
+            "requisitionlineitem_set-MIN_NUM_FORMS": 0,
+            "requisitionlineitem_set-0-item": "Pen",
+            "requisitionlineitem_set-0-quantity": 3,
+            "requisitionlineitem_set-0-price": 7,
+            "requisitionlineitem_set-1-item": "Ink",
+            "requisitionlineitem_set-1-quantity": 1,
+            "requisitionlineitem_set-1-price": 20,
+        }
+        url = reverse("purchases.requisition-create")
+        res = self.client.post(url, data)
+
+        self.assertEqual(302, res.status_code)
+        self.assertRedirects(res, reverse("purchases.requisition-list"))
+        self.assertEqual(1, Requisition.objects.all().count())
+        requisition = Requisition.objects.first()
+
+        self.assertEqual(
+            2, RequisitionLineItem.objects.filter(requisition=requisition).count()
+        )
+        self.assertEqual(41, requisition.total)
 
     def test_crispy_requisition_form(self):
         """
