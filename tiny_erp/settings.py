@@ -6,6 +6,9 @@ from django.conf import settings
 # strings
 TINY_ERP_REQUISITION_ITEMS_TXT = "Requisition Items"
 TINY_ERP_SUBMIT_TXT = "Submit"
+TINY_ERP_REQUISITION_FORMSET_ERROR_TXT = (
+    "There is an error in the requisition line items."
+)
 # emails
 TINY_ERP_ADMIN_NAME = "ERP"
 TINY_ERP_ADMIN_EMAILS = [settings.DEFAULT_FROM_EMAIL]
