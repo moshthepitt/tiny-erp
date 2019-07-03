@@ -120,6 +120,8 @@ class RequisitionForm(forms.ModelForm):
                 if formset.is_valid():
                     formset.save()
 
+        requisition.set_total()
+
         if not self.get_initial_for_field(self.fields["staff"], "staff"):
             # new requisition
             requisition_filed_email(requisition_obj=requisition)
