@@ -39,8 +39,8 @@ RequisitionItemFormSet = inlineformset_factory(  # pylint: disable=invalid-name
 )
 
 
-class SomeMixin:
-    """Some mixin
+class RequisitionFormMixin:
+    """Requisition Form mixin
     """
 
     def send_email(self, requisition):
@@ -83,7 +83,7 @@ class SomeMixin:
         return requisition
 
 
-class RequisitionForm(SomeMixin, forms.ModelForm):
+class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
     """Form definition for Requisition."""
 
     class Meta:
@@ -152,7 +152,7 @@ class RequisitionForm(SomeMixin, forms.ModelForm):
         )
 
 
-class UpdateRequisitionForm(SomeMixin, forms.ModelForm):
+class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
     """Form definition for Upodate Requisition."""
 
     class Meta:
