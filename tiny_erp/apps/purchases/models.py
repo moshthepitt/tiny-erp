@@ -1,5 +1,6 @@
 """Models module for locations app"""
 from django.db import models
+from django.db.models.functions import Coalesce
 from django.utils.translation import ugettext as _
 
 from small_small_hr.models import TimeStampedModel
@@ -61,7 +62,9 @@ class Requisition(TimeStampedModel):
     def get_total(self):
         """Get the total amount"""
         agg = RequisitionLineItem.objects.filter(requisition=self).aggregate(
-            total=models.Sum(models.F("price") * models.F("quantity"))
+            total=Coalesce(
+                models.Sum(models.F("price") * models.F("quantity")), models.Value(0)
+            )
         )
         return agg["total"]
 
