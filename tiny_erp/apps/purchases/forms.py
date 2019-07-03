@@ -66,6 +66,8 @@ class RequisitionForm(forms.ModelForm):
                 self.request.user.staffprofile
             except StaffProfile.DoesNotExist:
                 pass
+            except AttributeError:
+                pass
             else:
                 self.fields["staff"].queryset = StaffProfile.objects.filter(
                     id=self.request.user.staffprofile.id
