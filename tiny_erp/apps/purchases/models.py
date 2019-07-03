@@ -60,11 +60,10 @@ class Requisition(TimeStampedModel):
 
     def get_total(self):
         """Get the total amount"""
-        items = RequisitionLineItem.objects.filter(requisition=self)
-        total = 0
-        for item in items:
-            total = total + (item.quantity * item.price)
-        return total
+        agg = RequisitionLineItem.objects.filter(requisition=self).aggregate(
+            total=models.Sum(models.F("price") * models.F("quantity"))
+        )
+        return agg["total"]
 
     def __str__(self):
         """Unicode representation of Requisition."""
