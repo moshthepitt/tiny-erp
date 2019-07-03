@@ -65,6 +65,11 @@ class Requisition(TimeStampedModel):
         )
         return agg["total"]
 
+    def set_total(self):
+        """Save's the total to the DB"""
+        self.total = self.get_total()
+        self.save()
+
     def __str__(self):
         """Unicode representation of Requisition."""
         return f"{self.id}"
