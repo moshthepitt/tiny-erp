@@ -675,6 +675,7 @@ class TestForms(TestCase):
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
             "reason": "changed this",
+            "total": 0,
             "requisitionlineitem_set-TOTAL_FORMS": 3,
             "requisitionlineitem_set-INITIAL_FORMS": 0,
             "requisitionlineitem_set-MIN_NUM_FORMS": 0,
@@ -697,6 +698,41 @@ class TestForms(TestCase):
             2, RequisitionLineItem.objects.filter(requisition=requisition).count()
         )
         self.assertEqual(41, requisition.total)
+
+        url = reverse("purchases.requisition-update", kwargs={"pk": requisition.id})
+        data = {
+            "id": requisition.id,
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/01/2019",
+            "date_required": "02/02/2019",
+            "total": 0,
+            "reason": "Nice",
+            "status": Requisition.APPROVED,
+            "requisitionlineitem_set-TOTAL_FORMS": 5,
+            "requisitionlineitem_set-INITIAL_FORMS": 2,
+            "requisitionlineitem_set-MIN_NUM_FORMS": 0,
+            "requisitionlineitem_set-MAX_NUM_FORMS": 1000,
+            "requisitionlineitem_set-0-id": requisition.requisitionlineitem_set.first().id,  # noqa
+            "requisitionlineitem_set-0-item": "Pen",
+            "requisitionlineitem_set-0-quantity": 3,
+            "requisitionlineitem_set-0-price": 7,
+            "requisitionlineitem_set-0-requisition": requisition.id,
+            "requisitionlineitem_set-1-id": requisition.requisitionlineitem_set.last().id,
+            "requisitionlineitem_set-1-item": "Ink",
+            "requisitionlineitem_set-1-quantity": 1,
+            "requisitionlineitem_set-1-price": 20,
+            "requisitionlineitem_set-1-DELETE": "1",
+            "requisitionlineitem_set-1-requisition": requisition.id,
+            "requisitionlineitem_set-2-item": "Pencil",
+            "requisitionlineitem_set-2-quantity": 8,
+            "requisitionlineitem_set-2-price": 17,
+            "requisitionlineitem_set-2-requisition": requisition.id,
+        }
+
+        res = self.client.post(url, data)
 
     def test_crispy_requisition_form(self):
         """
