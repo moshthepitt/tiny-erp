@@ -54,4 +54,8 @@ class TestPurchaseModels(TestCase):
             requisition=requisition,
         )
 
+        self.assertEqual(Decimal(0), requisition.total)
         self.assertEqual(Decimal(97), requisition.get_total())
+        requisition.set_total()
+        requisition.refresh_from_db()
+        self.assertEqual(Decimal(97), requisition.total)

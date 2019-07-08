@@ -39,7 +39,51 @@ RequisitionItemFormSet = inlineformset_factory(  # pylint: disable=invalid-name
 )
 
 
-class RequisitionForm(forms.ModelForm):
+class RequisitionFormMixin:
+    """Requisition Form mixin
+    """
+
+    def send_email(self, requisition):
+        """Send email"""
+        if not self.get_initial_for_field(self.fields["staff"], "staff"):
+            # new requisition
+            requisition_filed_email(requisition_obj=requisition)
+        else:
+            if requisition.status == Requisition.APPROVED:
+                requisition_approved_email(requisition_obj=requisition)
+            else:
+                requisition_updated_email(requisition_obj=requisition)
+
+    def clean(self):
+        """ModelForm clean method"""
+        cleaned_data = super().clean()
+        self.formset = None
+        if self.request:
+            self.formset = RequisitionItemFormSet(
+                self.request.POST, instance=self.instance
+            )
+            if not self.formset.is_valid():
+                raise forms.ValidationError(
+                    settings.TINY_ERP_REQUISITION_FORMSET_ERROR_TXT
+                )
+        return cleaned_data
+
+    def save(self, commit=True):  # pylint: disable=unused-argument
+        """
+        Custom save method
+        """
+        with transaction.atomic():
+            requisition = super().save()
+            if self.formset:
+                self.formset.save()
+
+        requisition.set_total()
+        self.send_email(requisition)
+
+        return requisition
+
+
+class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
     """Form definition for Requisition."""
 
     class Meta:
@@ -65,6 +109,8 @@ class RequisitionForm(forms.ModelForm):
             try:
                 self.request.user.staffprofile
             except StaffProfile.DoesNotExist:
+                pass
+            except AttributeError:
                 pass
             else:
                 self.fields["staff"].queryset = StaffProfile.objects.filter(
@@ -105,31 +151,8 @@ class RequisitionForm(forms.ModelForm):
             )
         )
 
-    def save(self, commit=True):
-        """
-        Custom save method
-        """
-        with transaction.atomic():
-            requisition = super().save()
-            if self.request:
-                formset = RequisitionItemFormSet(
-                    self.request.POST, instance=requisition
-                )
-                if formset.is_valid():
-                    formset.save()
 
-        if not self.get_initial_for_field(self.fields["staff"], "staff"):
-            # new requisition
-            requisition_filed_email(requisition_obj=requisition)
-        else:
-            if requisition.status == Requisition.APPROVED:
-                requisition_approved_email(requisition_obj=requisition)
-            else:
-                requisition_updated_email(requisition_obj=requisition)
-        return requisition
-
-
-class UpdateRequisitionForm(RequisitionForm):
+class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
     """Form definition for Upodate Requisition."""
 
     class Meta:

@@ -1,0 +1,11 @@
+{% extends "vega_admin/basic/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ vega_object_title }} | {{ vega_verbose_name }}{% endblock%}
+
+{% block content %}
+    <h3>{{ vega_object_title }}</h3>
+    {% for key, val in vega_object_data.items %}
+        <strong>{{key}}</strong>: {{val}} <br />
+    {% endfor %}
+{% endblock %}

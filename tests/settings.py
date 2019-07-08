@@ -66,6 +66,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
+
 TIME_ZONE = "Africa/Nairobi"
 USE_I18N = True
 USE_L10N = True
