@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>
+            {% block title %}{% if vega_page_title %}{{ vega_page_title }}{% else %}{{ vega_verbose_name }}{% endif %}{% endblock %}
+        </title>
+    </head>
+    <body>
+    {% block content %}{% endblock %}
+    </body>
+</html>
