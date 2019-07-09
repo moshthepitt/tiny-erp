@@ -17,6 +17,7 @@ from tiny_erp.apps.purchases.emails import (
 )
 from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
 from tiny_erp.layout import Formset
+from tiny_erp.widgets import MiniTextarea
 
 
 class RequisitionLineItemForm(forms.ModelForm):
@@ -27,6 +28,7 @@ class RequisitionLineItemForm(forms.ModelForm):
 
         model = RequisitionLineItem
         fields = ["requisition", "item", "quantity", "price"]
+        widgets = {"item": MiniTextarea()}
 
 
 RequisitionItemFormSet = inlineformset_factory(  # pylint: disable=invalid-name
