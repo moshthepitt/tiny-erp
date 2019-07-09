@@ -90,7 +90,9 @@ CREATE_FORM = """
                                 <label for="id_requisitionlineitem_set-0-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <textarea class="form-control minitextarea" cols="40" id="id_requisitionlineitem_set-0-item" name="requisitionlineitem_set-0-item" rows="2"> </div>
+                                    <textarea name="requisitionlineitem_set-0-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-0-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -135,7 +137,9 @@ CREATE_FORM = """
                                 <label for="id_requisitionlineitem_set-1-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <textarea class="form-control minitextarea" cols="40" id="id_requisitionlineitem_set-1-item" name="requisitionlineitem_set-1-item" rows="2"> </div>
+                                    <textarea name="requisitionlineitem_set-1-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-1-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -180,7 +184,9 @@ CREATE_FORM = """
                                 <label for="id_requisitionlineitem_set-2-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <textarea class="form-control minitextarea" cols="40" id="id_requisitionlineitem_set-2-item" name="requisitionlineitem_set-2-item" rows="2"> </div>
+                                    <textarea name="requisitionlineitem_set-2-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-2-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
