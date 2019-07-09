@@ -169,6 +169,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
             "date_placed",
             "date_required",
             "reason",
+            "comments",
             "status",
         ]
 
@@ -204,6 +205,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                     ),
                 ),
                 Field("reason"),
+                Field("comments"),
                 HTML("<br>"),
                 ButtonHolder(
                     Submit(
