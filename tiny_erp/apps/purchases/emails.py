@@ -41,7 +41,11 @@ def requisition_filed_email(  # pylint: disable=bad-continuation
         )
 
 
-def requisition_updated_email(requisition_obj: Requisition):
+def requisition_updated_email(  # pylint: disable=bad-continuation
+    requisition_obj: Requisition,
+    template: str = "generic",
+    template_path: str = "tiny_erp/email",
+):
     """
     Sends an email to admins when a purchase requisition is updated
     """
@@ -65,8 +69,8 @@ def requisition_updated_email(requisition_obj: Requisition):
             subject=subj,
             message=msg,
             obj=requisition_obj,
-            template="generic",
-            template_path="tiny_erp/email",
+            template=template,
+            template_path=template_path,
         )
 
 
