@@ -90,7 +90,9 @@ CREATE_FORM = """
                                 <label for="id_requisitionlineitem_set-0-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-0-item" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-0-item"> </div>
+                                    <textarea name="requisitionlineitem_set-0-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-0-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -135,7 +137,9 @@ CREATE_FORM = """
                                 <label for="id_requisitionlineitem_set-1-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-1-item" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-1-item"> </div>
+                                    <textarea name="requisitionlineitem_set-1-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-1-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -180,7 +184,9 @@ CREATE_FORM = """
                                 <label for="id_requisitionlineitem_set-2-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-2-item" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-2-item"> </div>
+                                    <textarea name="requisitionlineitem_set-2-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-2-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -315,7 +321,9 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-0-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-0-item" value="Pen" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-0-item"> </div>
+                                    <textarea name="requisitionlineitem_set-0-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-0-item">
+                                        Pen</textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -360,7 +368,9 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-1-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-1-item" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-1-item"> </div>
+                                    <textarea name="requisitionlineitem_set-1-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-1-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -405,7 +415,9 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-2-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-2-item" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-2-item"> </div>
+                                    <textarea name="requisitionlineitem_set-2-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-2-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -450,7 +462,9 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-3-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-3-item" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-3-item"> </div>
+                                    <textarea name="requisitionlineitem_set-3-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-3-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -493,6 +507,15 @@ EDIT_FORM = """
                 Reason<span class="asteriskField">*</span> </label>
             <div class="controls ">
                 <textarea name="reason" cols="40" rows="10" class="textarea form-control" required id="id_reason">
+                </textarea>
+            </div>
+        </div>
+        <div id="div_id_comments" class="form-group">
+            <label for="id_comments" class="control-label ">
+                Comments
+            </label>
+            <div class="controls ">
+                <textarea name="comments" cols="40" rows="10" class="textarea form-control" id="id_comments">
                 </textarea>
             </div>
         </div>
@@ -674,7 +697,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "changed this",
+            "reason": "I love oov",
             "total": 0,
             "requisitionlineitem_set-TOTAL_FORMS": 3,
             "requisitionlineitem_set-INITIAL_FORMS": 0,
@@ -698,6 +721,9 @@ class TestForms(TestCase):
             2, RequisitionLineItem.objects.filter(requisition=requisition).count()
         )
         self.assertEqual(41, requisition.total)
+        self.assertEqual(Requisition.PENDING, requisition.status)
+        self.assertEqual("I love oov", requisition.reason)
+        self.assertEqual("", requisition.comments)
 
         url = reverse("purchases.requisition-update", kwargs={"pk": requisition.id})
         data = {
@@ -710,6 +736,7 @@ class TestForms(TestCase):
             "date_required": "02/02/2019",
             "total": 0,
             "reason": "Nice",
+            "comments": "Shall order on the 25th.",
             "status": Requisition.APPROVED,
             "requisitionlineitem_set-TOTAL_FORMS": 5,
             "requisitionlineitem_set-INITIAL_FORMS": 2,
@@ -724,7 +751,7 @@ class TestForms(TestCase):
             "requisitionlineitem_set-1-item": "Ink",
             "requisitionlineitem_set-1-quantity": 1,
             "requisitionlineitem_set-1-price": 20,
-            "requisitionlineitem_set-1-DELETE": "1",
+            "requisitionlineitem_set-1-DELETE": "1",  # this line item is e=being deleted
             "requisitionlineitem_set-1-requisition": requisition.id,
             "requisitionlineitem_set-2-item": "Pencil",
             "requisitionlineitem_set-2-quantity": 8,
@@ -733,6 +760,11 @@ class TestForms(TestCase):
         }
 
         res = self.client.post(url, data)
+        requisition.refresh_from_db()
+        self.assertEqual(157, requisition.total)
+        self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual("Nice", requisition.reason)
+        self.assertEqual("Shall order on the 25th.", requisition.comments)
 
     def test_crispy_requisition_form(self):
         """
