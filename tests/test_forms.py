@@ -321,7 +321,9 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-0-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-0-item" value="Pen" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-0-item"> </div>
+                                    <textarea name="requisitionlineitem_set-0-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-0-item">
+                                        Pen</textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -366,7 +368,9 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-1-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-1-item" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-1-item"> </div>
+                                    <textarea name="requisitionlineitem_set-1-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-1-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -411,7 +415,9 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-2-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="text" name="requisitionlineitem_set-2-item" maxlength="255" class="textinput textInput form-control" id="id_requisitionlineitem_set-2-item"> </div>
+                                    <textarea name="requisitionlineitem_set-2-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-2-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -456,7 +462,9 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-3-item" class="control-label  requiredField">
                                     Item<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <textarea class="form-control minitextarea" cols="40" id="id_requisitionlineitem_set-3-item" name="requisitionlineitem_set-3-item" rows="2"> </div>
+                                    <textarea name="requisitionlineitem_set-3-item" cols="40" rows="2" class="minitextarea form-control" id="id_requisitionlineitem_set-3-item">
+                                    </textarea>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -499,6 +507,15 @@ EDIT_FORM = """
                 Reason<span class="asteriskField">*</span> </label>
             <div class="controls ">
                 <textarea name="reason" cols="40" rows="10" class="textarea form-control" required id="id_reason">
+                </textarea>
+            </div>
+        </div>
+        <div id="div_id_comments" class="form-group">
+            <label for="id_comments" class="control-label ">
+                Comments
+            </label>
+            <div class="controls ">
+                <textarea name="comments" cols="40" rows="10" class="textarea form-control" id="id_comments">
                 </textarea>
             </div>
         </div>
