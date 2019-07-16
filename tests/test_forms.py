@@ -21,6 +21,16 @@ from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
 CREATE_FORM = """
 <form id="requisition-form" method="post">
     <div>
+        <div class="form-group" id="div_id_title">
+            <label class=" control-label requiredField" for="id_title">
+                Title<span class="asteriskField">
+            *
+            </span>
+            </label>
+            <div class=" controls">
+                <input class="form-control textInput textinput" id="id_title" maxlength="255" name="title" required type="text">
+            </div>
+        </div>
         <div id="div_id_staff" class="form-group">
             <label for="id_staff" class="control-label  requiredField">
                 Staff Member<span class="asteriskField">*</span> </label>
@@ -246,6 +256,16 @@ CREATE_FORM = """
 EDIT_FORM = """
 <form id="requisition-update-form" method="post">
     <div>
+        <div class="form-group" id="div_id_title">
+            <label class=" control-label requiredField" for="id_title">
+                Title<span class="asteriskField">
+            *
+            </span>
+            </label>
+            <div class=" controls">
+                <input class="form-control textInput textinput" id="id_title" maxlength="255" name="title" required type="text" value="Kitchen Supplies">
+            </div>
+        </div>
         <input type="hidden" name="staff" value="99" id="id_staff">
         <div id="div_id_business" class="form-group">
             <label for="id_business" class="control-label  requiredField">
@@ -800,6 +820,7 @@ class TestForms(TestCase):
         department = mommy.make("locations.Department", name="Science", id=99)
         requisition = mommy.make(
             "purchases.Requisition",
+            title="Kitchen Supplies",
             staff=staffprofile,
             location=location,
             department=department,
