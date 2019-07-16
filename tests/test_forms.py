@@ -701,6 +701,7 @@ class TestForms(TestCase):
         location = mommy.make("locations.Location", name="Voi")
         department = mommy.make("locations.Department", name="Science")
         data = {
+            "title": "Kitchen Supplies",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -733,11 +734,13 @@ class TestForms(TestCase):
         self.assertEqual(41, requisition.total)
         self.assertEqual(Requisition.PENDING, requisition.status)
         self.assertEqual("I love oov", requisition.reason)
+        self.assertEqual("Kitchen Supplies", requisition.title)
         self.assertEqual("", requisition.comments)
 
         url = reverse("purchases.requisition-update", kwargs={"pk": requisition.id})
         data = {
             "id": requisition.id,
+            "title": "Bar Supplies",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -773,6 +776,7 @@ class TestForms(TestCase):
         requisition.refresh_from_db()
         self.assertEqual(157, requisition.total)
         self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual("Bar Supplies", requisition.title)
         self.assertEqual("Nice", requisition.reason)
         self.assertEqual("Shall order on the 25th.", requisition.comments)
 
