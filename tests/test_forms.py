@@ -569,6 +569,7 @@ class TestForms(TestCase):
         department = mommy.make("locations.Department", name="Science")
 
         data = {
+            "title": "Cheers Baba",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -581,6 +582,7 @@ class TestForms(TestCase):
         form = RequisitionForm(data=data)
         self.assertTrue(form.is_valid())
         requisition = form.save()
+        self.assertEqual("Cheers Baba", requisition.title)
         self.assertEqual(staffprofile, requisition.staff)
         self.assertEqual(location, requisition.location)
         self.assertEqual(business, requisition.business)
