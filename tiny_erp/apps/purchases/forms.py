@@ -94,6 +94,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
 
         model = Requisition
         fields = [
+            "title",
             "staff",
             "business",
             "location",
@@ -129,6 +130,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
         self.helper.form_id = "requisition-form"
         self.helper.layout = Layout(
             Div(
+                Field("title"),
                 Field("staff"),
                 Field("business"),
                 Field("location"),
@@ -162,6 +164,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
 
         model = Requisition
         fields = [
+            "title",
             "staff",
             "business",
             "location",
@@ -189,6 +192,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
         self.helper.form_id = "requisition-update-form"
         self.helper.layout = Layout(
             Div(
+                Field("title"),
                 Field("staff", type="hidden"),
                 Field("business"),
                 Field("location"),
