@@ -1,8 +1,9 @@
 """module to test tiny-erp forms"""
 from datetime import date
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import AnonymousUser
+from django.forms.models import inlineformset_factory
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
@@ -20,6 +21,16 @@ from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
 CREATE_FORM = """
 <form id="requisition-form" method="post">
     <div>
+        <div class="form-group" id="div_id_title">
+            <label class=" control-label requiredField" for="id_title">
+                Title<span class="asteriskField">
+            *
+            </span>
+            </label>
+            <div class=" controls">
+                <input class="form-control textInput textinput" id="id_title" maxlength="255" name="title" required type="text">
+            </div>
+        </div>
         <div id="div_id_staff" class="form-group">
             <label for="id_staff" class="control-label  requiredField">
                 Staff Member<span class="asteriskField">*</span> </label>
@@ -66,7 +77,7 @@ CREATE_FORM = """
             <label for="id_date_placed" class="control-label  requiredField">
                 Date Placed<span class="asteriskField">*</span> </label>
             <div class="controls ">
-                <input type="text" name="date_placed" class="dateinput form-control" required id="id_date_placed"> </div>
+                <input type="text" name="date_placed" class="dateinput form-control" required id="id_date_placed" value="2019-06-15"> </div>
         </div>
         <div id="div_id_date_required" class="form-group">
             <label for="id_date_required" class="control-label  requiredField">
@@ -245,6 +256,16 @@ CREATE_FORM = """
 EDIT_FORM = """
 <form id="requisition-update-form" method="post">
     <div>
+        <div class="form-group" id="div_id_title">
+            <label class=" control-label requiredField" for="id_title">
+                Title<span class="asteriskField">
+            *
+            </span>
+            </label>
+            <div class=" controls">
+                <input class="form-control textInput textinput" id="id_title" maxlength="255" name="title" required type="text" value="Kitchen Supplies">
+            </div>
+        </div>
         <input type="hidden" name="staff" value="99" id="id_staff">
         <div id="div_id_business" class="form-group">
             <label for="id_business" class="control-label  requiredField">
@@ -568,6 +589,7 @@ class TestForms(TestCase):
         department = mommy.make("locations.Department", name="Science")
 
         data = {
+            "title": "Cheers Baba",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -580,6 +602,7 @@ class TestForms(TestCase):
         form = RequisitionForm(data=data)
         self.assertTrue(form.is_valid())
         requisition = form.save()
+        self.assertEqual("Cheers Baba", requisition.title)
         self.assertEqual(staffprofile, requisition.staff)
         self.assertEqual(location, requisition.location)
         self.assertEqual(business, requisition.business)
@@ -612,6 +635,7 @@ class TestForms(TestCase):
         department = mommy.make("locations.Department", name="Science")
         requisition = mommy.make(
             "purchases.Requisition",
+            title="Cheers Baba",
             staff=staffprofile,
             location=location,
             department=department,
@@ -622,6 +646,7 @@ class TestForms(TestCase):
         )
 
         data = {
+            "title": "Subaru Supplies",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -633,6 +658,7 @@ class TestForms(TestCase):
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
+        self.assertEqual("Subaru Supplies", requisition.title)
         self.assertEqual("changed this", requisition.reason)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(1, updated_mock.call_count)
@@ -640,6 +666,7 @@ class TestForms(TestCase):
         updated_mock.assert_called_with(requisition_obj=requisition)
 
         data = {
+            "title": "Shhh... Housekeeping!",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -652,6 +679,7 @@ class TestForms(TestCase):
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
+        self.assertEqual("Shhh... Housekeeping!", requisition.title)
         self.assertEqual("Not good", requisition.reason)
         self.assertEqual(Requisition.REJECTED, requisition.status)
         self.assertEqual(0, filed_mock.call_count)
@@ -660,6 +688,7 @@ class TestForms(TestCase):
         updated_mock.assert_called_with(requisition_obj=requisition)
 
         data = {
+            "title": "Cheers Baba",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -672,6 +701,7 @@ class TestForms(TestCase):
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
+        self.assertEqual("Cheers Baba", requisition.title)
         self.assertEqual("Great", requisition.reason)
         self.assertEqual(Requisition.APPROVED, requisition.status)
         self.assertEqual(0, filed_mock.call_count)
@@ -691,6 +721,7 @@ class TestForms(TestCase):
         location = mommy.make("locations.Location", name="Voi")
         department = mommy.make("locations.Department", name="Science")
         data = {
+            "title": "Kitchen Supplies",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -723,11 +754,13 @@ class TestForms(TestCase):
         self.assertEqual(41, requisition.total)
         self.assertEqual(Requisition.PENDING, requisition.status)
         self.assertEqual("I love oov", requisition.reason)
+        self.assertEqual("Kitchen Supplies", requisition.title)
         self.assertEqual("", requisition.comments)
 
         url = reverse("purchases.requisition-update", kwargs={"pk": requisition.id})
         data = {
             "id": requisition.id,
+            "title": "Bar Supplies",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -763,13 +796,19 @@ class TestForms(TestCase):
         requisition.refresh_from_db()
         self.assertEqual(157, requisition.total)
         self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual("Bar Supplies", requisition.title)
         self.assertEqual("Nice", requisition.reason)
         self.assertEqual("Shall order on the 25th.", requisition.comments)
 
-    def test_crispy_requisition_form(self):
+    @patch("tiny_erp.apps.purchases.forms.timezone")
+    def test_crispy_requisition_form(self, mocked):
         """
         Test crispy forms output
         """
+        now_mock = MagicMock()
+        now_mock.date = date(2019, 6, 15)
+        mocked.now.return_value = now_mock
+
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
         staffprofile = mommy.make("small_small_hr.StaffProfile", user=user, id=99)
         user2 = mommy.make("auth.User", first_name="Mosh", last_name="Pitt")
@@ -781,6 +820,7 @@ class TestForms(TestCase):
         department = mommy.make("locations.Department", name="Science", id=99)
         requisition = mommy.make(
             "purchases.Requisition",
+            title="Kitchen Supplies",
             staff=staffprofile,
             location=location,
             department=department,
@@ -828,3 +868,31 @@ class TestForms(TestCase):
         self.assertEqual("Tubes", item.item)
         self.assertEqual(3, item.quantity)
         self.assertEqual(200, item.price)
+
+    def test_custom_formset_class(self):
+        """Test custom formset class"""
+        CustomFormSet = inlineformset_factory(  # pylint: disable=invalid-name
+            Requisition,
+            RequisitionLineItem,
+            form=RequisitionLineItemForm,
+            fields=["item", "quantity", "price"],
+            extra=12,
+            can_delete=True,
+        )
+
+        class CreateForm(RequisitionForm):
+            """Some custom create form"""
+
+            formset_class = CustomFormSet
+
+        class UpdateForm(UpdateRequisitionForm):
+            """Some custom update form"""
+
+            formset_class = CustomFormSet
+
+        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        requisition = mommy.make("purchases.Requisition", staff=staffprofile)
+
+        self.assertEqual(CustomFormSet, CreateForm().formset_class)
+        self.assertEqual(CustomFormSet, UpdateForm(instance=requisition).formset_class)

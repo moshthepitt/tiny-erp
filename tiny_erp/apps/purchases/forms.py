@@ -3,6 +3,7 @@ from django import forms
 from django.conf import settings
 from django.db import transaction
 from django.forms.models import inlineformset_factory
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from small_small_hr.models import StaffProfile
@@ -45,6 +46,8 @@ class RequisitionFormMixin:
     """Requisition Form mixin
     """
 
+    formset_class = RequisitionItemFormSet
+
     def send_email(self, requisition):
         """Send email"""
         if not self.get_initial_for_field(self.fields["staff"], "staff"):
@@ -61,9 +64,7 @@ class RequisitionFormMixin:
         cleaned_data = super().clean()
         self.formset = None
         if self.request:
-            self.formset = RequisitionItemFormSet(
-                self.request.POST, instance=self.instance
-            )
+            self.formset = self.formset_class(self.request.POST, instance=self.instance)
             if not self.formset.is_valid():
                 raise forms.ValidationError(
                     settings.TINY_ERP_REQUISITION_FORMSET_ERROR_TXT
@@ -93,6 +94,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
 
         model = Requisition
         fields = [
+            "title",
             "staff",
             "business",
             "location",
@@ -106,6 +108,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
         self.request = kwargs.pop("request", None)
         self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
         super().__init__(*args, **kwargs)
+        self.fields["date_placed"].initial = timezone.now().date
         if self.request:
             # pylint: disable=no-member
             try:
@@ -127,6 +130,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
         self.helper.form_id = "requisition-form"
         self.helper.layout = Layout(
             Div(
+                Field("title"),
                 Field("staff"),
                 Field("business"),
                 Field("location"),
@@ -136,9 +140,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Fieldset(
                     _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
                     Formset(
-                        formset_in_context=RequisitionItemFormSet(
-                            instance=self.instance
-                        )
+                        formset_in_context=self.formset_class(instance=self.instance)
                     ),
                 ),
                 Field("reason"),
@@ -162,6 +164,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
 
         model = Requisition
         fields = [
+            "title",
             "staff",
             "business",
             "location",
@@ -189,6 +192,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
         self.helper.form_id = "requisition-update-form"
         self.helper.layout = Layout(
             Div(
+                Field("title"),
                 Field("staff", type="hidden"),
                 Field("business"),
                 Field("location"),
@@ -199,9 +203,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Fieldset(
                     _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
                     Formset(
-                        formset_in_context=RequisitionItemFormSet(
-                            instance=self.instance
-                        )
+                        formset_in_context=self.formset_class(instance=self.instance)
                     ),
                 ),
                 Field("reason"),

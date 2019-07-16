@@ -28,6 +28,7 @@ class Requisition(TimeStampedModel):
         verbose_name=_("Staff Member"),
         on_delete=models.PROTECT,
     )
+    title = models.CharField(_("Title"), max_length=255)
     business = models.ForeignKey(
         Business, verbose_name=_("Business"), on_delete=models.PROTECT
     )
@@ -75,7 +76,7 @@ class Requisition(TimeStampedModel):
 
     def __str__(self):
         """Unicode representation of Requisition."""
-        return f"{self.id}"
+        return f"#{self.id} {self.title}"
 
 
 class RequisitionLineItem(TimeStampedAbstractLineItem):

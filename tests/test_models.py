@@ -30,10 +30,13 @@ class TestPurchaseModels(TestCase):
         """Test model methods"""
         requisition = mommy.make(
             "purchases.Requisition",
+            title="Super Duper Important",
             date_placed="2019-06-24",
             date_required="2019-06-24",
         )
-        self.assertEqual(f"{requisition.id}", requisition.__str__())
+        self.assertEqual(
+            f"#{requisition.id} Super Duper Important", requisition.__str__()
+        )
         requisition_item = mommy.make(
             "purchases.RequisitionLineItem",
             item="Pen",
