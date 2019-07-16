@@ -76,7 +76,7 @@ class Requisition(TimeStampedModel):
 
     def __str__(self):
         """Unicode representation of Requisition."""
-        return f"{self.id}"
+        return f"#{self.id} {self.title}"
 
 
 class RequisitionLineItem(TimeStampedAbstractLineItem):
