@@ -45,6 +45,8 @@ class RequisitionFormMixin:
     """Requisition Form mixin
     """
 
+    formset_class = RequisitionItemFormSet
+
     def send_email(self, requisition):
         """Send email"""
         if not self.get_initial_for_field(self.fields["staff"], "staff"):
@@ -61,9 +63,7 @@ class RequisitionFormMixin:
         cleaned_data = super().clean()
         self.formset = None
         if self.request:
-            self.formset = RequisitionItemFormSet(
-                self.request.POST, instance=self.instance
-            )
+            self.formset = self.formset_class(self.request.POST, instance=self.instance)
             if not self.formset.is_valid():
                 raise forms.ValidationError(
                     settings.TINY_ERP_REQUISITION_FORMSET_ERROR_TXT
@@ -136,9 +136,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Fieldset(
                     _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
                     Formset(
-                        formset_in_context=RequisitionItemFormSet(
-                            instance=self.instance
-                        )
+                        formset_in_context=self.formset_class(instance=self.instance)
                     ),
                 ),
                 Field("reason"),
@@ -199,9 +197,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Fieldset(
                     _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
                     Formset(
-                        formset_in_context=RequisitionItemFormSet(
-                            instance=self.instance
-                        )
+                        formset_in_context=self.formset_class(instance=self.instance)
                     ),
                 ),
                 Field("reason"),
