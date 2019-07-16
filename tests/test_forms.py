@@ -3,6 +3,7 @@ from datetime import date
 from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
+from django.forms.models import inlineformset_factory
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
@@ -828,3 +829,31 @@ class TestForms(TestCase):
         self.assertEqual("Tubes", item.item)
         self.assertEqual(3, item.quantity)
         self.assertEqual(200, item.price)
+
+    def test_custom_formset_class(self):
+        """Test custom formset class"""
+        CustomFormSet = inlineformset_factory(  # pylint: disable=invalid-name
+            Requisition,
+            RequisitionLineItem,
+            form=RequisitionLineItemForm,
+            fields=["item", "quantity", "price"],
+            extra=12,
+            can_delete=True,
+        )
+
+        class CreateForm(RequisitionForm):
+            """Some custom create form"""
+
+            formset_class = CustomFormSet
+
+        class UpdateForm(UpdateRequisitionForm):
+            """Some custom update form"""
+
+            formset_class = CustomFormSet
+
+        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        requisition = mommy.make("purchases.Requisition", staff=staffprofile)
+
+        self.assertEqual(CustomFormSet, CreateForm().formset_class)
+        self.assertEqual(CustomFormSet, UpdateForm(instance=requisition).formset_class)
