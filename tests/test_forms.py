@@ -1,6 +1,6 @@
 """module to test tiny-erp forms"""
 from datetime import date
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.forms.models import inlineformset_factory
@@ -67,7 +67,7 @@ CREATE_FORM = """
             <label for="id_date_placed" class="control-label  requiredField">
                 Date Placed<span class="asteriskField">*</span> </label>
             <div class="controls ">
-                <input type="text" name="date_placed" class="dateinput form-control" required id="id_date_placed"> </div>
+                <input type="text" name="date_placed" class="dateinput form-control" required id="id_date_placed" value="2019-06-15"> </div>
         </div>
         <div id="div_id_date_required" class="form-group">
             <label for="id_date_required" class="control-label  requiredField">
@@ -767,10 +767,15 @@ class TestForms(TestCase):
         self.assertEqual("Nice", requisition.reason)
         self.assertEqual("Shall order on the 25th.", requisition.comments)
 
-    def test_crispy_requisition_form(self):
+    @patch("tiny_erp.apps.purchases.forms.timezone")
+    def test_crispy_requisition_form(self, mocked):
         """
         Test crispy forms output
         """
+        now_mock = MagicMock()
+        now_mock.date = date(2019, 6, 15)
+        mocked.now.return_value = now_mock
+
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
         staffprofile = mommy.make("small_small_hr.StaffProfile", user=user, id=99)
         user2 = mommy.make("auth.User", first_name="Mosh", last_name="Pitt")
