@@ -3,6 +3,7 @@ from django import forms
 from django.conf import settings
 from django.db import transaction
 from django.forms.models import inlineformset_factory
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from small_small_hr.models import StaffProfile
@@ -106,6 +107,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
         self.request = kwargs.pop("request", None)
         self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
         super().__init__(*args, **kwargs)
+        self.fields["date_placed"].initial = timezone.now().date
         if self.request:
             # pylint: disable=no-member
             try:
