@@ -615,6 +615,7 @@ class TestForms(TestCase):
         department = mommy.make("locations.Department", name="Science")
         requisition = mommy.make(
             "purchases.Requisition",
+            title="Cheers Baba",
             staff=staffprofile,
             location=location,
             department=department,
@@ -625,6 +626,7 @@ class TestForms(TestCase):
         )
 
         data = {
+            "title": "Subaru Supplies",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -636,6 +638,7 @@ class TestForms(TestCase):
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
+        self.assertEqual("Subaru Supplies", requisition.title)
         self.assertEqual("changed this", requisition.reason)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(1, updated_mock.call_count)
@@ -643,6 +646,7 @@ class TestForms(TestCase):
         updated_mock.assert_called_with(requisition_obj=requisition)
 
         data = {
+            "title": "Shhh... Housekeeping!",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -655,6 +659,7 @@ class TestForms(TestCase):
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
+        self.assertEqual("Shhh... Housekeeping!", requisition.title)
         self.assertEqual("Not good", requisition.reason)
         self.assertEqual(Requisition.REJECTED, requisition.status)
         self.assertEqual(0, filed_mock.call_count)
@@ -663,6 +668,7 @@ class TestForms(TestCase):
         updated_mock.assert_called_with(requisition_obj=requisition)
 
         data = {
+            "title": "Cheers Baba",
             "staff": staffprofile.id,
             "location": location.id,
             "business": business.id,
@@ -675,6 +681,7 @@ class TestForms(TestCase):
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
+        self.assertEqual("Cheers Baba", requisition.title)
         self.assertEqual("Great", requisition.reason)
         self.assertEqual(Requisition.APPROVED, requisition.status)
         self.assertEqual(0, filed_mock.call_count)
