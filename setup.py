@@ -12,6 +12,7 @@ with open(
 ) as f:
     LONG_DESCRIPTION = f.read()
 
+VEGA_ADMIN_VERSION = __import__("tiny_erp").__vega_admin__
 SMALL_SMALL_HR_VERSION = __import__("tiny_erp").__small_small_hr_version__
 
 setup(
@@ -25,7 +26,11 @@ setup(
     author_email="kelvin@jayanoris.com",
     url="https://github.com/moshthepitt/tiny-erp",
     packages=find_packages(exclude=["docs", "tests"]),
-    install_requires=["Django>=2.1.10", f"small_small_hr=={SMALL_SMALL_HR_VERSION}"],
+    install_requires=[
+        "Django>=2.1.10",
+        f"django-vega-admin=={VEGA_ADMIN_VERSION}",
+        f"small_small_hr=={SMALL_SMALL_HR_VERSION}",
+    ],
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.6",
