@@ -24,7 +24,7 @@ django-filter==2.2.0      # via django-vega-admin
 django-phonenumber-field==3.0.1  # via small-small-hr
 django-private-storage==2.2.1  # via small-small-hr
 django-tables2==2.2.1     # via django-vega-admin
-django-vega-admin==0.0.15
+django-vega-admin==0.0.16
 django==2.2.7             # via django-filter, django-phonenumber-field, django-tables2, django-vega-admin, model-mommy, small-small-hr
 djangorestframework==3.10.3  # via small-small-hr
 entrypoints==0.3          # via flake8
