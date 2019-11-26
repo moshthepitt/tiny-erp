@@ -2,6 +2,7 @@
 -e .
 
 # others
+autopep8
 pip-tools
 pycodestyle
 pydocstyle
