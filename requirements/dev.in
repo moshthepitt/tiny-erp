@@ -1,13 +1,10 @@
 # load from setup.py
 -e .
 
-# allauth
-django-allauth
-
-# vega admin
-git+git://github.com/moshthepitt/django-vega-admin.git@v0.0.11#egg=django_vega_admin
-
 # others
+pip-tools
+pycodestyle
+pydocstyle
 pylint
 pylint-django
 tox
