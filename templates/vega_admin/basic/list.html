@@ -1,8 +1,0 @@
-{% extends "vega_admin/basic/base.html" %}
-{% load i18n django_tables2 %}
-
-{% block title %}{{ vega_verbose_name_plural }}{% endblock%}
-
-{% block content %}
-    {% render_table table "django_tables2/bootstrap.html" %}
-{% endblock %}
