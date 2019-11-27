@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models.functions import Coalesce
 from django.utils.translation import ugettext as _
 
-from small_small_hr.models import TimeStampedModel
+from vega_admin.mixins import TimeStampedModel
 
 from tiny_erp.abstract_models import TimeStampedAbstractLineItem
 from tiny_erp.apps.locations.models import Business, Department, Location
