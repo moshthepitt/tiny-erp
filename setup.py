@@ -30,6 +30,9 @@ setup(
         "Django>=2.1.10",
         f"django-vega-admin=={VEGA_ADMIN_VERSION}",
         f"small_small_hr=={SMALL_SMALL_HR_VERSION}",
+        "django-phonenumber-field",
+        "phonenumbers",
+        "django-prices",
     ],
     classifiers=[
         "Programming Language :: Python",
