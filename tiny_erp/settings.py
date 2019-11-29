@@ -3,6 +3,9 @@ Configurable options
 """
 from django.conf import settings
 
+TINY_ERP_DEFAULT_CURRENCY = "KES"
+TINY_ERP_AVAILABLE_CURRENCIES = [("KES", "Kenya Shilling")]
+
 # strings
 TINY_ERP_REQUISITION_ITEMS_TXT = "Requisition Items"
 TINY_ERP_SUBMIT_TXT = "Submit"
