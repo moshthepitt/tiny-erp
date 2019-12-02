@@ -1,11 +1,15 @@
 """forms module for Products."""
 from django import forms
+from django.conf import settings
 from django.core.validators import validate_email
 from django.utils.translation import ugettext as _
 
+from django_prices.forms import MoneyField
+from django_prices.validators import MinMoneyValidator
 from phonenumber_field.validators import validate_international_phonenumber
+from prices import Money
 
-from tiny_erp.apps.products.models import Supplier
+from tiny_erp.apps.products.models import Product, Supplier
 
 
 class MultiInputField(forms.Field):
@@ -63,3 +67,33 @@ class SupplierForm(forms.ModelForm):
 
         model = Supplier
         fields = ["name", "contact_person", "emails", "phones"]
+
+
+class ProductForm(forms.ModelForm):
+    """Form definition for Product."""
+
+    price = MoneyField(
+        label=_("Price"),
+        required=True,
+        available_currencies=[settings.TINY_ERP_AVAILABLE_CURRENCIES],
+        max_digits=9,
+        decimal_places=2,
+        validators=[
+            MinMoneyValidator(Money(0, settings.TINY_ERP_AVAILABLE_CURRENCIES))
+        ],
+    )
+
+    class Meta:
+        """Meta definition for Productform."""
+
+        model = Product
+        fields = ["name", "description", "unit", "category", "supplier"]
+
+    def save(self, commit=True):
+        """Custom save method."""
+        product = super().save()
+        # deal with price
+        product.internal_amount = self.cleaned_data["price"].amount
+        product.currency = self.cleaned_data["price"].currency
+        product.save()
+        return product
