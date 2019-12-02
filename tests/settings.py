@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "vega_admin",
     # custom
     "tiny_erp.apps.locations",
+    "tiny_erp.apps.products",
     "tiny_erp.apps.purchases",
 ]
 
