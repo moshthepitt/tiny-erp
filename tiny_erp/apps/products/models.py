@@ -36,8 +36,13 @@ class Supplier(TimeStampedModel):
 class MeasurementUnit(TimeStampedModel):
     """Model definition for MeasurementUnit."""
 
-    name = models.CharField(_("Name"), max_length=2000)
-    symbol = models.CharField(_("Symbol"), db_index=True, max_length=2000)
+    name = models.CharField(_("Name"), max_length=2000, help_text=_("e.g. Kilogram"))
+    symbol = models.CharField(
+        _("Symbol"),
+        db_index=True,
+        max_length=2000,
+        help_text=_("e.g. l which is the symbol for litre"),
+    )
     description = models.TextField(_("Description"), blank=False, default="")
 
     class Meta:
