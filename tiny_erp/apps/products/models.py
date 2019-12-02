@@ -84,8 +84,10 @@ class Product(TimeStampedModel):
     currency = models.CharField(
         _("Currency"),
         max_length=3,
-        choices=settings.TINY_ERP_AVAILABLE_CURRENCIES,
-        default=settings.TINY_ERP_DEFAULT_CURRENCY,
+        choices=getattr(
+            settings, "TINY_ERP_AVAILABLE_CURRENCIES", [("KES", "Kenya Shilling")]
+        ),
+        default=getattr(settings, "TINY_ERP_DEFAULT_CURRENCY", "KES"),
         db_index=True,
     )
     internal_amount = models.DecimalField(
