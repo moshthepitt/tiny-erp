@@ -16,6 +16,7 @@ class PurchasesConfig(AppConfig):
 
     def ready(self):
         # set up app settings
+        # pylint: disable=import-outside-toplevel
         from tiny_erp.anza import setup_settings  # noqa
 
         setup_settings()
