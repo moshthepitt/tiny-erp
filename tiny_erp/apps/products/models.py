@@ -18,7 +18,7 @@ class Supplier(TimeStampedModel):
     emails = ArrayField(
         models.EmailField(_("Email Address")), verbose_name=_("Email Address(es)")
     )
-    phoness = ArrayField(
+    phones = ArrayField(
         PhoneNumberField(_("Telephone Number")), verbose_name=_("Phone number(s)")
     )
 
