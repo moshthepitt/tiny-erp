@@ -123,6 +123,33 @@ class TestProductForms(TestCase):
 
     def test_supplier_form_validation(self):
         """Test SupplierForm vaidation."""
+
+        # test name validation
+        data = {
+            "name": "",
+            "contact_person": "Marvin",
+            "emails": "a@example.com,b@example.com",
+            "phones": "+254711000000",
+        }
+        form = SupplierForm(data=data)
+        form.full_clean()
+        self.assertFalse(form.is_valid())
+        self.assertDictEqual({"name": ["This field is required."]}, form.errors)
+
+        # test contact_person validation
+        data = {
+            "name": "Umbrella Inc",
+            "contact_person": "",
+            "emails": "a@example.com,b@example.com",
+            "phones": "+254711000000",
+        }
+        form = SupplierForm(data=data)
+        form.full_clean()
+        self.assertFalse(form.is_valid())
+        self.assertDictEqual(
+            {"contact_person": ["This field is required."]}, form.errors
+        )
+
         # test phone validation
         data = {
             "name": "Umbrella Inc",
