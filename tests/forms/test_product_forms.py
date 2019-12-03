@@ -91,6 +91,38 @@ class TestProductForms(TestCase):
         self.assertEqual(["b@example.com"], supplier.emails)
         self.assertEqual(["+254711000000", "+254722000000"], supplier.phones)
 
+        # test empty phone
+        data = {
+            "name": "Umbrella Inc",
+            "contact_person": "Marvin",
+            "emails": "a@example.com,b@example.com",
+            "phones": "",
+        }
+        form = SupplierForm(data=data)
+        self.assertTrue(form.is_valid())
+        supplier = form.save()
+        self.assertEqual("Umbrella Inc", supplier.name)
+        self.assertEqual("Marvin", supplier.contact_person)
+        self.assertEqual(["a@example.com", "b@example.com"], supplier.emails)
+        self.assertEqual([], supplier.phones)
+
+        # test empty email
+        data = {
+            "name": "Umbrella Inc",
+            "contact_person": "Marvin",
+            "emails": "",
+            "phones": "+254722000000",
+        }
+        form = SupplierForm(data=data)
+        self.assertTrue(form.is_valid())
+        supplier = form.save()
+        self.assertEqual("Umbrella Inc", supplier.name)
+        self.assertEqual("Marvin", supplier.contact_person)
+        self.assertEqual([], supplier.emails)
+        self.assertEqual(["+254722000000"], supplier.phones)
+
+    def test_supplier_form_validation(self):
+        """Test SupplierForm vaidation."""
         # test phone validation
         data = {
             "name": "Umbrella Inc",
