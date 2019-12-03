@@ -248,3 +248,82 @@ class TestProductForms(TestCase):
         self.assertEqual(Money("25", "KES"), product.amount)
         self.assertEqual(settings.TINY_ERP_DEFAULT_CURRENCY, product.currency)
         self.assertEqual(Decimal(25), product.internal_amount)
+
+    def test_product_form_validation(self):
+        """Test ProductForm validation."""
+
+        # test price
+        data = {
+            "name": "Pen",
+            "description": "A pen",
+            "unit": self.unit.id,
+            "category": [self.category.id],
+            "supplier": [self.supplier.id],
+            "price_0": -20,
+            "price_1": "KES",
+        }
+        form = ProductForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertDictEqual(
+            {"price": ["Ensure this value is greater than or equal to KES0.00."]},
+            form.errors,
+        )
+
+        # test required fields
+        for field in ["category", "name", "unit"]:
+            data = {
+                "name": "Pen",
+                "description": "A pen",
+                "unit": self.unit.id,
+                "category": [self.category.id],
+                "supplier": [self.supplier.id],
+                "price_0": 20,
+                "price_1": "KES",
+            }
+            data[field] = ""
+            form = ProductForm(data=data)
+            self.assertFalse(form.is_valid())
+            self.assertDictEqual({field: ["This field is required."]}, form.errors)
+
+        # test price
+        for field in ["price_0", "price_1"]:
+            data = {
+                "name": "Pen",
+                "description": "A pen",
+                "unit": self.unit.id,
+                "category": [self.category.id],
+                "supplier": [self.supplier.id],
+                "price_0": 20,
+                "price_1": "KES",
+            }
+            data[field] = ""
+            form = ProductForm(data=data)
+            self.assertFalse(form.is_valid())
+            self.assertDictEqual({"price": ["This field is required."]}, form.errors)
+
+        # test related fields
+        data = {
+            "name": "Pen",
+            "description": "A pen",
+            "unit": "1337",
+            "category": [1337],
+            "supplier": ["1337"],
+            "price_0": 20,
+            "price_1": "KES",
+        }
+        form = ProductForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertDictEqual(
+            {
+                "category": [
+                    "Select a valid choice. 1337 is not one of the available choices."
+                ],
+                "supplier": [
+                    "Select a valid choice. 1337 is not one of the available choices."
+                ],
+                "unit": [
+                    "Select a valid choice. That choice is not one of the available choices."  # noqa  # pylint: disable=line-too-long
+                ],
+            },
+            form.errors,
+        )
