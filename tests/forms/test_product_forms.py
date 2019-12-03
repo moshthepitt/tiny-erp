@@ -285,7 +285,7 @@ class TestProductForms(TestCase):
             self.assertFalse(form.is_valid())
             self.assertDictEqual({field: ["This field is required."]}, form.errors)
 
-        # test price
+        # test price required
         for field in ["price_0", "price_1"]:
             data = {
                 "name": "Pen",
