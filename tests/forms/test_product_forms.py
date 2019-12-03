@@ -1,7 +1,13 @@
 """Module for product form tests."""
+from decimal import Decimal
+
+from django.conf import settings
 from django.test import RequestFactory, TestCase
 
-from tiny_erp.apps.products.forms import SupplierForm
+from model_mommy import mommy
+from prices import Money
+
+from tiny_erp.apps.products.forms import ProductForm, SupplierForm
 
 CREATE_SUPPLIER_FORM = """
 <p>
@@ -51,6 +57,12 @@ class TestProductForms(TestCase):
 
     def setUp(self):
         """Setup test class."""
+        self.supplier = mommy.make("products.Supplier", name="X Inc")
+        self.supplier2 = mommy.make("products.Supplier", name="Y Inc")
+        self.unit = mommy.make("products.MeasurementUnit", name="g")
+        self.unit2 = mommy.make("products.MeasurementUnit", name="l")
+        self.category = mommy.make("products.ProductCategory", name="a")
+        self.category2 = mommy.make("products.ProductCategory", name="b")
         self.factory = RequestFactory()
 
     def test_supplier_form(self):
@@ -188,3 +200,51 @@ class TestProductForms(TestCase):
             },
             form.errors,
         )
+
+    def test_product_form(self):
+        """Test ProductForm."""
+
+        # test form when creating
+        data = {
+            "name": "Pen",
+            "description": "A pen",
+            "unit": self.unit.id,
+            "category": [self.category.id],
+            "supplier": [self.supplier.id],
+            "price_0": 20,
+            "price_1": "KES",
+        }
+        form = ProductForm(data=data)
+        self.assertTrue(form.is_valid())
+        product = form.save()
+        self.assertEqual("Pen", product.name)
+        self.assertEqual("A pen", product.description)
+        self.assertEqual(self.unit, product.unit)
+        self.assertEqual(self.category, product.category.first())
+        self.assertEqual(self.supplier, product.supplier.first())
+        self.assertEqual(Money("20", "KES"), product.amount)
+        self.assertEqual(settings.TINY_ERP_DEFAULT_CURRENCY, product.currency)
+        self.assertEqual(Decimal(20), product.internal_amount)
+
+        # test form when updating
+        data = {
+            "name": "Nice Pen",
+            "description": "A nice pen",
+            "unit": self.unit2.id,
+            "category": [self.category2],
+            "supplier": [self.supplier.id, self.supplier2.id],
+            "price_0": 25,
+            "price_1": "KES",
+        }
+        form = ProductForm(instance=product, data=data)
+        self.assertTrue(form.is_valid())
+        form.save()
+        product.refresh_from_db()
+        self.assertEqual("Nice Pen", product.name)
+        self.assertEqual("A nice pen", product.description)
+        self.assertEqual(self.unit2, product.unit)
+        self.assertEqual(self.category2, product.category.first())
+        self.assertEqual([self.supplier, self.supplier2], list(product.supplier.all()))
+        self.assertEqual(Money("25", "KES"), product.amount)
+        self.assertEqual(settings.TINY_ERP_DEFAULT_CURRENCY, product.currency)
+        self.assertEqual(Decimal(25), product.internal_amount)
