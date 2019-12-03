@@ -55,7 +55,10 @@ class TestProductForms(TestCase):
 
     def test_supplier_form(self):
         """Test SupplierForm."""
+        # test empty form output
         self.assertHTMLEqual(CREATE_SUPPLIER_FORM, SupplierForm().as_p())
+
+        # test form when creating
         data = {
             "name": "Umbrella Inc",
             "contact_person": "Marvin",
@@ -70,6 +73,7 @@ class TestProductForms(TestCase):
         self.assertEqual(["a@example.com", "b@example.com"], supplier.emails)
         self.assertEqual(["+254722000000"], supplier.phones)
 
+        # test form when updating
         update_data = {
             "name": "Umbrella Inc",
             "contact_person": "Alice",
@@ -86,3 +90,42 @@ class TestProductForms(TestCase):
         self.assertEqual("Alice", supplier.contact_person)
         self.assertEqual(["b@example.com"], supplier.emails)
         self.assertEqual(["+254711000000", "+254722000000"], supplier.phones)
+
+        # test phone validation
+        data = {
+            "name": "Umbrella Inc",
+            "contact_person": "Marvin",
+            "emails": "a@example.com,b@example.com",
+            "phones": "+254722000000, +2547999999999999",
+        }
+        form = SupplierForm(data=data)
+        form.full_clean()
+        self.assertFalse(form.is_valid())
+        self.assertDictEqual(
+            {"phones": ["The phone number entered is not valid."]}, form.errors
+        )
+
+        # test email validation
+        data = {
+            "name": "Umbrella Inc",
+            "contact_person": "Marvin",
+            "emails": "42",
+            "phones": "+254722000000",
+        }
+        form = SupplierForm(data=data)
+        form.full_clean()
+        self.assertFalse(form.is_valid())
+        self.assertDictEqual({"emails": ["Enter a valid email address."]}, form.errors)
+
+        # test that one of email or phone is required
+        data = {"name": "Umbrella Inc", "contact_person": "Marvin", "emails": ""}
+        form = SupplierForm(data=data)
+        form.full_clean()
+        self.assertFalse(form.is_valid())
+        self.assertDictEqual(
+            {
+                "emails": ["Provide a phone number or an email address."],
+                "phones": ["Provide a phone number or an email address."],
+            },
+            form.errors,
+        )
