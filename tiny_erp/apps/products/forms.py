@@ -76,6 +76,15 @@ class SupplierForm(forms.ModelForm):
         model = Supplier
         fields = ["name", "contact_person", "emails", "phones"]
 
+    def clean(self):
+        super().clean()
+        emails = self.cleaned_data.get("emails")
+        phones = self.cleaned_data.get("phones")
+        if not emails and not phones:
+            msg = _("Provide a phone number or an email address.")
+            raise forms.ValidationError({"emails": msg, "phones": msg})
+        return self.cleaned_data
+
 
 class ProductForm(forms.ModelForm):
     """Form definition for Product."""
