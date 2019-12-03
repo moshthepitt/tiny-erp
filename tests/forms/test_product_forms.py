@@ -38,7 +38,7 @@ UPDATE_SUPPLIER_FORM = """
     <span class="helptext">Enter a comma-separated list of email addresses</span></p>
 <p>
     <label for="id_phones">Phone Number(s):</label>
-    <textarea name="phones" cols="40" rows="2" id="id_phones">+254711000000,+254722000000</textarea>
+    <textarea name="phones" cols="40" rows="2" id="id_phones">+254711000000, +254722000000</textarea>
     <span class="helptext">Enter a comma-separated list of phone numbers</span>
 </p>
 """  # noqa
@@ -74,7 +74,7 @@ class TestProductForms(TestCase):
             "name": "Umbrella Inc",
             "contact_person": "Alice",
             "emails": "b@example.com",
-            "phones": "+254711000000,+254722000000",
+            "phones": "+254711000000, +254722000000",  # notice the empty space
         }
 
         form = SupplierForm(instance=supplier, data=update_data)
