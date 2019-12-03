@@ -92,7 +92,7 @@ class ProductForm(forms.ModelForm):
     price = MoneyField(
         label=_("Price"),
         required=True,
-        available_currencies=settings.TINY_ERP_AVAILABLE_CURRENCIES,
+        available_currencies=[_[0] for _ in settings.TINY_ERP_AVAILABLE_CURRENCIES],
         max_digits=9,
         decimal_places=2,
         validators=[MinMoneyValidator(Money(0, settings.TINY_ERP_DEFAULT_CURRENCY))],
