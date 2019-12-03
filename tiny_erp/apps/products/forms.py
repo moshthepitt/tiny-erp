@@ -45,18 +45,29 @@ class MultiPhoneField(MultiInputField):
             validate_international_phonenumber(phone)
 
 
+class MiniTextarea(forms.Textarea):
+    """Vertically shorter version of textarea widget."""
+
+    rows = 2
+
+    def __init__(self, attrs=None):
+        super().__init__({"rows": self.rows})
+
+
 class SupplierForm(forms.ModelForm):
     """Form definition for Supplier."""
 
     emails = MultiEmailField(
         label=_("Email Address(es)"),
-        help_text=_("Enter a comma-seprated list of email addresses"),
+        help_text=_("Enter a comma-separated list of email addresses"),
         required=False,
+        widget=MiniTextarea,
     )
     phones = MultiPhoneField(
         label=_("Phone Number(s)"),
-        help_text=_("Enter a comma-seprated list of phone numbers"),
+        help_text=_("Enter a comma-separated list of phone numbers"),
         required=False,
+        widget=MiniTextarea,
     )
 
     class Meta:
