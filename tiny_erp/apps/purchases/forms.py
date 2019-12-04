@@ -10,9 +10,6 @@ from small_small_hr.models import StaffProfile
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout, Submit
-from django_prices.forms import MoneyField
-from django_prices.validators import MinMoneyValidator
-from prices import Money
 
 from tiny_erp.apps.purchases.emails import (
     requisition_approved_email,
@@ -27,37 +24,18 @@ from tiny_erp.widgets import MiniTextarea
 class RequisitionLineItemForm(forms.ModelForm):
     """Form definition for RequisitionLineItem."""
 
-    price = MoneyField(
-        label=_("Price"),
-        required=True,
-        available_currencies=[_[0] for _ in settings.TINY_ERP_AVAILABLE_CURRENCIES],
-        max_digits=64,
-        decimal_places=2,
-        validators=[MinMoneyValidator(Money(0, settings.TINY_ERP_DEFAULT_CURRENCY))],
-    )
-
     class Meta:
         """Meta definition for RequisitionLineItemform."""
 
         model = RequisitionLineItem
-        fields = ["requisition", "item", "quantity", "price"]
+        fields = ["requisition", "item", "quantity", "internal_price"]
         widgets = {"item": MiniTextarea()}
-
-    def save(self, commit=True):
-        """Custom save method."""
-        item = super().save()
-        # deal with price
-        item.internal_price = self.cleaned_data["price"].amount
-        item.currency = self.cleaned_data["price"].currency
-        item.save()
-        return item
 
 
 RequisitionItemFormSet = inlineformset_factory(  # pylint: disable=invalid-name
     Requisition,
     RequisitionLineItem,
     form=RequisitionLineItemForm,
-    # fields=["item", "quantity"],
     extra=3,
     can_delete=True,
 )
