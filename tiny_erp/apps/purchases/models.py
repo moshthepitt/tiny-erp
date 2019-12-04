@@ -87,7 +87,6 @@ class RequisitionLineItem(TimeStampedAbstractLineItem):
     )
     item = models.TextField(_("Item"))
     quantity = models.DecimalField(_("Quantity"), max_digits=64, decimal_places=2)
-    price = models.DecimalField(_("Price"), max_digits=64, decimal_places=2)
 
     class Meta:
         """Meta definition for RequisitionLineItem."""
