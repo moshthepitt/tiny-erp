@@ -95,13 +95,7 @@ class Product(TimeStampedModel):
         default=getattr(settings, "TINY_ERP_DEFAULT_CURRENCY", "KES"),
         db_index=True,
     )
-    internal_amount = models.DecimalField(
-        _("Price"),
-        max_digits=9,
-        decimal_places=2,
-        default=0,
-        help_text=_("VAT included"),
-    )
+    internal_amount = models.DecimalField(_("Price"), max_digits=64, decimal_places=2)
     amount = MoneyField(
         verbose_name=_("Price"),
         amount_field="internal_amount",
