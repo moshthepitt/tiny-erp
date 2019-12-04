@@ -176,7 +176,7 @@ class Migration(migrations.Migration):
                 (
                     "internal_amount",
                     models.DecimalField(
-                        decimal_places=2, max_digits=64, verbose_name="Price"
+                        decimal_places=2, default=0, max_digits=64, verbose_name="Price"
                     ),
                 ),
                 (
