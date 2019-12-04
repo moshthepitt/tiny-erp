@@ -64,7 +64,8 @@ class Requisition(TimeStampedModel):
         """Get the total amount"""
         agg = RequisitionLineItem.objects.filter(requisition=self).aggregate(
             total=Coalesce(
-                models.Sum(models.F("price") * models.F("quantity")), models.Value(0)
+                models.Sum(models.F("internal_price") * models.F("quantity")),
+                models.Value(0),
             )
         )
         return agg["total"]
