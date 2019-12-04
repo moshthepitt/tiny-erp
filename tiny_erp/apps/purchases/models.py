@@ -86,7 +86,9 @@ class RequisitionLineItem(TimeStampedAbstractLineItem):
         Requisition, verbose_name=_("Requisition"), on_delete=models.CASCADE
     )
     item = models.TextField(_("Item"))
-    quantity = models.DecimalField(_("Quantity"), max_digits=64, decimal_places=2)
+
+    # remove fields from base model class
+    name = None
 
     class Meta:
         """Meta definition for RequisitionLineItem."""
