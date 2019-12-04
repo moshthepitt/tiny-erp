@@ -9,6 +9,7 @@ from django.urls import reverse
 
 from crispy_forms.utils import render_crispy_form
 from model_mommy import mommy
+from prices import Money
 
 from tiny_erp.apps.locations.models import Business, Department, Location
 from tiny_erp.apps.purchases.forms import (
@@ -21,15 +22,11 @@ from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
 CREATE_FORM = """
 <form id="requisition-form" method="post">
     <div>
-        <div class="form-group" id="div_id_title">
-            <label class=" control-label requiredField" for="id_title">
-                Title<span class="asteriskField">
-            *
-            </span>
-            </label>
-            <div class=" controls">
-                <input class="form-control textInput textinput" id="id_title" maxlength="255" name="title" required type="text">
-            </div>
+        <div id="div_id_title" class="form-group">
+            <label for="id_title" class="control-label  requiredField">
+                Title<span class="asteriskField">*</span> </label>
+            <div class="controls ">
+                <input type="text" name="title" maxlength="255" class="textinput textInput form-control" required id="id_title"> </div>
         </div>
         <div id="div_id_staff" class="form-group">
             <label for="id_staff" class="control-label  requiredField">
@@ -77,7 +74,7 @@ CREATE_FORM = """
             <label for="id_date_placed" class="control-label  requiredField">
                 Date Placed<span class="asteriskField">*</span> </label>
             <div class="controls ">
-                <input type="text" name="date_placed" class="dateinput form-control" required id="id_date_placed" value="2019-06-15"> </div>
+                <input type="text" name="date_placed" value="2019-06-15" class="dateinput form-control" required id="id_date_placed"> </div>
         </div>
         <div id="div_id_date_required" class="form-group">
             <label for="id_date_required" class="control-label  requiredField">
@@ -94,8 +91,8 @@ CREATE_FORM = """
                 <input type="hidden" name="requisitionlineitem_set-MAX_NUM_FORMS" value="1000" id="id_requisitionlineitem_set-MAX_NUM_FORMS">
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
-                        <input type="hidden" name="requisitionlineitem_set-0-id" id="id_requisitionlineitem_set-0-id">
                         <input type="hidden" name="requisitionlineitem_set-0-requisition" id="id_requisitionlineitem_set-0-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-0-id" id="id_requisitionlineitem_set-0-id">
                         <div>
                             <div id="div_id_requisitionlineitem_set-0-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-0-item" class="control-label  requiredField">
@@ -113,17 +110,19 @@ CREATE_FORM = """
                                 <label for="id_requisitionlineitem_set-0-quantity" class="control-label  requiredField">
                                     Quantity<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-0-quantity" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-0-quantity"> </div>
+                                    <input type="number" name="requisitionlineitem_set-0-quantity" value="1" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-0-quantity"> </div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div>
-                            <div id="div_id_requisitionlineitem_set-0-price" class="form-group">
-                                <label for="id_requisitionlineitem_set-0-price" class="control-label  requiredField">
+                            <div id="div_id_requisitionlineitem_set-0-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-0-internal_price" class="control-label  requiredField">
                                     Price<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-0-price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-0-price"> </div>
+                                    <input type="number" name="requisitionlineitem_set-0-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-0-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-0-internal_price" class="help-block">The price per item</div>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -141,8 +140,8 @@ CREATE_FORM = """
                 </tr>
                 <tr class="row2 formset_row-requisitionlineitem_set">
                     <td>
-                        <input type="hidden" name="requisitionlineitem_set-1-id" id="id_requisitionlineitem_set-1-id">
                         <input type="hidden" name="requisitionlineitem_set-1-requisition" id="id_requisitionlineitem_set-1-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-1-id" id="id_requisitionlineitem_set-1-id">
                         <div>
                             <div id="div_id_requisitionlineitem_set-1-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-1-item" class="control-label  requiredField">
@@ -160,17 +159,19 @@ CREATE_FORM = """
                                 <label for="id_requisitionlineitem_set-1-quantity" class="control-label  requiredField">
                                     Quantity<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-1-quantity" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-quantity"> </div>
+                                    <input type="number" name="requisitionlineitem_set-1-quantity" value="1" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-quantity"> </div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div>
-                            <div id="div_id_requisitionlineitem_set-1-price" class="form-group">
-                                <label for="id_requisitionlineitem_set-1-price" class="control-label  requiredField">
+                            <div id="div_id_requisitionlineitem_set-1-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-1-internal_price" class="control-label  requiredField">
                                     Price<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-1-price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-price"> </div>
+                                    <input type="number" name="requisitionlineitem_set-1-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-1-internal_price" class="help-block">The price per item</div>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -188,8 +189,8 @@ CREATE_FORM = """
                 </tr>
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
-                        <input type="hidden" name="requisitionlineitem_set-2-id" id="id_requisitionlineitem_set-2-id">
                         <input type="hidden" name="requisitionlineitem_set-2-requisition" id="id_requisitionlineitem_set-2-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-2-id" id="id_requisitionlineitem_set-2-id">
                         <div>
                             <div id="div_id_requisitionlineitem_set-2-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-2-item" class="control-label  requiredField">
@@ -207,17 +208,19 @@ CREATE_FORM = """
                                 <label for="id_requisitionlineitem_set-2-quantity" class="control-label  requiredField">
                                     Quantity<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-2-quantity" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-quantity"> </div>
+                                    <input type="number" name="requisitionlineitem_set-2-quantity" value="1" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-quantity"> </div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div>
-                            <div id="div_id_requisitionlineitem_set-2-price" class="form-group">
-                                <label for="id_requisitionlineitem_set-2-price" class="control-label  requiredField">
+                            <div id="div_id_requisitionlineitem_set-2-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-2-internal_price" class="control-label  requiredField">
                                     Price<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-2-price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-price"> </div>
+                                    <input type="number" name="requisitionlineitem_set-2-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-2-internal_price" class="help-block">The price per item</div>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -256,15 +259,11 @@ CREATE_FORM = """
 EDIT_FORM = """
 <form id="requisition-update-form" method="post">
     <div>
-        <div class="form-group" id="div_id_title">
-            <label class=" control-label requiredField" for="id_title">
-                Title<span class="asteriskField">
-            *
-            </span>
-            </label>
-            <div class=" controls">
-                <input class="form-control textInput textinput" id="id_title" maxlength="255" name="title" required type="text" value="Kitchen Supplies">
-            </div>
+        <div id="div_id_title" class="form-group">
+            <label for="id_title" class="control-label  requiredField">
+                Title<span class="asteriskField">*</span> </label>
+            <div class="controls ">
+                <input type="text" name="title" value="Kitchen Supplies" maxlength="255" class="textinput textInput form-control" required id="id_title"> </div>
         </div>
         <input type="hidden" name="staff" value="99" id="id_staff">
         <div id="div_id_business" class="form-group">
@@ -335,8 +334,8 @@ EDIT_FORM = """
                 <input type="hidden" name="requisitionlineitem_set-MAX_NUM_FORMS" value="1000" id="id_requisitionlineitem_set-MAX_NUM_FORMS">
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
-                        <input type="hidden" name="requisitionlineitem_set-0-id" value="1" id="id_requisitionlineitem_set-0-id">
                         <input type="hidden" name="requisitionlineitem_set-0-requisition" value="99" id="id_requisitionlineitem_set-0-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-0-id" value="1" id="id_requisitionlineitem_set-0-id">
                         <div>
                             <div id="div_id_requisitionlineitem_set-0-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-0-item" class="control-label  requiredField">
@@ -360,11 +359,13 @@ EDIT_FORM = """
                     </td>
                     <td>
                         <div>
-                            <div id="div_id_requisitionlineitem_set-0-price" class="form-group">
-                                <label for="id_requisitionlineitem_set-0-price" class="control-label  requiredField">
+                            <div id="div_id_requisitionlineitem_set-0-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-0-internal_price" class="control-label  requiredField">
                                     Price<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-0-price" value="20.00" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-0-price"> </div>
+                                    <input type="number" name="requisitionlineitem_set-0-internal_price" value="20.00" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-0-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-0-internal_price" class="help-block">The price per item</div>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -382,8 +383,8 @@ EDIT_FORM = """
                 </tr>
                 <tr class="row2 formset_row-requisitionlineitem_set">
                     <td>
-                        <input type="hidden" name="requisitionlineitem_set-1-id" id="id_requisitionlineitem_set-1-id">
                         <input type="hidden" name="requisitionlineitem_set-1-requisition" value="99" id="id_requisitionlineitem_set-1-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-1-id" id="id_requisitionlineitem_set-1-id">
                         <div>
                             <div id="div_id_requisitionlineitem_set-1-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-1-item" class="control-label  requiredField">
@@ -401,17 +402,19 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-1-quantity" class="control-label  requiredField">
                                     Quantity<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-1-quantity" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-quantity"> </div>
+                                    <input type="number" name="requisitionlineitem_set-1-quantity" value="1" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-quantity"> </div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div>
-                            <div id="div_id_requisitionlineitem_set-1-price" class="form-group">
-                                <label for="id_requisitionlineitem_set-1-price" class="control-label  requiredField">
+                            <div id="div_id_requisitionlineitem_set-1-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-1-internal_price" class="control-label  requiredField">
                                     Price<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-1-price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-price"> </div>
+                                    <input type="number" name="requisitionlineitem_set-1-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-1-internal_price" class="help-block">The price per item</div>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -429,8 +432,8 @@ EDIT_FORM = """
                 </tr>
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
-                        <input type="hidden" name="requisitionlineitem_set-2-id" id="id_requisitionlineitem_set-2-id">
                         <input type="hidden" name="requisitionlineitem_set-2-requisition" value="99" id="id_requisitionlineitem_set-2-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-2-id" id="id_requisitionlineitem_set-2-id">
                         <div>
                             <div id="div_id_requisitionlineitem_set-2-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-2-item" class="control-label  requiredField">
@@ -448,17 +451,19 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-2-quantity" class="control-label  requiredField">
                                     Quantity<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-2-quantity" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-quantity"> </div>
+                                    <input type="number" name="requisitionlineitem_set-2-quantity" value="1" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-quantity"> </div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div>
-                            <div id="div_id_requisitionlineitem_set-2-price" class="form-group">
-                                <label for="id_requisitionlineitem_set-2-price" class="control-label  requiredField">
+                            <div id="div_id_requisitionlineitem_set-2-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-2-internal_price" class="control-label  requiredField">
                                     Price<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-2-price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-price"> </div>
+                                    <input type="number" name="requisitionlineitem_set-2-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-2-internal_price" class="help-block">The price per item</div>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -476,8 +481,8 @@ EDIT_FORM = """
                 </tr>
                 <tr class="row2 formset_row-requisitionlineitem_set">
                     <td>
-                        <input type="hidden" name="requisitionlineitem_set-3-id" id="id_requisitionlineitem_set-3-id">
                         <input type="hidden" name="requisitionlineitem_set-3-requisition" value="99" id="id_requisitionlineitem_set-3-requisition">
+                        <input type="hidden" name="requisitionlineitem_set-3-id" id="id_requisitionlineitem_set-3-id">
                         <div>
                             <div id="div_id_requisitionlineitem_set-3-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-3-item" class="control-label  requiredField">
@@ -495,17 +500,19 @@ EDIT_FORM = """
                                 <label for="id_requisitionlineitem_set-3-quantity" class="control-label  requiredField">
                                     Quantity<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-3-quantity" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-3-quantity"> </div>
+                                    <input type="number" name="requisitionlineitem_set-3-quantity" value="1" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-3-quantity"> </div>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div>
-                            <div id="div_id_requisitionlineitem_set-3-price" class="form-group">
-                                <label for="id_requisitionlineitem_set-3-price" class="control-label  requiredField">
+                            <div id="div_id_requisitionlineitem_set-3-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-3-internal_price" class="control-label  requiredField">
                                     Price<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <input type="number" name="requisitionlineitem_set-3-price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-3-price"> </div>
+                                    <input type="number" name="requisitionlineitem_set-3-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-3-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-3-internal_price" class="help-block">The price per item</div>
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -730,19 +737,18 @@ class TestForms(TestCase):
             "date_required": "02/02/2019",
             "reason": "I love oov",
             "total": 0,
-            "requisitionlineitem_set-TOTAL_FORMS": 3,
+            "requisitionlineitem_set-TOTAL_FORMS": 2,
             "requisitionlineitem_set-INITIAL_FORMS": 0,
             "requisitionlineitem_set-MIN_NUM_FORMS": 0,
             "requisitionlineitem_set-0-item": "Pen",
             "requisitionlineitem_set-0-quantity": 3,
-            "requisitionlineitem_set-0-price": 7,
+            "requisitionlineitem_set-0-internal_price": 7,
             "requisitionlineitem_set-1-item": "Ink",
             "requisitionlineitem_set-1-quantity": 1,
-            "requisitionlineitem_set-1-price": 20,
+            "requisitionlineitem_set-1-internal_price": 20,
         }
         url = reverse("purchases.requisition-create")
         res = self.client.post(url, data)
-
         self.assertEqual(302, res.status_code)
         self.assertRedirects(res, reverse("purchases.requisition-list"))
         self.assertEqual(1, Requisition.objects.all().count())
@@ -771,24 +777,24 @@ class TestForms(TestCase):
             "reason": "Nice",
             "comments": "Shall order on the 25th.",
             "status": Requisition.APPROVED,
-            "requisitionlineitem_set-TOTAL_FORMS": 5,
+            "requisitionlineitem_set-TOTAL_FORMS": 3,
             "requisitionlineitem_set-INITIAL_FORMS": 2,
             "requisitionlineitem_set-MIN_NUM_FORMS": 0,
             "requisitionlineitem_set-MAX_NUM_FORMS": 1000,
             "requisitionlineitem_set-0-id": requisition.requisitionlineitem_set.first().id,  # noqa
             "requisitionlineitem_set-0-item": "Pen",
             "requisitionlineitem_set-0-quantity": 3,
-            "requisitionlineitem_set-0-price": 7,
+            "requisitionlineitem_set-0-internal_price": 7,
             "requisitionlineitem_set-0-requisition": requisition.id,
             "requisitionlineitem_set-1-id": requisition.requisitionlineitem_set.last().id,
             "requisitionlineitem_set-1-item": "Ink",
             "requisitionlineitem_set-1-quantity": 1,
-            "requisitionlineitem_set-1-price": 20,
-            "requisitionlineitem_set-1-DELETE": "1",  # this line item is e=being deleted
+            "requisitionlineitem_set-1-internal_price": 20,
+            "requisitionlineitem_set-1-DELETE": "1",  # this line item is being deleted
             "requisitionlineitem_set-1-requisition": requisition.id,
             "requisitionlineitem_set-2-item": "Pencil",
             "requisitionlineitem_set-2-quantity": 8,
-            "requisitionlineitem_set-2-price": 17,
+            "requisitionlineitem_set-2-internal_price": 17,
             "requisitionlineitem_set-2-requisition": requisition.id,
         }
 
@@ -815,6 +821,7 @@ class TestForms(TestCase):
         mommy.make("small_small_hr.StaffProfile", user=user2, id=999)
 
         self.assertHTMLEqual(CREATE_FORM, render_crispy_form(RequisitionForm))
+
         business = mommy.make("locations.Business", name="Abc Ltd", id=99)
         location = mommy.make("locations.Location", name="Voi", id=99)
         department = mommy.make("locations.Department", name="Science", id=99)
@@ -834,7 +841,7 @@ class TestForms(TestCase):
             _quantity=1,
             item="Pen",
             quantity=2,
-            price=20,
+            internal_price=20,
             requisition=requisition,
         )
 
@@ -858,7 +865,7 @@ class TestForms(TestCase):
             "requisition": requisition.id,
             "item": "Tubes",
             "quantity": 3,
-            "price": 200,
+            "internal_price": 200,
         }
 
         form = RequisitionLineItemForm(data=data)
@@ -867,7 +874,7 @@ class TestForms(TestCase):
         self.assertEqual(requisition, item.requisition)
         self.assertEqual("Tubes", item.item)
         self.assertEqual(3, item.quantity)
-        self.assertEqual(200, item.price)
+        self.assertEqual(Money("200", "KES"), item.price)
 
     def test_custom_formset_class(self):
         """Test custom formset class"""
@@ -875,7 +882,6 @@ class TestForms(TestCase):
             Requisition,
             RequisitionLineItem,
             form=RequisitionLineItemForm,
-            fields=["item", "quantity", "price"],
             extra=12,
             can_delete=True,
         )
