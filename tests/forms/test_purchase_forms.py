@@ -22,7 +22,12 @@ from tiny_erp.apps.purchases.forms import (
 )
 from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
 
-from .html import CREATE_FORM, EDIT_FORM
+from .html import (
+    CREATE_FORM,
+    CREATE_REQUISITION_PRODUCT_FORM,
+    EDIT_FORM,
+    EDIT_REQUISITION_PRODUCT_FORM,
+)
 
 
 @override_settings(
@@ -536,6 +541,56 @@ class TestForms(TestCase):
 
         self.assertHTMLEqual(
             EDIT_FORM, render_crispy_form(UpdateRequisitionForm(instance=requisition))
+        )
+
+    @patch("tiny_erp.apps.purchases.forms.timezone")
+    def test_crispy_requisition_product_form(self, mocked):
+        """
+        Test crispy forms output
+        """
+        now_mock = MagicMock()
+        now_mock.date = date(2019, 6, 15)
+        mocked.now.return_value = now_mock
+
+        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user, id=99)
+        user2 = mommy.make("auth.User", first_name="Mosh", last_name="Pitt")
+        mommy.make("small_small_hr.StaffProfile", user=user2, id=999)
+
+        product1 = mommy.make("products.product", name="Lego", internal_amount=99)
+        mommy.make("products.product", name="Duvet", internal_amount=5000)
+
+        self.assertHTMLEqual(
+            CREATE_REQUISITION_PRODUCT_FORM, render_crispy_form(RequisitionProductForm)
+        )
+
+        business = mommy.make("locations.Business", name="Abc Ltd", id=99)
+        location = mommy.make("locations.Location", name="Voi", id=99)
+        department = mommy.make("locations.Department", name="Science", id=99)
+        requisition = mommy.make(
+            "purchases.Requisition",
+            title="Kitchen Supplies",
+            staff=staffprofile,
+            location=location,
+            department=department,
+            business=business,
+            date_placed="2019-06-24",
+            date_required="2019-06-24",
+            id=99,
+        )
+        mommy.make(
+            "purchases.RequisitionLineItem",
+            _quantity=1,
+            product=product1,
+            item=product1.name,
+            quantity=12,
+            internal_price=product1.internal_amount,
+            requisition=requisition,
+        )
+
+        self.assertHTMLEqual(
+            EDIT_REQUISITION_PRODUCT_FORM,
+            render_crispy_form(UpdatedRequisitionProductForm(instance=requisition)),
         )
 
     def test_requisition_lineitem_form(self):
