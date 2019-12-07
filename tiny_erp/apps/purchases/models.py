@@ -7,6 +7,7 @@ from vega_admin.mixins import TimeStampedModel
 
 from tiny_erp.abstract_models import TimeStampedAbstractLineItem
 from tiny_erp.apps.locations.models import Business, Department, Location
+from tiny_erp.apps.products.models import Product
 
 
 # pylint: disable=no-member
@@ -85,6 +86,14 @@ class RequisitionLineItem(TimeStampedAbstractLineItem):
 
     requisition = models.ForeignKey(
         Requisition, verbose_name=_("Requisition"), on_delete=models.CASCADE
+    )
+    product = models.ForeignKey(
+        Product,
+        verbose_name=_("Product"),
+        null=True,
+        default=None,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
     item = models.TextField(_("Item"))
 
