@@ -327,7 +327,7 @@ class TestForms(TestCase):
     @override_settings(ROOT_URLCONF="tests.crud")
     def test_full_requisition_form(self):
         """
-        Test the full implementation of the requesition form
+        Test the full implementation of the requisition form
         """
         Requisition.objects.all().delete()
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
@@ -413,6 +413,87 @@ class TestForms(TestCase):
         self.assertEqual("Bar Supplies", requisition.title)
         self.assertEqual("Nice", requisition.reason)
         self.assertEqual("Shall order on the 25th.", requisition.comments)
+
+    @override_settings(ROOT_URLCONF="tests.crud")
+    def test_full_requisition_product_form(self):
+        """
+        Test the full implementation of the requisition product form
+        """
+        Requisition.objects.all().delete()
+        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        business = mommy.make("locations.Business", name="X Inc")
+        location = mommy.make("locations.Location", name="Voi")
+        department = mommy.make("locations.Department", name="Science")
+        product1 = mommy.make("products.product", name="Juice", internal_amount=250)
+        product2 = mommy.make("products.product", name="Water", internal_amount=50)
+        data = {
+            "title": "Kitchen Supplies",
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/11/2019",
+            "date_required": "02/12/2019",
+            "reason": "I love oov",
+            "total": 0,
+            "requisitionlineitem_set-TOTAL_FORMS": 1,
+            "requisitionlineitem_set-INITIAL_FORMS": 0,
+            "requisitionlineitem_set-MIN_NUM_FORMS": 0,
+            "requisitionlineitem_set-0-product": product1.pk,
+            "requisitionlineitem_set-0-quantity": 3,
+        }
+        url = reverse("req-products-create")
+        res = self.client.post(url, data)
+        self.assertEqual(302, res.status_code)
+        self.assertRedirects(res, reverse("req-products-list"))
+        self.assertEqual(1, Requisition.objects.all().count())
+        requisition = Requisition.objects.first()
+
+        self.assertEqual(
+            1, RequisitionLineItem.objects.filter(requisition=requisition).count()
+        )
+        self.assertEqual(750, requisition.total)
+        self.assertEqual(Requisition.PENDING, requisition.status)
+        self.assertEqual("I love oov", requisition.reason)
+        self.assertEqual("Kitchen Supplies", requisition.title)
+        self.assertEqual("", requisition.comments)
+
+        url = reverse("req-products-update", kwargs={"pk": requisition.id})
+        data = {
+            "id": requisition.id,
+            "title": "Bar Supplies",
+            "staff": staffprofile.id,
+            "location": location.id,
+            "business": business.id,
+            "department": department.id,
+            "date_placed": "01/01/2019",
+            "date_required": "02/02/2019",
+            "total": 0,
+            "reason": "Nice",
+            "comments": "Shall order on the 26th.",
+            "status": Requisition.APPROVED,
+            "requisitionlineitem_set-TOTAL_FORMS": 2,
+            "requisitionlineitem_set-INITIAL_FORMS": 1,
+            "requisitionlineitem_set-MIN_NUM_FORMS": 0,
+            "requisitionlineitem_set-MAX_NUM_FORMS": 1000,
+            "requisitionlineitem_set-0-id": requisition.requisitionlineitem_set.first().id,  # noqa
+            "requisitionlineitem_set-0-product": product1.pk,
+            "requisitionlineitem_set-0-quantity": 3,
+            "requisitionlineitem_set-0-requisition": requisition.id,
+            "requisitionlineitem_set-1-id": requisition.requisitionlineitem_set.last().id,
+            "requisitionlineitem_set-1-product": product2.pk,
+            "requisitionlineitem_set-1-quantity": 2,
+            "requisitionlineitem_set-1-requisition": requisition.id,
+        }
+
+        res = self.client.post(url, data)
+        requisition.refresh_from_db()
+        self.assertEqual(850, requisition.total)
+        self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual("Bar Supplies", requisition.title)
+        self.assertEqual("Nice", requisition.reason)
+        self.assertEqual("Shall order on the 26th.", requisition.comments)
 
     @patch("tiny_erp.apps.purchases.forms.timezone")
     def test_crispy_requisition_form(self, mocked):
