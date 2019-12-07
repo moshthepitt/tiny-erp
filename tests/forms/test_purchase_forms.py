@@ -15,6 +15,7 @@ from tiny_erp.apps.locations.models import Business, Department, Location
 from tiny_erp.apps.purchases.forms import (
     RequisitionForm,
     RequisitionLineItemForm,
+    RequisitionLineItemProductForm,
     UpdateRequisitionForm,
 )
 from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
@@ -876,8 +877,30 @@ class TestForms(TestCase):
         self.assertEqual(3, item.quantity)
         self.assertEqual(Money("200", "KES"), item.price)
 
+    def test_requisition_lineitem_product_form(self):
+        """Test RequisitionLineItemProductForm."""
+        request = self.factory.get("/")
+        request.session = {}
+        request.user = AnonymousUser()
+
+        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
+        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
+        requisition = mommy.make("purchases.Requisition", staff=staffprofile)
+        product = mommy.make("products.Product", name="Pipes", internal_amount=123)
+
+        data = {"requisition": requisition.id, "product": product.pk, "quantity": 3}
+
+        form = RequisitionLineItemProductForm(data=data)
+        self.assertTrue(form.is_valid())
+        item = form.save()
+        self.assertEqual(requisition, item.requisition)
+        self.assertEqual("Pipes", item.item)
+        self.assertEqual(3, item.quantity)
+        self.assertEqual(Money("123", "KES"), item.price)
+        self.assertEqual(product, item.product)
+
     def test_custom_formset_class(self):
-        """Test custom formset class"""
+        """Test custom formset class."""
         CustomFormSet = inlineformset_factory(  # pylint: disable=invalid-name
             Requisition,
             RequisitionLineItem,
