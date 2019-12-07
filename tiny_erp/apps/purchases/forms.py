@@ -68,6 +68,14 @@ RequisitionItemFormSet = inlineformset_factory(  # pylint: disable=invalid-name
     can_delete=True,
 )
 
+RequisitionItemProductFormSet = inlineformset_factory(  # pylint: disable=invalid-name
+    Requisition,
+    RequisitionLineItem,
+    form=RequisitionLineItemProductForm,
+    extra=3,
+    can_delete=True,
+)
+
 
 class RequisitionFormMixin:
     """Requisition Form mixin
@@ -183,6 +191,12 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
         )
 
 
+class RequisitionProductForm(RequisitionForm):
+    """Form definition for Requisition that uses products."""
+
+    formset_class = RequisitionItemProductFormSet
+
+
 class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
     """Form definition for Upodate Requisition."""
 
@@ -245,3 +259,9 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 ),
             )
         )
+
+
+class UpdatedRequisitionProductForm(UpdateRequisitionForm):
+    """Form definition for Requisition that uses products."""
+
+    formset_class = RequisitionItemProductFormSet
