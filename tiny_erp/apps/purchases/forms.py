@@ -11,6 +11,7 @@ from small_small_hr.models import StaffProfile
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout, Submit
 
+from tiny_erp.apps.products.models import Product
 from tiny_erp.apps.purchases.emails import (
     requisition_approved_email,
     requisition_filed_email,
@@ -30,6 +31,33 @@ class RequisitionLineItemForm(forms.ModelForm):
         model = RequisitionLineItem
         fields = ["requisition", "item", "quantity", "internal_price"]
         widgets = {"item": MiniTextarea()}
+
+
+class RequisitionLineItemProductForm(forms.ModelForm):
+    """Form definition for RequisitionLineItem that uses products."""
+
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.all(), label=_("Product"), required=True
+    )
+
+    class Meta:
+        """Meta definition for RequisitionLineItemform."""
+
+        model = RequisitionLineItem
+        fields = ["requisition", "product", "quantity"]
+
+    def save(self, commit=False):  # pylint: disable=unused-argument
+        """
+        Custom save method
+        """
+        obj = super().save(commit)
+        if obj.product:
+            obj.item = obj.product.name
+            obj.description = obj.product.description
+            obj.currency = obj.product.currency
+            obj.internal_price = obj.product.internal_amount
+        obj.save()
+        return obj
 
 
 RequisitionItemFormSet = inlineformset_factory(  # pylint: disable=invalid-name
