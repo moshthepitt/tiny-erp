@@ -1,5 +1,4 @@
 """models module for products app."""
-from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -8,6 +7,8 @@ from vega_admin.mixins import TimeStampedModel
 
 from django_prices.models import MoneyField
 from phonenumber_field.modelfields import PhoneNumberField
+
+from tiny_erp.abstract_models import MoneyModel
 
 
 class Supplier(TimeStampedModel):
@@ -73,7 +74,7 @@ class ProductCategory(TimeStampedModel):
         return self.name
 
 
-class Product(TimeStampedModel):
+class Product(TimeStampedModel, MoneyModel):
     """Model definition for Product."""
 
     name = models.CharField(_("Name"), max_length=2000)
@@ -86,15 +87,6 @@ class Product(TimeStampedModel):
     )
     category = models.ManyToManyField(ProductCategory, verbose_name=_("Category"))
     supplier = models.ManyToManyField(Supplier, verbose_name=_("Supplier"))
-    currency = models.CharField(
-        _("Currency"),
-        max_length=3,
-        choices=getattr(
-            settings, "TINY_ERP_AVAILABLE_CURRENCIES", [("KES", "Kenya Shilling")]
-        ),
-        default=getattr(settings, "TINY_ERP_DEFAULT_CURRENCY", "KES"),
-        db_index=True,
-    )
     internal_amount = models.DecimalField(
         _("Price"), max_digits=64, decimal_places=2, default=0
     )
