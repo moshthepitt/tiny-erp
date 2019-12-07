@@ -24,14 +24,9 @@ class AbstractEntity(models.Model):
         return self.name
 
 
-class AbstractLineItem(models.Model):
-    """Model definition for abstract line item"""
+class MoneyModel(models.Model):
+    """Model definition for item with moneyfield."""
 
-    name = models.CharField(_("Name"), max_length=255)
-    description = models.TextField(_("Description"), blank=True, default="")
-    quantity = models.DecimalField(
-        _("Quantity"), max_digits=64, decimal_places=2, default=1
-    )
     currency = models.CharField(
         _("Currency"),
         max_length=3,
@@ -41,6 +36,29 @@ class AbstractLineItem(models.Model):
         default=getattr(settings, "TINY_ERP_DEFAULT_CURRENCY", "KES"),
         db_index=True,
     )
+    internal_amount = models.DecimalField(
+        _("Price"), max_digits=64, decimal_places=2, default=0
+    )
+    amount = MoneyField(
+        verbose_name=_("Price"),
+        amount_field="internal_amount",
+        currency_field="currency",
+    )
+
+    class Meta:
+        """Meta definition for MoneyModel."""
+
+        abstract = True
+
+
+class AbstractLineItem(MoneyModel):
+    """Model definition for abstract line item"""
+
+    name = models.CharField(_("Name"), max_length=255)
+    description = models.TextField(_("Description"), blank=True, default="")
+    quantity = models.DecimalField(
+        _("Quantity"), max_digits=64, decimal_places=2, default=1
+    )
     internal_price = models.DecimalField(
         _("Price"), help_text=_("The price per item"), max_digits=64, decimal_places=2
     )
@@ -49,6 +67,10 @@ class AbstractLineItem(models.Model):
         amount_field="internal_price",
         currency_field="currency",
     )
+
+    # remove fields from base model class
+    internal_amount = None
+    amount = None
 
     def _get_total(self):
         """Get the total for this line item
