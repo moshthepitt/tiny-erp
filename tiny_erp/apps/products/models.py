@@ -5,7 +5,6 @@ from django.utils.translation import ugettext as _
 
 from vega_admin.mixins import TimeStampedModel
 
-from django_prices.models import MoneyField
 from phonenumber_field.modelfields import PhoneNumberField
 
 from tiny_erp.abstract_models import MoneyModel
@@ -87,14 +86,6 @@ class Product(TimeStampedModel, MoneyModel):
     )
     category = models.ManyToManyField(ProductCategory, verbose_name=_("Category"))
     supplier = models.ManyToManyField(Supplier, verbose_name=_("Supplier"))
-    internal_amount = models.DecimalField(
-        _("Price"), max_digits=64, decimal_places=2, default=0
-    )
-    amount = MoneyField(
-        verbose_name=_("Price"),
-        amount_field="internal_amount",
-        currency_field="currency",
-    )
 
     class Meta:
         """Meta definition for Product."""
