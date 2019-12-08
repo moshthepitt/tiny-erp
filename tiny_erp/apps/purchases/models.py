@@ -3,10 +3,11 @@ from django.db import models
 from django.db.models.functions import Coalesce
 from django.utils.translation import ugettext as _
 
-from small_small_hr.models import TimeStampedModel
+from vega_admin.mixins import TimeStampedModel
 
 from tiny_erp.abstract_models import TimeStampedAbstractLineItem
 from tiny_erp.apps.locations.models import Business, Department, Location
+from tiny_erp.apps.products.models import Product
 
 
 # pylint: disable=no-member
@@ -64,7 +65,8 @@ class Requisition(TimeStampedModel):
         """Get the total amount"""
         agg = RequisitionLineItem.objects.filter(requisition=self).aggregate(
             total=Coalesce(
-                models.Sum(models.F("price") * models.F("quantity")), models.Value(0)
+                models.Sum(models.F("internal_price") * models.F("quantity")),
+                models.Value(0),
             )
         )
         return agg["total"]
@@ -85,9 +87,18 @@ class RequisitionLineItem(TimeStampedAbstractLineItem):
     requisition = models.ForeignKey(
         Requisition, verbose_name=_("Requisition"), on_delete=models.CASCADE
     )
+    product = models.ForeignKey(
+        Product,
+        verbose_name=_("Product"),
+        null=True,
+        default=None,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
     item = models.TextField(_("Item"))
-    quantity = models.DecimalField(_("Quantity"), max_digits=64, decimal_places=2)
-    price = models.DecimalField(_("Price"), max_digits=64, decimal_places=2)
+
+    # remove fields from base model class
+    name = None
 
     class Meta:
         """Meta definition for RequisitionLineItem."""

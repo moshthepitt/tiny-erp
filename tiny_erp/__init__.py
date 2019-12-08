@@ -1,6 +1,8 @@
 """
 Main init file for tiny_erp
 """
+VERSION = (0, 1, 0)
+
+__vega_admin_version__ = "0.0.16"
 __small_small_hr_version__ = "0.1.9"
-VERSION = (0, 0, 4)
-__version__ = ".".join(str(v) for v in VERSION)
+__version__ = ".".join(str(_) for _ in VERSION)

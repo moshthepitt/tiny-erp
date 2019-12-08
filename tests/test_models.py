@@ -41,7 +41,7 @@ class TestPurchaseModels(TestCase):
             "purchases.RequisitionLineItem",
             item="Pen",
             quantity=2,
-            price=20,
+            internal_price=20,
             requisition=requisition,
         )
         self.assertEqual(
@@ -53,7 +53,7 @@ class TestPurchaseModels(TestCase):
             _quantity=1,
             item="Ink",
             quantity=3,
-            price=19,
+            internal_price=19,
             requisition=requisition,
         )
 
