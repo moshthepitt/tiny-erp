@@ -537,6 +537,7 @@ class TestForms(TestCase):
             quantity=2,
             internal_price=20,
             requisition=requisition,
+            id=557,
         )
 
         self.assertHTMLEqual(
@@ -557,8 +558,10 @@ class TestForms(TestCase):
         user2 = mommy.make("auth.User", first_name="Mosh", last_name="Pitt")
         mommy.make("small_small_hr.StaffProfile", user=user2, id=999)
 
-        product1 = mommy.make("products.product", name="Lego", internal_amount=99)
-        mommy.make("products.product", name="Duvet", internal_amount=5000)
+        product1 = mommy.make(
+            "products.product", name="Lego", internal_amount=99, id=776
+        )
+        mommy.make("products.product", name="Duvet", internal_amount=5000, id=777)
 
         self.assertHTMLEqual(
             CREATE_REQUISITION_PRODUCT_FORM, render_crispy_form(RequisitionProductForm)
@@ -586,6 +589,7 @@ class TestForms(TestCase):
             quantity=12,
             internal_price=product1.internal_amount,
             requisition=requisition,
+            id=556,
         )
 
         self.assertHTMLEqual(

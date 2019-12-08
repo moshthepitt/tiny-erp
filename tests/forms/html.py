@@ -316,7 +316,7 @@ EDIT_FORM = """
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-0-requisition" value="99" id="id_requisitionlineitem_set-0-requisition">
-                        <input type="hidden" name="requisitionlineitem_set-0-id" value="1" id="id_requisitionlineitem_set-0-id">
+                        <input type="hidden" name="requisitionlineitem_set-0-id" value="557" id="id_requisitionlineitem_set-0-id">
                         <div>
                             <div id="div_id_requisitionlineitem_set-0-item" class="form-group">
                                 <label for="id_requisitionlineitem_set-0-item" class="control-label  requiredField">
@@ -619,8 +619,8 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-0-product" class="select form-control" id="id_requisitionlineitem_set-0-product">
                                         <option value="" selected>---------</option>
-                                        <option value="1">Lego</option>
-                                        <option value="2">Duvet</option>
+                                        <option value="776">Lego</option>
+                                        <option value="777">Duvet</option>
 
                                     </select>
                                 </div>
@@ -660,8 +660,8 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-1-product" class="select form-control" id="id_requisitionlineitem_set-1-product">
                                         <option value="" selected>---------</option>
-                                        <option value="1">Lego</option>
-                                        <option value="2">Duvet</option>
+                                        <option value="776">Lego</option>
+                                        <option value="777">Duvet</option>
 
                                     </select>
                                 </div>
@@ -701,8 +701,8 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-2-product" class="select form-control" id="id_requisitionlineitem_set-2-product">
                                         <option value="" selected>---------</option>
-                                        <option value="1">Lego</option>
-                                        <option value="2">Duvet</option>
+                                        <option value="776">Lego</option>
+                                        <option value="777">Duvet</option>
 
                                     </select>
                                 </div>
@@ -830,7 +830,7 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                 <tr class="row1 formset_row-requisitionlineitem_set">
                     <td>
                         <input type="hidden" name="requisitionlineitem_set-0-requisition" value="99" id="id_requisitionlineitem_set-0-requisition">
-                        <input type="hidden" name="requisitionlineitem_set-0-id" value="1" id="id_requisitionlineitem_set-0-id">
+                        <input type="hidden" name="requisitionlineitem_set-0-id" value="556" id="id_requisitionlineitem_set-0-id">
                         <div>
                             <div id="div_id_requisitionlineitem_set-0-product" class="form-group">
                                 <label for="id_requisitionlineitem_set-0-product" class="control-label  requiredField">
@@ -838,8 +838,8 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-0-product" class="select form-control" id="id_requisitionlineitem_set-0-product">
                                         <option value="">---------</option>
-                                        <option value="1" selected>Lego</option>
-                                        <option value="2">Duvet</option>
+                                        <option value="776" selected>Lego</option>
+                                        <option value="777">Duvet</option>
 
                                     </select>
                                 </div>
@@ -879,8 +879,8 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-1-product" class="select form-control" id="id_requisitionlineitem_set-1-product">
                                         <option value="" selected>---------</option>
-                                        <option value="1">Lego</option>
-                                        <option value="2">Duvet</option>
+                                        <option value="776">Lego</option>
+                                        <option value="777">Duvet</option>
 
                                     </select>
                                 </div>
@@ -920,8 +920,8 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-2-product" class="select form-control" id="id_requisitionlineitem_set-2-product">
                                         <option value="" selected>---------</option>
-                                        <option value="1">Lego</option>
-                                        <option value="2">Duvet</option>
+                                        <option value="776">Lego</option>
+                                        <option value="777">Duvet</option>
 
                                     </select>
                                 </div>
@@ -961,8 +961,8 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-3-product" class="select form-control" id="id_requisitionlineitem_set-3-product">
                                         <option value="" selected>---------</option>
-                                        <option value="1">Lego</option>
-                                        <option value="2">Duvet</option>
+                                        <option value="776">Lego</option>
+                                        <option value="777">Duvet</option>
 
                                     </select>
                                 </div>
