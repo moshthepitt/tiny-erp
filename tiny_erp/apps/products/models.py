@@ -16,10 +16,16 @@ class Supplier(TimeStampedModel):
     name = models.CharField(_("Name"), max_length=2000)
     contact_person = models.CharField(_("Contact Person"), max_length=2000)
     emails = ArrayField(
-        models.EmailField(_("Email Address")), verbose_name=_("Email Address(es)")
+        models.EmailField(_("Email Address")),
+        verbose_name=_("Email Address(es)"),
+        blank=True,
+        default=list,
     )
     phones = ArrayField(
-        PhoneNumberField(_("Telephone Number")), verbose_name=_("Phone number(s)")
+        PhoneNumberField(_("Telephone Number")),
+        verbose_name=_("Phone number(s)"),
+        blank=True,
+        default=list,
     )
 
     class Meta:
@@ -43,7 +49,7 @@ class MeasurementUnit(TimeStampedModel):
         max_length=2000,
         help_text=_("e.g. l which is the symbol for litre"),
     )
-    description = models.TextField(_("Description"), blank=False, default="")
+    description = models.TextField(_("Description"), blank=True, default="")
 
     class Meta:
         """Meta definition for MeasurementUnit."""
@@ -60,7 +66,7 @@ class ProductCategory(TimeStampedModel):
     """Model definition for ProductCategory."""
 
     name = models.CharField(_("Name"), max_length=2000)
-    description = models.TextField(_("Description"), blank=False, default="")
+    description = models.TextField(_("Description"), blank=True, default="")
 
     class Meta:
         """Meta definition for ProductCategory."""
@@ -77,15 +83,14 @@ class Product(TimeStampedModel, MoneyModel):
     """Model definition for Product."""
 
     name = models.CharField(_("Name"), max_length=2000)
-    description = models.TextField(_("Description"), blank=False, default="")
+    description = models.TextField(_("Description"), blank=True, default="")
     unit = models.ForeignKey(
-        MeasurementUnit,
-        verbose_name=_("Measurement Unit"),
-        db_index=True,
-        on_delete=models.PROTECT,
+        MeasurementUnit, verbose_name=_("Measurement Unit"), on_delete=models.PROTECT
     )
     category = models.ManyToManyField(ProductCategory, verbose_name=_("Category"))
-    supplier = models.ManyToManyField(Supplier, verbose_name=_("Supplier"))
+    supplier = models.ForeignKey(
+        Supplier, verbose_name=_("Supplier"), on_delete=models.PROTECT
+    )
 
     class Meta:
         """Meta definition for Product."""
