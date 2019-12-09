@@ -447,6 +447,7 @@ class TestForms(TestCase):
             "requisitionlineitem_set-MIN_NUM_FORMS": 0,
             "requisitionlineitem_set-0-product": product1.pk,
             "requisitionlineitem_set-0-quantity": 3,
+            "requisitionlineitem_set-0-internal_price": 1,
         }
         url = reverse("req-products-create")
         res = self.client.post(url, data)
@@ -485,10 +486,12 @@ class TestForms(TestCase):
             "requisitionlineitem_set-0-id": requisition.requisitionlineitem_set.first().id,  # noqa
             "requisitionlineitem_set-0-product": product1.pk,
             "requisitionlineitem_set-0-quantity": 3,
+            "requisitionlineitem_set-0-internal_price": 1,
             "requisitionlineitem_set-0-requisition": requisition.id,
             "requisitionlineitem_set-1-id": requisition.requisitionlineitem_set.last().id,
             "requisitionlineitem_set-1-product": product2.pk,
             "requisitionlineitem_set-1-quantity": 2,
+            "requisitionlineitem_set-1-internal_price": 1,
             "requisitionlineitem_set-1-requisition": requisition.id,
         }
 
@@ -559,9 +562,21 @@ class TestForms(TestCase):
         mommy.make("small_small_hr.StaffProfile", user=user2, id=999)
 
         product1 = mommy.make(
-            "products.product", name="Lego", internal_amount=99, id=776
+            "products.product",
+            name="Lego",
+            internal_amount=99,
+            id=776,
+            unit=mommy.make("products.MeasurementUnit", name="Box", symbol="box"),
+            supplier=mommy.make("products.Supplier", name="GAP"),
         )
-        mommy.make("products.product", name="Duvet", internal_amount=5000, id=777)
+        mommy.make(
+            "products.product",
+            name="Duvet",
+            internal_amount=5000,
+            id=777,
+            unit=mommy.make("products.MeasurementUnit", name="Metre", symbol="m"),
+            supplier=mommy.make("products.Supplier", name="GAP"),
+        )
 
         self.assertHTMLEqual(
             CREATE_REQUISITION_PRODUCT_FORM, render_crispy_form(RequisitionProductForm)
@@ -633,9 +648,22 @@ class TestForms(TestCase):
         user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
         staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
         requisition = mommy.make("purchases.Requisition", staff=staffprofile)
-        product = mommy.make("products.Product", name="Pipes", internal_amount=123)
+        unit = mommy.make("products.MeasurementUnit", name="Metre", symbol="m")
+        supplier = mommy.make("products.Supplier", name="GAP")
+        product = mommy.make(
+            "products.Product",
+            name="Pipes",
+            internal_amount=123,
+            unit=unit,
+            supplier=supplier,
+        )
 
-        data = {"requisition": requisition.id, "product": product.pk, "quantity": 3}
+        data = {
+            "requisition": requisition.id,
+            "product": product.pk,
+            "quantity": 3,
+            "internal_price": 1,
+        }
 
         form = RequisitionLineItemProductForm(data=data)
         self.assertTrue(form.is_valid())
