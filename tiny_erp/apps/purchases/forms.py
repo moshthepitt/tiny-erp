@@ -132,7 +132,7 @@ class RequisitionLineItemProductForm(forms.ModelForm):
         """
         Custom save method
         """
-        obj = super().save(False)
+        obj = super().save(commit)
         if obj.product:
             obj.item = obj.product.name
             obj.description = obj.product.description
