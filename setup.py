@@ -17,7 +17,7 @@ if sys.argv[-1] == "publish":
     os.system("python setup.py sdist bdist_wheel")
     os.system("twine upload dist/* --skip-existing")
     print("You probably want to also tag the version now:")
-    print(f"  git tag -a {tiny_erp.__version__} -m 'version {tiny_erp.__version__}'")
+    print(f"  git tag -a v{tiny_erp.__version__} -m 'version {tiny_erp.__version__}'")
     print("  git push --tags")
     sys.exit()
 
