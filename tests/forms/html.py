@@ -617,12 +617,23 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                                 <label for="id_requisitionlineitem_set-0-product" class="control-label  requiredField">
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <select name="requisitionlineitem_set-0-product" class="select form-control" id="id_requisitionlineitem_set-0-product">
-                                        <option value="" selected>---------</option>
-                                        <option value="776">Lego</option>
-                                        <option value="777">Duvet</option>
-
+                                    <select name="requisitionlineitem_set-0-product" class="customselect form-control" id="id_requisitionlineitem_set-0-product">
+                                        <option data-price="" data-currency="" value="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div id="div_id_requisitionlineitem_set-0-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-0-internal_price" class="control-label  requiredField">
+                                    Price<span class="asteriskField">*</span> </label>
+                                <div class="controls ">
+                                    <input type="number" name="requisitionlineitem_set-0-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-0-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-0-internal_price" class="help-block">The price per item</div>
                                 </div>
                             </div>
                         </div>
@@ -658,12 +669,23 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                                 <label for="id_requisitionlineitem_set-1-product" class="control-label  requiredField">
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <select name="requisitionlineitem_set-1-product" class="select form-control" id="id_requisitionlineitem_set-1-product">
-                                        <option value="" selected>---------</option>
-                                        <option value="776">Lego</option>
-                                        <option value="777">Duvet</option>
-
+                                    <select name="requisitionlineitem_set-1-product" class="customselect form-control" id="id_requisitionlineitem_set-1-product">
+                                        <option data-price="" data-currency="" value="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div id="div_id_requisitionlineitem_set-1-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-1-internal_price" class="control-label  requiredField">
+                                    Price<span class="asteriskField">*</span> </label>
+                                <div class="controls ">
+                                    <input type="number" name="requisitionlineitem_set-1-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-1-internal_price" class="help-block">The price per item</div>
                                 </div>
                             </div>
                         </div>
@@ -699,12 +721,23 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                                 <label for="id_requisitionlineitem_set-2-product" class="control-label  requiredField">
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <select name="requisitionlineitem_set-2-product" class="select form-control" id="id_requisitionlineitem_set-2-product">
-                                        <option value="" selected>---------</option>
-                                        <option value="776">Lego</option>
-                                        <option value="777">Duvet</option>
-
+                                    <select name="requisitionlineitem_set-2-product" class="customselect form-control" id="id_requisitionlineitem_set-2-product">
+                                        <option data-price="" data-currency="" value="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div id="div_id_requisitionlineitem_set-2-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-2-internal_price" class="control-label  requiredField">
+                                    Price<span class="asteriskField">*</span> </label>
+                                <div class="controls ">
+                                    <input type="number" name="requisitionlineitem_set-2-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-2-internal_price" class="help-block">The price per item</div>
                                 </div>
                             </div>
                         </div>
@@ -836,12 +869,23 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                 <label for="id_requisitionlineitem_set-0-product" class="control-label  requiredField">
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <select name="requisitionlineitem_set-0-product" class="select form-control" id="id_requisitionlineitem_set-0-product">
-                                        <option value="">---------</option>
-                                        <option value="776" selected>Lego</option>
-                                        <option value="777">Duvet</option>
-
+                                    <select name="requisitionlineitem_set-0-product" class="customselect form-control" id="id_requisitionlineitem_set-0-product">
+                                        <option data-price="" data-currency="" value="">---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776" selected>Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div id="div_id_requisitionlineitem_set-0-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-0-internal_price" class="control-label  requiredField">
+                                    Price<span class="asteriskField">*</span> </label>
+                                <div class="controls ">
+                                    <input type="number" name="requisitionlineitem_set-0-internal_price" value="99.00" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-0-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-0-internal_price" class="help-block">The price per item</div>
                                 </div>
                             </div>
                         </div>
@@ -877,12 +921,23 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                 <label for="id_requisitionlineitem_set-1-product" class="control-label  requiredField">
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <select name="requisitionlineitem_set-1-product" class="select form-control" id="id_requisitionlineitem_set-1-product">
-                                        <option value="" selected>---------</option>
-                                        <option value="776">Lego</option>
-                                        <option value="777">Duvet</option>
-
+                                    <select name="requisitionlineitem_set-1-product" class="customselect form-control" id="id_requisitionlineitem_set-1-product">
+                                        <option data-price="" data-currency="" value="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div id="div_id_requisitionlineitem_set-1-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-1-internal_price" class="control-label  requiredField">
+                                    Price<span class="asteriskField">*</span> </label>
+                                <div class="controls ">
+                                    <input type="number" name="requisitionlineitem_set-1-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-1-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-1-internal_price" class="help-block">The price per item</div>
                                 </div>
                             </div>
                         </div>
@@ -918,12 +973,23 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                 <label for="id_requisitionlineitem_set-2-product" class="control-label  requiredField">
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <select name="requisitionlineitem_set-2-product" class="select form-control" id="id_requisitionlineitem_set-2-product">
-                                        <option value="" selected>---------</option>
-                                        <option value="776">Lego</option>
-                                        <option value="777">Duvet</option>
-
+                                    <select name="requisitionlineitem_set-2-product" class="customselect form-control" id="id_requisitionlineitem_set-2-product">
+                                        <option data-price="" data-currency="" value="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div id="div_id_requisitionlineitem_set-2-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-2-internal_price" class="control-label  requiredField">
+                                    Price<span class="asteriskField">*</span> </label>
+                                <div class="controls ">
+                                    <input type="number" name="requisitionlineitem_set-2-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-2-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-2-internal_price" class="help-block">The price per item</div>
                                 </div>
                             </div>
                         </div>
@@ -959,12 +1025,23 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                 <label for="id_requisitionlineitem_set-3-product" class="control-label  requiredField">
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
-                                    <select name="requisitionlineitem_set-3-product" class="select form-control" id="id_requisitionlineitem_set-3-product">
-                                        <option value="" selected>---------</option>
-                                        <option value="776">Lego</option>
-                                        <option value="777">Duvet</option>
-
+                                    <select name="requisitionlineitem_set-3-product" class="customselect form-control" id="id_requisitionlineitem_set-3-product">
+                                        <option data-price="" data-currency="" value="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div id="div_id_requisitionlineitem_set-3-internal_price" class="form-group">
+                                <label for="id_requisitionlineitem_set-3-internal_price" class="control-label  requiredField">
+                                    Price<span class="asteriskField">*</span> </label>
+                                <div class="controls ">
+                                    <input type="number" name="requisitionlineitem_set-3-internal_price" step="0.01" class="numberinput form-control" id="id_requisitionlineitem_set-3-internal_price">
+                                    <div id="hint_id_requisitionlineitem_set-3-internal_price" class="help-block">The price per item</div>
                                 </div>
                             </div>
                         </div>

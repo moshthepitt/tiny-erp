@@ -2,7 +2,7 @@
 from django import forms
 from django.conf import settings
 from django.db import transaction
-from django.forms.models import inlineformset_factory
+from django.forms.models import ModelChoiceIterator, inlineformset_factory
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
@@ -22,6 +22,85 @@ from tiny_erp.layout import Formset
 from tiny_erp.widgets import MiniTextarea
 
 
+class CustomModelChoiceIterator(
+    # pylint: disable=too-few-public-methods,bad-continuation
+    ModelChoiceIterator
+):
+    """Custom ModelChoiceIterator."""
+
+    def choice(self, obj):
+        return (self.field.prepare_value(obj), self.field.label_from_instance(obj), obj)
+
+
+class CustomModelChoiceField(forms.ModelChoiceField):
+    """Custom ModelChoiceField."""
+
+    iterator = CustomModelChoiceIterator
+
+    def label_from_instance(self, obj):
+        """
+        Convert objects into strings and generate the labels for the choices
+        presented by this object. Subclasses can override this method to
+        customize the display of the choices.
+        """
+        return f"{obj.name} - {obj.unit.name} - {obj.supplier.name}"
+
+
+class CustomSelect(forms.Select):
+    """Custom Select."""
+
+    option_template_name = "tiny_erp/product_option.html"
+
+    def optgroups(self, name, value, attrs=None):  # pylint: disable=too-many-locals
+        """Return a list of optgroups for this widget."""
+        groups = []
+        has_selected = False
+
+        for index, option_tuple in enumerate(self.choices):
+            option_value = option_tuple[0]
+            option_label = option_tuple[1]
+
+            try:
+                option_object = option_tuple[2]
+            except IndexError:
+                option_object = None
+
+            if option_value is None:
+                option_value = ""
+
+            subgroup = []
+            if isinstance(option_label, (list, tuple)):
+                group_name = option_value
+                subindex = 0
+                choices = option_label
+            else:
+                group_name = None
+                subindex = None
+                choices = [(option_value, option_label)]
+            groups.append((group_name, subgroup, index))
+
+            for subvalue, sublabel in choices:
+                selected = str(subvalue) in value and (
+                    not has_selected or self.allow_multiple_selected
+                )
+                has_selected |= selected
+                option = self.create_option(
+                    name,
+                    subvalue,
+                    sublabel,
+                    selected,
+                    index,
+                    subindex=subindex,
+                    attrs=attrs,
+                )
+                option["object"] = option_object
+                subgroup.append(option)
+                if subindex is not None:
+                    subindex += 1
+
+        return groups
+
+
 class RequisitionLineItemForm(forms.ModelForm):
     """Form definition for RequisitionLineItem."""
 
@@ -36,21 +115,24 @@ class RequisitionLineItemForm(forms.ModelForm):
 class RequisitionLineItemProductForm(forms.ModelForm):
     """Form definition for RequisitionLineItem that uses products."""
 
-    product = forms.ModelChoiceField(
-        queryset=Product.objects.all(), label=_("Product"), required=True
+    product = CustomModelChoiceField(
+        queryset=Product.objects.all(),
+        label=_("Product"),
+        required=True,
+        widget=CustomSelect,
     )
 
     class Meta:
         """Meta definition for RequisitionLineItemform."""
 
         model = RequisitionLineItem
-        fields = ["requisition", "product", "quantity"]
+        fields = ["requisition", "product", "internal_price", "quantity"]
 
     def save(self, commit=False):  # pylint: disable=unused-argument
         """
         Custom save method
         """
-        obj = super().save(False)
+        obj = super().save(commit)
         if obj.product:
             obj.item = obj.product.name
             obj.description = obj.product.description
@@ -198,7 +280,7 @@ class RequisitionProductForm(RequisitionForm):
 
 
 class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
-    """Form definition for Upodate Requisition."""
+    """Form definition for Update Requisition."""
 
     class Meta:
         """Meta definition for UpdateRequisitionForm."""
