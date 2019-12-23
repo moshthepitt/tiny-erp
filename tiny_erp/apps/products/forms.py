@@ -102,7 +102,7 @@ class ProductForm(forms.ModelForm):
         """Meta definition for Productform."""
 
         model = Product
-        fields = ["name", "description", "unit", "category", "supplier"]
+        fields = ["name", "sku", "description", "unit", "category", "supplier"]
 
     def save(self, commit=True):
         """Custom save method."""
