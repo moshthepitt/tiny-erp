@@ -618,9 +618,9 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-0-product" class="customselect form-control" id="id_requisitionlineitem_set-0-product">
-                                        <option data-price="" data-currency="" value="" selected>---------</option>
-                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
-                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
+                                        <option data-price="" data-currency="" value="" data-sku="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776" data-sku="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777" data-sku="777">Duvet - Metre - GAP</option>
                                     </select>
                                 </div>
                             </div>
@@ -670,9 +670,9 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-1-product" class="customselect form-control" id="id_requisitionlineitem_set-1-product">
-                                        <option data-price="" data-currency="" value="" selected>---------</option>
-                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
-                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
+                                        <option data-price="" data-currency="" value="" data-sku="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776" data-sku="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777" data-sku="777">Duvet - Metre - GAP</option>
                                     </select>
                                 </div>
                             </div>
@@ -722,9 +722,9 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-2-product" class="customselect form-control" id="id_requisitionlineitem_set-2-product">
-                                        <option data-price="" data-currency="" value="" selected>---------</option>
-                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
-                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
+                                        <option data-price="" data-currency="" value="" data-sku="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776" data-sku="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777" data-sku="777">Duvet - Metre - GAP</option>
                                     </select>
                                 </div>
                             </div>
@@ -870,9 +870,9 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-0-product" class="customselect form-control" id="id_requisitionlineitem_set-0-product">
-                                        <option data-price="" data-currency="" value="">---------</option>
-                                        <option data-price="99.00" data-currency="KES" value="776" selected>Lego - Box - GAP</option>
-                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
+                                        <option data-price="" data-currency="" value="" data-sku="">---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776" data-sku="776" selected>Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777" data-sku="777">Duvet - Metre - GAP</option>
                                     </select>
                                 </div>
                             </div>
@@ -922,9 +922,9 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-1-product" class="customselect form-control" id="id_requisitionlineitem_set-1-product">
-                                        <option data-price="" data-currency="" value="" selected>---------</option>
-                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
-                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
+                                        <option data-price="" data-currency="" value="" data-sku="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776" data-sku="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777" data-sku="777">Duvet - Metre - GAP</option>
                                     </select>
                                 </div>
                             </div>
@@ -974,9 +974,9 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-2-product" class="customselect form-control" id="id_requisitionlineitem_set-2-product">
-                                        <option data-price="" data-currency="" value="" selected>---------</option>
-                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
-                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
+                                        <option data-price="" data-currency="" value="" data-sku="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776" data-sku="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777" data-sku="777">Duvet - Metre - GAP</option>
                                     </select>
                                 </div>
                             </div>
@@ -1026,9 +1026,9 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                                     Product<span class="asteriskField">*</span> </label>
                                 <div class="controls ">
                                     <select name="requisitionlineitem_set-3-product" class="customselect form-control" id="id_requisitionlineitem_set-3-product">
-                                        <option data-price="" data-currency="" value="" selected>---------</option>
-                                        <option data-price="99.00" data-currency="KES" value="776">Lego - Box - GAP</option>
-                                        <option data-price="5000.00" data-currency="KES" value="777">Duvet - Metre - GAP</option>
+                                        <option data-price="" data-currency="" value="" data-sku="" selected>---------</option>
+                                        <option data-price="99.00" data-currency="KES" value="776" data-sku="776">Lego - Box - GAP</option>
+                                        <option data-price="5000.00" data-currency="KES" value="777" data-sku="777">Duvet - Metre - GAP</option>
                                     </select>
                                 </div>
                             </div>

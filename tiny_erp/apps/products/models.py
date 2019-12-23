@@ -83,6 +83,15 @@ class Product(TimeStampedModel, MoneyModel):
     """Model definition for Product."""
 
     name = models.CharField(_("Name"), max_length=2000)
+    sku = models.CharField(
+        _("SKU"),
+        max_length=255,
+        blank=False,
+        null=False,
+        unique=True,
+        db_index=True,
+        help_text=_("Stock Keeping Unit or Product Code"),
+    )
     description = models.TextField(_("Description"), blank=True, default="")
     unit = models.ForeignKey(
         MeasurementUnit, verbose_name=_("Measurement Unit"), on_delete=models.PROTECT

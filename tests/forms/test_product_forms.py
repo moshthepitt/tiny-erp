@@ -207,6 +207,7 @@ class TestProductForms(TestCase):
         # test form when creating
         data = {
             "name": "Pen",
+            "sku": "pen-1",
             "description": "A pen",
             "unit": self.unit.id,
             "category": [self.category.id],
@@ -218,6 +219,7 @@ class TestProductForms(TestCase):
         self.assertTrue(form.is_valid())
         product = form.save()
         self.assertEqual("Pen", product.name)
+        self.assertEqual("pen-1", product.sku)
         self.assertEqual("A pen", product.description)
         self.assertEqual(self.unit, product.unit)
         self.assertEqual(self.category, product.category.first())
@@ -229,6 +231,7 @@ class TestProductForms(TestCase):
         # test form when updating
         data = {
             "name": "Nice Pen",
+            "sku": "pen-1-1",
             "description": "A nice pen",
             "unit": self.unit2.id,
             "category": [self.category2],
@@ -241,6 +244,7 @@ class TestProductForms(TestCase):
         form.save()
         product.refresh_from_db()
         self.assertEqual("Nice Pen", product.name)
+        self.assertEqual("pen-1-1", product.sku)
         self.assertEqual("A nice pen", product.description)
         self.assertEqual(self.unit2, product.unit)
         self.assertEqual(self.category2, product.category.first())
@@ -255,6 +259,7 @@ class TestProductForms(TestCase):
         # test price
         data = {
             "name": "Pen",
+            "sku": "pen-2",
             "description": "A pen",
             "unit": self.unit.id,
             "category": [self.category.id],
@@ -270,9 +275,10 @@ class TestProductForms(TestCase):
         )
 
         # test required fields
-        for field in ["category", "name", "unit"]:
+        for field in ["category", "name", "unit", "sku"]:
             data = {
                 "name": "Pen",
+                "sku": "pen-3",
                 "description": "A pen",
                 "unit": self.unit.id,
                 "category": [self.category.id],
@@ -289,6 +295,7 @@ class TestProductForms(TestCase):
         for field in ["price_0", "price_1"]:
             data = {
                 "name": "Pen",
+                "sku": "pen-4",
                 "description": "A pen",
                 "unit": self.unit.id,
                 "category": [self.category.id],
@@ -304,6 +311,7 @@ class TestProductForms(TestCase):
         # test related fields
         data = {
             "name": "Pen",
+            "sku": "pen-5",
             "description": "A pen",
             "unit": "1337",
             "category": [1337],
@@ -326,4 +334,30 @@ class TestProductForms(TestCase):
                 ],
             },
             form.errors,
+        )
+
+        # test unique fields
+        product = mommy.make(
+            "products.product",
+            name="Book",
+            internal_amount=99,
+            id=123,
+            sku="bk1",
+            unit=mommy.make("products.MeasurementUnit", name="Box", symbol="box"),
+            supplier=mommy.make("products.Supplier", name="GAP"),
+        )
+        data = {
+            "name": "Pen",
+            "sku": product.sku,
+            "description": "A pen",
+            "unit": self.unit.id,
+            "category": [self.category.id],
+            "supplier": self.supplier.id,
+            "price_0": 20,
+            "price_1": "KES",
+        }
+        form = ProductForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertDictEqual(
+            {"sku": ["Product with this SKU already exists."]}, form.errors
         )

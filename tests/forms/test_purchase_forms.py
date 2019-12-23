@@ -430,8 +430,12 @@ class TestForms(TestCase):
         business = mommy.make("locations.Business", name="X Inc")
         location = mommy.make("locations.Location", name="Voi")
         department = mommy.make("locations.Department", name="Science")
-        product1 = mommy.make("products.product", name="Juice", internal_amount=250)
-        product2 = mommy.make("products.product", name="Water", internal_amount=50)
+        product1 = mommy.make(
+            "products.product", name="Juice", sku="778", internal_amount=250
+        )
+        product2 = mommy.make(
+            "products.product", name="Water", sku="779", internal_amount=50
+        )
         data = {
             "title": "Kitchen Supplies",
             "staff": staffprofile.id,
@@ -566,6 +570,7 @@ class TestForms(TestCase):
             name="Lego",
             internal_amount=99,
             id=776,
+            sku="776",
             unit=mommy.make("products.MeasurementUnit", name="Box", symbol="box"),
             supplier=mommy.make("products.Supplier", name="GAP"),
         )
@@ -574,6 +579,7 @@ class TestForms(TestCase):
             name="Duvet",
             internal_amount=5000,
             id=777,
+            sku="777",
             unit=mommy.make("products.MeasurementUnit", name="Metre", symbol="m"),
             supplier=mommy.make("products.Supplier", name="GAP"),
         )
