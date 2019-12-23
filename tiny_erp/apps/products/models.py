@@ -86,8 +86,9 @@ class Product(TimeStampedModel, MoneyModel):
     sku = models.CharField(
         _("SKU"),
         max_length=255,
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
+        default=None,
         unique=True,
         db_index=True,
         help_text=_("Stock Keeping Unit or Product Code"),
