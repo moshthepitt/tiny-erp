@@ -275,7 +275,7 @@ class TestProductForms(TestCase):
         )
 
         # test required fields
-        for field in ["category", "name", "unit", "sku"]:
+        for field in ["category", "name", "unit"]:
             data = {
                 "name": "Pen",
                 "sku": "pen-3",
