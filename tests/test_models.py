@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django.test import TestCase
 
-from model_mommy import mommy
+from model_bakery import baker
 
 
 class TestLocationModels(TestCase):
@@ -13,9 +13,9 @@ class TestLocationModels(TestCase):
 
     def test_model_methods(self):
         """Test model methods"""
-        business = mommy.make("locations.Business", name="Abc Ltd")
-        location = mommy.make("locations.Location", name="Voi")
-        department = mommy.make("locations.Department", name="Science")
+        business = baker.make("locations.Business", name="Abc Ltd")
+        location = baker.make("locations.Location", name="Voi")
+        department = baker.make("locations.Department", name="Science")
         self.assertEqual("Abc Ltd", business.__str__())
         self.assertEqual("Voi", location.__str__())
         self.assertEqual("Science", department.__str__())
@@ -28,7 +28,7 @@ class TestPurchaseModels(TestCase):
 
     def test_model_methods(self):
         """Test model methods"""
-        requisition = mommy.make(
+        requisition = baker.make(
             "purchases.Requisition",
             title="Super Duper Important",
             date_placed="2019-06-24",
@@ -37,7 +37,7 @@ class TestPurchaseModels(TestCase):
         self.assertEqual(
             f"#{requisition.id} Super Duper Important", requisition.__str__()
         )
-        requisition_item = mommy.make(
+        requisition_item = baker.make(
             "purchases.RequisitionLineItem",
             item="Pen",
             quantity=2,
@@ -48,7 +48,7 @@ class TestPurchaseModels(TestCase):
             f"{requisition_item.item} - #{requisition_item.requisition}",
             requisition_item.__str__(),
         )
-        mommy.make(
+        baker.make(
             "purchases.RequisitionLineItem",
             _quantity=1,
             item="Ink",

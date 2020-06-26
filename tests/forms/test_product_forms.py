@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.test import RequestFactory, TestCase
 
-from model_mommy import mommy
+from model_bakery import baker
 from prices import Money
 
 from tiny_erp.apps.products.forms import ProductForm, SupplierForm
@@ -57,12 +57,12 @@ class TestProductForms(TestCase):
 
     def setUp(self):
         """Setup test class."""
-        self.supplier = mommy.make("products.Supplier", name="X Inc")
-        self.supplier2 = mommy.make("products.Supplier", name="Y Inc")
-        self.unit = mommy.make("products.MeasurementUnit", name="g")
-        self.unit2 = mommy.make("products.MeasurementUnit", name="l")
-        self.category = mommy.make("products.ProductCategory", name="a")
-        self.category2 = mommy.make("products.ProductCategory", name="b")
+        self.supplier = baker.make("products.Supplier", name="X Inc")
+        self.supplier2 = baker.make("products.Supplier", name="Y Inc")
+        self.unit = baker.make("products.MeasurementUnit", name="g")
+        self.unit2 = baker.make("products.MeasurementUnit", name="l")
+        self.category = baker.make("products.ProductCategory", name="a")
+        self.category2 = baker.make("products.ProductCategory", name="b")
         self.factory = RequestFactory()
 
     def test_supplier_form(self):
@@ -337,14 +337,14 @@ class TestProductForms(TestCase):
         )
 
         # test unique fields
-        product = mommy.make(
+        product = baker.make(
             "products.product",
             name="Book",
             internal_amount=99,
             id=123,
             sku="bk1",
-            unit=mommy.make("products.MeasurementUnit", name="Box", symbol="box"),
-            supplier=mommy.make("products.Supplier", name="GAP"),
+            unit=baker.make("products.MeasurementUnit", name="Box", symbol="box"),
+            supplier=baker.make("products.Supplier", name="GAP"),
         )
         data = {
             "name": "Pen",

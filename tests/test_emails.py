@@ -6,7 +6,7 @@ from unittest.mock import patch
 from django.core import mail
 from django.test import TestCase, override_settings
 
-from model_mommy import mommy
+from model_bakery import baker
 
 from tiny_erp.apps.purchases.emails import (
     requisition_approved_email,
@@ -29,19 +29,19 @@ class TestEmails(TestCase):
         """
         Set up
         """
-        self.user = mommy.make(
+        self.user = baker.make(
             "auth.User", first_name="Bob", last_name="Ndoe", email="bob@example.com"
         )
-        self.staffprofile = mommy.make("small_small_hr.StaffProfile", user=self.user)
-        self.business = mommy.make("locations.Business", name="X Inc")
-        self.location = mommy.make("locations.Location", name="Voi")
-        self.department = mommy.make("locations.Department", name="Science")
+        self.staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        self.business = baker.make("locations.Business", name="X Inc")
+        self.location = baker.make("locations.Location", name="Voi")
+        self.department = baker.make("locations.Department", name="Science")
 
     def test_requisition_filed_email(self):
         """
         Test requisition_filed_email
         """
-        requisition = mommy.make(
+        requisition = baker.make(
             "purchases.Requisition",
             staff=self.staffprofile,
             location=self.location,
@@ -87,7 +87,7 @@ class TestEmails(TestCase):
         """
         Test requisition_updated_email
         """
-        requisition = mommy.make(
+        requisition = baker.make(
             "purchases.Requisition",
             staff=self.staffprofile,
             location=self.location,
@@ -133,7 +133,7 @@ class TestEmails(TestCase):
         """
         Test requisition_approved_email
         """
-        requisition = mommy.make(
+        requisition = baker.make(
             "purchases.Requisition",
             staff=self.staffprofile,
             location=self.location,
