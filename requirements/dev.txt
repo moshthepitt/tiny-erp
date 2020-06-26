@@ -29,7 +29,7 @@ django-phonenumber-field==4.0.0  # via django-tiny-erp, small-small-hr
 django-prices==2.2.0      # via django-tiny-erp
 django-private-storage==2.2.2  # via small-small-hr
 django-tables2==2.3.1     # via django-vega-admin
-django-vega-admin==0.0.16  # via django-tiny-erp
+django-vega-admin==0.0.19  # via django-tiny-erp
 django==3.0.7             # via django-braces, django-filter, django-model-reviews, django-mptt, django-phonenumber-field, django-prices, django-tables2, django-tiny-erp, django-vega-admin, djangorestframework, enmerkar, model-bakery, small-small-hr
 djangorestframework==3.11.0  # via small-small-hr
 enmerkar==0.7.1           # via django-prices
@@ -78,7 +78,7 @@ pytz==2020.1              # via babel, django
 pyyaml==5.3.1             # via django-vega-admin, pre-commit
 regex==2020.6.8           # via black
 six==1.15.0               # via astroid, django-braces, packaging, pip-tools, tox, traitlets, virtualenv
-small_small_hr==0.2.0     # via django-tiny-erp
+small_small_hr==0.2.1     # via django-tiny-erp
 snowballstemmer==2.0.0    # via pydocstyle
 sorl-thumbnail==12.6.3    # via small-small-hr
 sqlparse==0.3.1           # via django
