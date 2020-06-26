@@ -14,6 +14,7 @@ if sys.argv[-1] == "publish":
     if os.system("pip freeze | grep twine"):
         print("twine not installed.\nUse `pip install twine`.\nExiting.")
         sys.exit()
+    os.system("rm -rf build/ *.egg-info/")
     os.system("python setup.py sdist bdist_wheel")
     os.system("twine upload dist/* --skip-existing")
     print("You probably want to also tag the version now:")
@@ -38,7 +39,7 @@ setup(
     author="Kelvin Jayanoris",
     author_email="kelvin@jayanoris.com",
     url="https://github.com/moshthepitt/tiny-erp",
-    packages=find_packages(exclude=["docs", "tests"]),
+    packages=find_packages(exclude=["docs", "*.egg-info", "build", "tests.*", "tests"]),
     install_requires=[
         "Django>=2.1.10",
         f"django-vega-admin=={VEGA_ADMIN_VERSION}",
@@ -51,9 +52,10 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Framework :: Django",
-        "Framework :: Django :: 2.1",
         "Framework :: Django :: 2.2",
+        "Framework :: Django :: 3.0",
     ],
     include_package_data=True,
 )
