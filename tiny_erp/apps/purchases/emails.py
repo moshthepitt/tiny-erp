@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-from small_small_hr.emails import send_email
+from model_reviews.emails import send_email
 
 from tiny_erp.apps.purchases.models import Requisition
 
