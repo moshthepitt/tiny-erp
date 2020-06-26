@@ -1,4 +1,4 @@
-"""module to test tiny-erp forms"""
+"""module to test tiny-erp forms."""
 from datetime import date
 from unittest.mock import MagicMock, patch
 
@@ -7,8 +7,10 @@ from django.forms.models import inlineformset_factory
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 
+from small_small_hr.models import StaffProfile
+
 from crispy_forms.utils import render_crispy_form
-from model_mommy import mommy
+from model_bakery import baker
 from prices import Money
 
 from tiny_erp.apps.locations.models import Business, Department, Location
@@ -30,13 +32,24 @@ from .html import (
 )
 
 
+def make_staffprofile(attrs: dict):
+    """
+    Make StaffProfile object.
+
+    This is necessary because:
+        - model_bakery isn't working well for StaffProfile
+        - we need to set lft and rght
+    """
+    staff = StaffProfile(**attrs, lft=None, rght=None,)
+    staff.save()
+    return staff
+
+
 @override_settings(
     TINY_ERP_REQUISITION_ITEMS_TXT="Requisition Items", TINY_ERP_SUBMIT_TXT="Submit"
 )
 class TestForms(TestCase):
-    """
-    Test class for forms
-    """
+    """Test class for forms."""
 
     maxDiff = None
 
@@ -48,24 +61,22 @@ class TestForms(TestCase):
         Business.objects.all().delete()
         Department.objects.all().delete()
         Location.objects.all().delete()
+        self.user = baker.make("auth.User", first_name="Bob", last_name="Ndoe")
 
     @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
     @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
     @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
     def test_requisition_form(self, filed_mock, updated_mock, approved_mock):
-        """
-        Test RequisitionForm
-        """
+        """Test RequisitionForm."""
         request = self.factory.get("/")
         request.session = {}
         request.user = AnonymousUser()
 
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        mommy.make("small_small_hr.StaffProfile", _quantity=2)
-        business = mommy.make("locations.Business", name="X Inc")
-        location = mommy.make("locations.Location", name="Voi")
-        department = mommy.make("locations.Department", name="Science")
+        staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        baker.make("small_small_hr.StaffProfile", _quantity=2)
+        business = baker.make("locations.Business", name="X Inc")
+        location = baker.make("locations.Location", name="Voi")
+        department = baker.make("locations.Department", name="Science")
 
         data = {
             "title": "Cheers Baba",
@@ -99,19 +110,16 @@ class TestForms(TestCase):
     @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
     @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
     def test_requisition_product_form(self, filed_mock, updated_mock, approved_mock):
-        """
-        Test RequisitionProductForm
-        """
+        """Test RequisitionProductForm."""
         request = self.factory.get("/")
         request.session = {}
         request.user = AnonymousUser()
 
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        mommy.make("small_small_hr.StaffProfile", _quantity=2)
-        business = mommy.make("locations.Business", name="X Inc")
-        location = mommy.make("locations.Location", name="Voi")
-        department = mommy.make("locations.Department", name="Science")
+        staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        baker.make("small_small_hr.StaffProfile", _quantity=2)
+        business = baker.make("locations.Business", name="X Inc")
+        location = baker.make("locations.Location", name="Voi")
+        department = baker.make("locations.Department", name="Science")
 
         data = {
             "title": "Cheers Baba",
@@ -145,20 +153,17 @@ class TestForms(TestCase):
     @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
     @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
     def test_updated_requisition_form(self, filed_mock, updated_mock, approved_mock):
-        """
-        Test UpdateRequisitionForm
-        """
+        """Test UpdateRequisitionForm."""
         request = self.factory.get("/")
         request.session = {}
         request.user = AnonymousUser()
 
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        mommy.make("small_small_hr.StaffProfile", _quantity=2)
-        business = mommy.make("locations.Business", name="X Inc")
-        location = mommy.make("locations.Location", name="Voi")
-        department = mommy.make("locations.Department", name="Science")
-        requisition = mommy.make(
+        staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        baker.make("small_small_hr.StaffProfile", _quantity=2)
+        business = baker.make("locations.Business", name="X Inc")
+        location = baker.make("locations.Location", name="Voi")
+        department = baker.make("locations.Department", name="Science")
+        requisition = baker.make(
             "purchases.Requisition",
             title="Cheers Baba",
             staff=staffprofile,
@@ -240,20 +245,17 @@ class TestForms(TestCase):
     def test_updated_requisition_product_form(  # pylint: disable=bad-continuation
         self, filed_mock, updated_mock, approved_mock
     ):
-        """
-        Test UpdatedRequisitionProductForm
-        """
+        """Test UpdatedRequisitionProductForm."""
         request = self.factory.get("/")
         request.session = {}
         request.user = AnonymousUser()
 
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        mommy.make("small_small_hr.StaffProfile", _quantity=2)
-        business = mommy.make("locations.Business", name="X Inc")
-        location = mommy.make("locations.Location", name="Voi")
-        department = mommy.make("locations.Department", name="Science")
-        requisition = mommy.make(
+        staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        baker.make("small_small_hr.StaffProfile", _quantity=2)
+        business = baker.make("locations.Business", name="X Inc")
+        location = baker.make("locations.Location", name="Voi")
+        department = baker.make("locations.Department", name="Science")
+        requisition = baker.make(
             "purchases.Requisition",
             title="Cheers Baba",
             staff=staffprofile,
@@ -331,15 +333,13 @@ class TestForms(TestCase):
 
     @override_settings(ROOT_URLCONF="tests.crud")
     def test_full_requisition_form(self):
-        """
-        Test the full implementation of the requisition form
-        """
+        """Test the full implementation of the requisition form."""
         Requisition.objects.all().delete()
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        business = mommy.make("locations.Business", name="X Inc")
-        location = mommy.make("locations.Location", name="Voi")
-        department = mommy.make("locations.Department", name="Science")
+
+        staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        business = baker.make("locations.Business", name="X Inc")
+        location = baker.make("locations.Location", name="Voi")
+        department = baker.make("locations.Department", name="Science")
         data = {
             "title": "Kitchen Supplies",
             "staff": staffprofile.id,
@@ -421,19 +421,17 @@ class TestForms(TestCase):
 
     @override_settings(ROOT_URLCONF="tests.crud")
     def test_full_requisition_product_form(self):
-        """
-        Test the full implementation of the requisition product form
-        """
+        """Test the full implementation of the requisition product form."""
         Requisition.objects.all().delete()
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        business = mommy.make("locations.Business", name="X Inc")
-        location = mommy.make("locations.Location", name="Voi")
-        department = mommy.make("locations.Department", name="Science")
-        product1 = mommy.make(
+
+        staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        business = baker.make("locations.Business", name="X Inc")
+        location = baker.make("locations.Location", name="Voi")
+        department = baker.make("locations.Department", name="Science")
+        product1 = baker.make(
             "products.product", name="Juice", sku="778", internal_amount=250
         )
-        product2 = mommy.make(
+        product2 = baker.make(
             "products.product", name="Water", sku="779", internal_amount=50
         )
         data = {
@@ -509,24 +507,21 @@ class TestForms(TestCase):
 
     @patch("tiny_erp.apps.purchases.forms.timezone")
     def test_crispy_requisition_form(self, mocked):
-        """
-        Test crispy forms output
-        """
+        """Test crispy forms output."""
         now_mock = MagicMock()
         now_mock.date = date(2019, 6, 15)
         mocked.now.return_value = now_mock
 
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user, id=99)
-        user2 = mommy.make("auth.User", first_name="Mosh", last_name="Pitt")
-        mommy.make("small_small_hr.StaffProfile", user=user2, id=999)
+        staffprofile = make_staffprofile(dict(user=self.user, id=99))
+        user2 = baker.make("auth.User", first_name="Mosh", last_name="Pitt")
+        make_staffprofile(dict(user=user2, id=999))
 
         self.assertHTMLEqual(CREATE_FORM, render_crispy_form(RequisitionForm))
 
-        business = mommy.make("locations.Business", name="Abc Ltd", id=99)
-        location = mommy.make("locations.Location", name="Voi", id=99)
-        department = mommy.make("locations.Department", name="Science", id=99)
-        requisition = mommy.make(
+        business = baker.make("locations.Business", name="Abc Ltd", id=99)
+        location = baker.make("locations.Location", name="Voi", id=99)
+        department = baker.make("locations.Department", name="Science", id=99)
+        requisition = baker.make(
             "purchases.Requisition",
             title="Kitchen Supplies",
             staff=staffprofile,
@@ -537,7 +532,7 @@ class TestForms(TestCase):
             date_required="2019-06-24",
             id=99,
         )
-        mommy.make(
+        baker.make(
             "purchases.RequisitionLineItem",
             _quantity=1,
             item="Pen",
@@ -553,45 +548,42 @@ class TestForms(TestCase):
 
     @patch("tiny_erp.apps.purchases.forms.timezone")
     def test_crispy_requisition_product_form(self, mocked):
-        """
-        Test crispy forms output
-        """
+        """Test crispy forms output."""
         now_mock = MagicMock()
         now_mock.date = date(2019, 6, 15)
         mocked.now.return_value = now_mock
 
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user, id=99)
-        user2 = mommy.make("auth.User", first_name="Mosh", last_name="Pitt")
-        mommy.make("small_small_hr.StaffProfile", user=user2, id=999)
+        staffprofile = make_staffprofile(dict(user=self.user, id=99))
+        user2 = baker.make("auth.User", first_name="Mosh", last_name="Pitt")
+        make_staffprofile(dict(user=user2, id=999))
 
-        product1 = mommy.make(
+        product1 = baker.make(
             "products.product",
             name="Lego",
             internal_amount=99,
             id=776,
             sku="776",
-            unit=mommy.make("products.MeasurementUnit", name="Box", symbol="box"),
-            supplier=mommy.make("products.Supplier", name="GAP"),
+            unit=baker.make("products.MeasurementUnit", name="Box", symbol="box"),
+            supplier=baker.make("products.Supplier", name="GAP"),
         )
-        mommy.make(
+        baker.make(
             "products.product",
             name="Duvet",
             internal_amount=5000,
             id=777,
             sku="777",
-            unit=mommy.make("products.MeasurementUnit", name="Metre", symbol="m"),
-            supplier=mommy.make("products.Supplier", name="GAP"),
+            unit=baker.make("products.MeasurementUnit", name="Metre", symbol="m"),
+            supplier=baker.make("products.Supplier", name="GAP"),
         )
 
         self.assertHTMLEqual(
             CREATE_REQUISITION_PRODUCT_FORM, render_crispy_form(RequisitionProductForm)
         )
 
-        business = mommy.make("locations.Business", name="Abc Ltd", id=99)
-        location = mommy.make("locations.Location", name="Voi", id=99)
-        department = mommy.make("locations.Department", name="Science", id=99)
-        requisition = mommy.make(
+        business = baker.make("locations.Business", name="Abc Ltd", id=99)
+        location = baker.make("locations.Location", name="Voi", id=99)
+        department = baker.make("locations.Department", name="Science", id=99)
+        requisition = baker.make(
             "purchases.Requisition",
             title="Kitchen Supplies",
             staff=staffprofile,
@@ -602,7 +594,7 @@ class TestForms(TestCase):
             date_required="2019-06-24",
             id=99,
         )
-        mommy.make(
+        baker.make(
             "purchases.RequisitionLineItem",
             _quantity=1,
             product=product1,
@@ -619,16 +611,13 @@ class TestForms(TestCase):
         )
 
     def test_requisition_lineitem_form(self):
-        """
-        Test RequisitionLineItemForm
-        """
+        """Test RequisitionLineItemForm."""
         request = self.factory.get("/")
         request.session = {}
         request.user = AnonymousUser()
 
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        requisition = mommy.make("purchases.Requisition", staff=staffprofile)
+        staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        requisition = baker.make("purchases.Requisition", staff=staffprofile)
 
         data = {
             "requisition": requisition.id,
@@ -651,12 +640,11 @@ class TestForms(TestCase):
         request.session = {}
         request.user = AnonymousUser()
 
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        requisition = mommy.make("purchases.Requisition", staff=staffprofile)
-        unit = mommy.make("products.MeasurementUnit", name="Metre", symbol="m")
-        supplier = mommy.make("products.Supplier", name="GAP")
-        product = mommy.make(
+        staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        requisition = baker.make("purchases.Requisition", staff=staffprofile)
+        unit = baker.make("products.MeasurementUnit", name="Metre", symbol="m")
+        supplier = baker.make("products.Supplier", name="GAP")
+        product = baker.make(
             "products.Product",
             name="Pipes",
             internal_amount=123,
@@ -691,18 +679,17 @@ class TestForms(TestCase):
         )
 
         class CreateForm(RequisitionForm):
-            """Some custom create form"""
+            """Some custom create form."""
 
             formset_class = CustomFormSet
 
         class UpdateForm(UpdateRequisitionForm):
-            """Some custom update form"""
+            """Some custom update form."""
 
             formset_class = CustomFormSet
 
-        user = mommy.make("auth.User", first_name="Bob", last_name="Ndoe")
-        staffprofile = mommy.make("small_small_hr.StaffProfile", user=user)
-        requisition = mommy.make("purchases.Requisition", staff=staffprofile)
+        staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
+        requisition = baker.make("purchases.Requisition", staff=staffprofile)
 
         self.assertEqual(CustomFormSet, CreateForm().formset_class)
         self.assertEqual(CustomFormSet, UpdateForm(instance=requisition).formset_class)
