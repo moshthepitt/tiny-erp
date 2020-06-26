@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "crispy_forms",
     "rest_framework",
+    "model_reviews",
     "small_small_hr",
     "django_tables2",
     "django_filters",
