@@ -1,3 +1,6 @@
 include LICENSE
 include README.md
-recursive-include tiny_erp *.html *.txt *.xml *.po *.mo *.js *.css
+recursive-include tiny_erp/static *
+recursive-include tiny_erp/templates *
+
+recursive-exclude tests *
