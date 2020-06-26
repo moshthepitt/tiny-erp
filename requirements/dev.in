@@ -20,4 +20,5 @@ ipdb
 model_mommy
 black
 mypy
+ipdb
 urllib3>=1.24.2
