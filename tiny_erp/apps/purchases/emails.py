@@ -59,7 +59,7 @@ def requisition_updated_email(  # pylint: disable=bad-continuation
         subj = getattr(
             settings,
             "TINY_ERP_REQUISITION_UPDATED_EMAIL_SUBJ",
-            _(f"Purchase Requisition Updated"),
+            _("Purchase Requisition Updated"),
         )
         subj = subj + f" - #{requisition_obj.id}"
 
