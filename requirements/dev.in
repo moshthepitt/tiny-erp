@@ -17,7 +17,8 @@ isort
 pre-commit
 psycopg2-binary
 ipdb
-model_mommy
+model_bakery
 black
 mypy
+ipdb
 urllib3>=1.24.2

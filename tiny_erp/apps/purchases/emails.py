@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
-from small_small_hr.emails import send_email
+from model_reviews.emails import send_email
 
 from tiny_erp.apps.purchases.models import Requisition
 
@@ -59,7 +59,7 @@ def requisition_updated_email(  # pylint: disable=bad-continuation
         subj = getattr(
             settings,
             "TINY_ERP_REQUISITION_UPDATED_EMAIL_SUBJ",
-            _(f"Purchase Requisition Updated"),
+            _("Purchase Requisition Updated"),
         )
         subj = subj + f" - #{requisition_obj.id}"
 
