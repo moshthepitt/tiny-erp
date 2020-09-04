@@ -48,7 +48,6 @@ class Requisition(TimeStampedModel):
         blank=True,
         db_index=True,
     )
-    comments = models.TextField(_("Comments"), blank=True, default="")
     date_placed = models.DateField(_("Date Placed"))
     date_required = models.DateField(_("Date Required"))
     total = models.DecimalField(

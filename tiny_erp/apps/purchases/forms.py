@@ -295,7 +295,6 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
             "date_placed",
             "date_required",
             "review_reason",
-            "comments",
             "review_status",
         ]
 
@@ -330,7 +329,6 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                     ),
                 ),
                 Field("review_reason"),
-                Field("comments"),
                 HTML("<br>"),
                 ButtonHolder(
                     Submit(
