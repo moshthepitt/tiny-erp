@@ -1,4 +1,4 @@
-"""Models module for locations app"""
+"""Models module for locations app."""
 from django.db import models
 from django.db.models.functions import Coalesce
 from django.utils.translation import ugettext as _
@@ -62,7 +62,7 @@ class Requisition(TimeStampedModel):
         verbose_name_plural = _("Requisitions")
 
     def get_total(self):
-        """Get the total amount"""
+        """Get the total amount."""
         agg = RequisitionLineItem.objects.filter(requisition=self).aggregate(
             total=Coalesce(
                 models.Sum(models.F("internal_price") * models.F("quantity")),
@@ -72,7 +72,7 @@ class Requisition(TimeStampedModel):
         return agg["total"]
 
     def set_total(self):
-        """Save's the total to the DB"""
+        """Save the total to the DB."""
         self.total = self.get_total()
         self.save()
 
