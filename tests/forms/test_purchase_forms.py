@@ -86,7 +86,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "Science, bitch",
+            "review_reason": "Science, bitch",
         }
 
         form = RequisitionForm(data=data)
@@ -99,7 +99,7 @@ class TestForms(TestCase):
         self.assertEqual(department, requisition.department)
         self.assertEqual(date(2019, 1, 1), requisition.date_placed)
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
-        self.assertEqual("Science, bitch", requisition.reason)
+        self.assertEqual("Science, bitch", requisition.review_reason)
 
         self.assertEqual(1, filed_mock.call_count)
         self.assertEqual(0, updated_mock.call_count)
@@ -129,7 +129,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "Science, bitch",
+            "review_reason": "Science, bitch",
         }
 
         form = RequisitionProductForm(data=data)
@@ -142,7 +142,7 @@ class TestForms(TestCase):
         self.assertEqual(department, requisition.department)
         self.assertEqual(date(2019, 1, 1), requisition.date_placed)
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
-        self.assertEqual("Science, bitch", requisition.reason)
+        self.assertEqual("Science, bitch", requisition.review_reason)
 
         self.assertEqual(1, filed_mock.call_count)
         self.assertEqual(0, updated_mock.call_count)
@@ -183,13 +183,13 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "changed this",
+            "review_reason": "changed this",
         }
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Subaru Supplies", requisition.title)
-        self.assertEqual("changed this", requisition.reason)
+        self.assertEqual("changed this", requisition.review_reason)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(1, updated_mock.call_count)
         self.assertEqual(0, approved_mock.call_count)
@@ -204,13 +204,13 @@ class TestForms(TestCase):
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
             "review_status": Requisition.REJECTED,
-            "reason": "Not good",
+            "review_reason": "Not good",
         }
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Shhh... Housekeeping!", requisition.title)
-        self.assertEqual("Not good", requisition.reason)
+        self.assertEqual("Not good", requisition.review_reason)
         self.assertEqual(Requisition.REJECTED, requisition.review_status)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(2, updated_mock.call_count)
@@ -226,13 +226,13 @@ class TestForms(TestCase):
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
             "review_status": Requisition.APPROVED,
-            "reason": "Great",
+            "review_reason": "Great",
         }
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Cheers Baba", requisition.title)
-        self.assertEqual("Great", requisition.reason)
+        self.assertEqual("Great", requisition.review_reason)
         self.assertEqual(Requisition.APPROVED, requisition.review_status)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(2, updated_mock.call_count)
@@ -275,13 +275,13 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "changed this",
+            "review_reason": "changed this",
         }
         form = UpdatedRequisitionProductForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Subaru Supplies", requisition.title)
-        self.assertEqual("changed this", requisition.reason)
+        self.assertEqual("changed this", requisition.review_reason)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(1, updated_mock.call_count)
         self.assertEqual(0, approved_mock.call_count)
@@ -296,13 +296,13 @@ class TestForms(TestCase):
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
             "review_status": Requisition.REJECTED,
-            "reason": "Not good",
+            "review_reason": "Not good",
         }
         form = UpdatedRequisitionProductForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Shhh... Housekeeping!", requisition.title)
-        self.assertEqual("Not good", requisition.reason)
+        self.assertEqual("Not good", requisition.review_reason)
         self.assertEqual(Requisition.REJECTED, requisition.review_status)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(2, updated_mock.call_count)
@@ -318,13 +318,13 @@ class TestForms(TestCase):
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
             "review_status": Requisition.APPROVED,
-            "reason": "Great",
+            "review_reason": "Great",
         }
         form = UpdatedRequisitionProductForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Cheers Baba", requisition.title)
-        self.assertEqual("Great", requisition.reason)
+        self.assertEqual("Great", requisition.review_reason)
         self.assertEqual(Requisition.APPROVED, requisition.review_status)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(2, updated_mock.call_count)
@@ -348,7 +348,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "I love oov",
+            "review_reason": "I love oov",
             "total": 0,
             "requisitionlineitem_set-TOTAL_FORMS": 2,
             "requisitionlineitem_set-INITIAL_FORMS": 0,
@@ -372,7 +372,7 @@ class TestForms(TestCase):
         )
         self.assertEqual(41, requisition.total)
         self.assertEqual(Requisition.PENDING, requisition.review_status)
-        self.assertEqual("I love oov", requisition.reason)
+        self.assertEqual("I love oov", requisition.review_reason)
         self.assertEqual("Kitchen Supplies", requisition.title)
         self.assertEqual("", requisition.comments)
 
@@ -387,7 +387,7 @@ class TestForms(TestCase):
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
             "total": 0,
-            "reason": "Nice",
+            "review_reason": "Nice",
             "comments": "Shall order on the 25th.",
             "review_status": Requisition.APPROVED,
             "requisitionlineitem_set-TOTAL_FORMS": 3,
@@ -416,7 +416,7 @@ class TestForms(TestCase):
         self.assertEqual(157, requisition.total)
         self.assertEqual(Requisition.APPROVED, requisition.review_status)
         self.assertEqual("Bar Supplies", requisition.title)
-        self.assertEqual("Nice", requisition.reason)
+        self.assertEqual("Nice", requisition.review_reason)
         self.assertEqual("Shall order on the 25th.", requisition.comments)
 
     @override_settings(ROOT_URLCONF="tests.crud")
@@ -442,7 +442,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/11/2019",
             "date_required": "02/12/2019",
-            "reason": "I love oov",
+            "review_reason": "I love oov",
             "total": 0,
             "requisitionlineitem_set-TOTAL_FORMS": 1,
             "requisitionlineitem_set-INITIAL_FORMS": 0,
@@ -463,7 +463,7 @@ class TestForms(TestCase):
         )
         self.assertEqual(750, requisition.total)
         self.assertEqual(Requisition.PENDING, requisition.review_status)
-        self.assertEqual("I love oov", requisition.reason)
+        self.assertEqual("I love oov", requisition.review_reason)
         self.assertEqual("Kitchen Supplies", requisition.title)
         self.assertEqual("", requisition.comments)
 
@@ -478,7 +478,7 @@ class TestForms(TestCase):
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
             "total": 0,
-            "reason": "Nice",
+            "review_reason": "Nice",
             "comments": "Shall order on the 26th.",
             "review_status": Requisition.APPROVED,
             "requisitionlineitem_set-TOTAL_FORMS": 2,
@@ -502,7 +502,7 @@ class TestForms(TestCase):
         self.assertEqual(850, requisition.total)
         self.assertEqual(Requisition.APPROVED, requisition.review_status)
         self.assertEqual("Bar Supplies", requisition.title)
-        self.assertEqual("Nice", requisition.reason)
+        self.assertEqual("Nice", requisition.review_reason)
         self.assertEqual("Shall order on the 26th.", requisition.comments)
 
     @patch("tiny_erp.apps.purchases.forms.timezone")

@@ -39,7 +39,7 @@ class Requisition(TimeStampedModel):
     department = models.ForeignKey(
         Department, verbose_name=_("Department"), on_delete=models.PROTECT
     )
-    reason = models.TextField(_("Reason"), blank=False, default="")
+    review_reason = models.TextField(_("Reason"), blank=False, default="")
     review_status = models.CharField(
         _("Status"),
         max_length=1,

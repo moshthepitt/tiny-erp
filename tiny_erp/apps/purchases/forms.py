@@ -218,7 +218,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
             "department",
             "date_placed",
             "date_required",
-            "reason",
+            "review_reason",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -260,7 +260,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
                         formset_in_context=self.formset_class(instance=self.instance)
                     ),
                 ),
-                Field("reason"),
+                Field("review_reason"),
                 HTML("<br>"),
                 ButtonHolder(
                     Submit(
@@ -294,7 +294,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
             "department",
             "date_placed",
             "date_required",
-            "reason",
+            "review_reason",
             "comments",
             "review_status",
         ]
@@ -329,7 +329,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                         formset_in_context=self.formset_class(instance=self.instance)
                     ),
                 ),
-                Field("reason"),
+                Field("review_reason"),
                 Field("comments"),
                 HTML("<br>"),
                 ButtonHolder(

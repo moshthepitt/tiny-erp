@@ -49,7 +49,7 @@ class TestEmails(TestCase):
             department=self.department,
             date_placed="2019-01-01",
             date_required="2019-02-02",
-            reason="Science, bitch",
+            review_reason="Science, bitch",
         )
 
         with patch("tiny_erp.apps.purchases.emails.send_email") as mock:
@@ -95,7 +95,7 @@ class TestEmails(TestCase):
             department=self.department,
             date_placed="2019-03-03",
             date_required="2019-03-10",
-            reason="Science, bitch",
+            review_reason="Science, bitch",
         )
 
         with patch("tiny_erp.apps.purchases.emails.send_email") as mock:
@@ -141,7 +141,7 @@ class TestEmails(TestCase):
             department=self.department,
             date_placed="2019-04-03",
             date_required="2019-04-10",
-            reason="Science, bitch",
+            review_reason="Science, bitch",
         )
 
         with patch("tiny_erp.apps.purchases.emails.send_email") as mock:
