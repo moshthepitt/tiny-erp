@@ -49,6 +49,7 @@ class Requisition(TimeStampedModel, AbstractReview):
     class Meta:
         """Meta definition for Requisition."""
 
+        abstract = False
         verbose_name = _("Requisition")
         verbose_name_plural = _("Requisitions")
 
