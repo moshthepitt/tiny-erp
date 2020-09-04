@@ -40,7 +40,7 @@ class Requisition(TimeStampedModel):
         Department, verbose_name=_("Department"), on_delete=models.PROTECT
     )
     reason = models.TextField(_("Reason"), blank=False, default="")
-    status = models.CharField(
+    review_status = models.CharField(
         _("Status"),
         max_length=1,
         choices=STATUS_CHOICES,

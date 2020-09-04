@@ -171,7 +171,7 @@ class RequisitionFormMixin:
             # new requisition
             requisition_filed_email(requisition_obj=requisition)
         else:
-            if requisition.status == Requisition.APPROVED:
+            if requisition.review_status == Requisition.APPROVED:
                 requisition_approved_email(requisition_obj=requisition)
             else:
                 requisition_updated_email(requisition_obj=requisition)
@@ -296,7 +296,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
             "date_required",
             "reason",
             "comments",
-            "status",
+            "review_status",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -322,7 +322,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Field("department"),
                 Field("date_placed"),
                 Field("date_required"),
-                Field("status"),
+                Field("review_status"),
                 Fieldset(
                     _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
                     Formset(

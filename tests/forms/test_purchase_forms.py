@@ -203,7 +203,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "status": Requisition.REJECTED,
+            "review_status": Requisition.REJECTED,
             "reason": "Not good",
         }
         form = UpdateRequisitionForm(instance=requisition, data=data)
@@ -211,7 +211,7 @@ class TestForms(TestCase):
 
         self.assertEqual("Shhh... Housekeeping!", requisition.title)
         self.assertEqual("Not good", requisition.reason)
-        self.assertEqual(Requisition.REJECTED, requisition.status)
+        self.assertEqual(Requisition.REJECTED, requisition.review_status)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(2, updated_mock.call_count)
         self.assertEqual(0, approved_mock.call_count)
@@ -225,7 +225,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "status": Requisition.APPROVED,
+            "review_status": Requisition.APPROVED,
             "reason": "Great",
         }
         form = UpdateRequisitionForm(instance=requisition, data=data)
@@ -233,7 +233,7 @@ class TestForms(TestCase):
 
         self.assertEqual("Cheers Baba", requisition.title)
         self.assertEqual("Great", requisition.reason)
-        self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual(Requisition.APPROVED, requisition.review_status)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(2, updated_mock.call_count)
         self.assertEqual(1, approved_mock.call_count)
@@ -295,7 +295,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "status": Requisition.REJECTED,
+            "review_status": Requisition.REJECTED,
             "reason": "Not good",
         }
         form = UpdatedRequisitionProductForm(instance=requisition, data=data)
@@ -303,7 +303,7 @@ class TestForms(TestCase):
 
         self.assertEqual("Shhh... Housekeeping!", requisition.title)
         self.assertEqual("Not good", requisition.reason)
-        self.assertEqual(Requisition.REJECTED, requisition.status)
+        self.assertEqual(Requisition.REJECTED, requisition.review_status)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(2, updated_mock.call_count)
         self.assertEqual(0, approved_mock.call_count)
@@ -317,7 +317,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "status": Requisition.APPROVED,
+            "review_status": Requisition.APPROVED,
             "reason": "Great",
         }
         form = UpdatedRequisitionProductForm(instance=requisition, data=data)
@@ -325,7 +325,7 @@ class TestForms(TestCase):
 
         self.assertEqual("Cheers Baba", requisition.title)
         self.assertEqual("Great", requisition.reason)
-        self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual(Requisition.APPROVED, requisition.review_status)
         self.assertEqual(0, filed_mock.call_count)
         self.assertEqual(2, updated_mock.call_count)
         self.assertEqual(1, approved_mock.call_count)
@@ -362,7 +362,7 @@ class TestForms(TestCase):
         }
         url = reverse("purchases.requisition-create")
         res = self.client.post(url, data)
-        self.assertEqual(302, res.status_code)
+        self.assertEqual(302, res.review_status_code)
         self.assertRedirects(res, reverse("purchases.requisition-list"))
         self.assertEqual(1, Requisition.objects.all().count())
         requisition = Requisition.objects.first()
@@ -371,7 +371,7 @@ class TestForms(TestCase):
             2, RequisitionLineItem.objects.filter(requisition=requisition).count()
         )
         self.assertEqual(41, requisition.total)
-        self.assertEqual(Requisition.PENDING, requisition.status)
+        self.assertEqual(Requisition.PENDING, requisition.review_status)
         self.assertEqual("I love oov", requisition.reason)
         self.assertEqual("Kitchen Supplies", requisition.title)
         self.assertEqual("", requisition.comments)
@@ -389,7 +389,7 @@ class TestForms(TestCase):
             "total": 0,
             "reason": "Nice",
             "comments": "Shall order on the 25th.",
-            "status": Requisition.APPROVED,
+            "review_status": Requisition.APPROVED,
             "requisitionlineitem_set-TOTAL_FORMS": 3,
             "requisitionlineitem_set-INITIAL_FORMS": 2,
             "requisitionlineitem_set-MIN_NUM_FORMS": 0,
@@ -414,7 +414,7 @@ class TestForms(TestCase):
         res = self.client.post(url, data)
         requisition.refresh_from_db()
         self.assertEqual(157, requisition.total)
-        self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual(Requisition.APPROVED, requisition.review_status)
         self.assertEqual("Bar Supplies", requisition.title)
         self.assertEqual("Nice", requisition.reason)
         self.assertEqual("Shall order on the 25th.", requisition.comments)
@@ -453,7 +453,7 @@ class TestForms(TestCase):
         }
         url = reverse("req-products-create")
         res = self.client.post(url, data)
-        self.assertEqual(302, res.status_code)
+        self.assertEqual(302, res.review_status_code)
         self.assertRedirects(res, reverse("req-products-list"))
         self.assertEqual(1, Requisition.objects.all().count())
         requisition = Requisition.objects.first()
@@ -462,7 +462,7 @@ class TestForms(TestCase):
             1, RequisitionLineItem.objects.filter(requisition=requisition).count()
         )
         self.assertEqual(750, requisition.total)
-        self.assertEqual(Requisition.PENDING, requisition.status)
+        self.assertEqual(Requisition.PENDING, requisition.review_status)
         self.assertEqual("I love oov", requisition.reason)
         self.assertEqual("Kitchen Supplies", requisition.title)
         self.assertEqual("", requisition.comments)
@@ -480,7 +480,7 @@ class TestForms(TestCase):
             "total": 0,
             "reason": "Nice",
             "comments": "Shall order on the 26th.",
-            "status": Requisition.APPROVED,
+            "review_status": Requisition.APPROVED,
             "requisitionlineitem_set-TOTAL_FORMS": 2,
             "requisitionlineitem_set-INITIAL_FORMS": 1,
             "requisitionlineitem_set-MIN_NUM_FORMS": 0,
@@ -500,7 +500,7 @@ class TestForms(TestCase):
         res = self.client.post(url, data)
         requisition.refresh_from_db()
         self.assertEqual(850, requisition.total)
-        self.assertEqual(Requisition.APPROVED, requisition.status)
+        self.assertEqual(Requisition.APPROVED, requisition.review_status)
         self.assertEqual("Bar Supplies", requisition.title)
         self.assertEqual("Nice", requisition.reason)
         self.assertEqual("Shall order on the 26th.", requisition.comments)
