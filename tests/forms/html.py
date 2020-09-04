@@ -219,11 +219,11 @@ CREATE_FORM = """
                 </tr>
             </table>
         </fieldset>
-        <div id="div_id_reason" class="form-group">
-            <label for="id_reason" class="control-label  requiredField">
+        <div id="div_id_review_reason" class="form-group">
+            <label for="id_review_reason" class="control-label  requiredField">
                 Reason<span class="asteriskField">*</span> </label>
             <div class="controls ">
-                <textarea name="reason" cols="40" rows="10" class="textarea form-control" required id="id_reason">
+                <textarea name="review_reason" cols="40" rows="10" class="textarea form-control" required id="id_review_reason">
                 </textarea>
             </div>
         </div>
@@ -292,12 +292,12 @@ EDIT_FORM = """
             <div class="controls ">
                 <input type="text" name="date_required" value="2019-06-24" class="dateinput form-control" required id="id_date_required"> </div>
         </div>
-        <div id="div_id_status" class="form-group">
-            <label for="id_status" class="control-label ">
+        <div id="div_id_review_status" class="form-group">
+            <label for="id_review_status" class="control-label ">
                 Status
             </label>
             <div class="controls ">
-                <select name="status" class="select form-control" id="id_status">
+                <select name="review_status" class="select form-control" id="id_review_status">
                     <option value="">---------</option>
                     <option value="1">Approved</option>
                     <option value="3" selected>Pending</option>
@@ -511,11 +511,11 @@ EDIT_FORM = """
                 </tr>
             </table>
         </fieldset>
-        <div id="div_id_reason" class="form-group">
-            <label for="id_reason" class="control-label  requiredField">
+        <div id="div_id_review_reason" class="form-group">
+            <label for="id_review_reason" class="control-label  requiredField">
                 Reason<span class="asteriskField">*</span> </label>
             <div class="controls ">
-                <textarea name="reason" cols="40" rows="10" class="textarea form-control" required id="id_reason">
+                <textarea name="review_reason" cols="40" rows="10" class="textarea form-control" required id="id_review_reason">
                 </textarea>
             </div>
         </div>
@@ -766,11 +766,11 @@ CREATE_REQUISITION_PRODUCT_FORM = """
                 </tr>
             </table>
         </fieldset>
-        <div id="div_id_reason" class="form-group">
-            <label for="id_reason" class="control-label  requiredField">
+        <div id="div_id_review_reason" class="form-group">
+            <label for="id_review_reason" class="control-label  requiredField">
                 Reason<span class="asteriskField">*</span> </label>
             <div class="controls ">
-                <textarea name="reason" cols="40" rows="10" class="textarea form-control" required id="id_reason">
+                <textarea name="review_reason" cols="40" rows="10" class="textarea form-control" required id="id_review_reason">
                 </textarea>
             </div>
         </div>
@@ -839,12 +839,12 @@ EDIT_REQUISITION_PRODUCT_FORM = """
             <div class="controls ">
                 <input type="text" name="date_required" value="2019-06-24" class="dateinput form-control" required id="id_date_required"> </div>
         </div>
-        <div id="div_id_status" class="form-group">
-            <label for="id_status" class="control-label ">
+        <div id="div_id_review_status" class="form-group">
+            <label for="id_review_status" class="control-label ">
                 Status
             </label>
             <div class="controls ">
-                <select name="status" class="select form-control" id="id_status">
+                <select name="review_status" class="select form-control" id="id_review_status">
                     <option value="">---------</option>
                     <option value="1">Approved</option>
                     <option value="3" selected>Pending</option>
@@ -1070,11 +1070,11 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                 </tr>
             </table>
         </fieldset>
-        <div id="div_id_reason" class="form-group">
-            <label for="id_reason" class="control-label  requiredField">
+        <div id="div_id_review_reason" class="form-group">
+            <label for="id_review_reason" class="control-label  requiredField">
                 Reason<span class="asteriskField">*</span> </label>
             <div class="controls ">
-                <textarea name="reason" cols="40" rows="10" class="textarea form-control" required id="id_reason">
+                <textarea name="review_reason" cols="40" rows="10" class="textarea form-control" required id="id_review_reason">
                 </textarea>
             </div>
         </div>
