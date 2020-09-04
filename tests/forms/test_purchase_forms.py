@@ -54,9 +54,7 @@ class TestForms(TestCase):
     maxDiff = None
 
     def setUp(self):
-        """
-        Setup test class
-        """
+        """Set up test class."""
         self.factory = RequestFactory()
         Business.objects.all().delete()
         Department.objects.all().delete()

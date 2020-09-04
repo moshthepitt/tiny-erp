@@ -56,7 +56,7 @@ class TestProductForms(TestCase):
     maxDiff = None
 
     def setUp(self):
-        """Setup test class."""
+        """Set up test class."""
         self.supplier = baker.make("products.Supplier", name="X Inc")
         self.supplier2 = baker.make("products.Supplier", name="Y Inc")
         self.unit = baker.make("products.MeasurementUnit", name="g")
@@ -134,8 +134,7 @@ class TestProductForms(TestCase):
         self.assertEqual(["+254722000000"], supplier.phones)
 
     def test_supplier_form_validation(self):
-        """Test SupplierForm vaidation."""
-
+        """Test SupplierForm validation."""
         # test name validation
         data = {
             "name": "",
@@ -203,7 +202,6 @@ class TestProductForms(TestCase):
 
     def test_product_form(self):
         """Test ProductForm."""
-
         # test form when creating
         data = {
             "name": "Pen",
@@ -255,7 +253,6 @@ class TestProductForms(TestCase):
 
     def test_product_form_validation(self):
         """Test ProductForm validation."""
-
         # test price
         data = {
             "name": "Pen",
