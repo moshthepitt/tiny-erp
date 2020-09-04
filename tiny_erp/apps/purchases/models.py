@@ -5,16 +5,24 @@ from django.utils.translation import ugettext as _
 
 from vega_admin.mixins import TimeStampedModel
 
-from model_reviews.models import AbstractReview
-
 from tiny_erp.abstract_models import TimeStampedAbstractLineItem
 from tiny_erp.apps.locations.models import Business, Department, Location
 from tiny_erp.apps.products.models import Product
 
 
 # pylint: disable=no-member
-class Requisition(TimeStampedModel, AbstractReview):
+class Requisition(TimeStampedModel):
     """Model definition for Requisition."""
+
+    APPROVED = "1"
+    REJECTED = "2"
+    PENDING = "3"
+
+    STATUS_CHOICES = (
+        (APPROVED, _("Approved")),
+        (PENDING, _("Pending")),
+        (REJECTED, _("Rejected")),
+    )
 
     staff = models.ForeignKey(
         "small_small_hr.StaffProfile",
@@ -31,7 +39,16 @@ class Requisition(TimeStampedModel, AbstractReview):
     department = models.ForeignKey(
         Department, verbose_name=_("Department"), on_delete=models.PROTECT
     )
-    review_reason = models.TextField(_("Reason"), blank=False, default="")
+    reason = models.TextField(_("Reason"), blank=False, default="")
+    status = models.CharField(
+        _("Status"),
+        max_length=1,
+        choices=STATUS_CHOICES,
+        default=PENDING,
+        blank=True,
+        db_index=True,
+    )
+    comments = models.TextField(_("Comments"), blank=True, default="")
     date_placed = models.DateField(_("Date Placed"))
     date_required = models.DateField(_("Date Required"))
     total = models.DecimalField(
