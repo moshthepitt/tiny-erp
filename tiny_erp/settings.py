@@ -1,6 +1,4 @@
-"""
-Configurable options
-"""
+"""Configurable options."""
 from django.conf import settings
 
 TINY_ERP_DEFAULT_CURRENCY = "KES"
