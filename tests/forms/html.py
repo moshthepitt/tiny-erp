@@ -519,15 +519,6 @@ EDIT_FORM = """
                 </textarea>
             </div>
         </div>
-        <div id="div_id_comments" class="form-group">
-            <label for="id_comments" class="control-label ">
-                Comments
-            </label>
-            <div class="controls ">
-                <textarea name="comments" cols="40" rows="10" class="textarea form-control" id="id_comments">
-                </textarea>
-            </div>
-        </div>
         <br>
         <div class="buttonHolder">
             <input type="submit" name="submitBtn" value="Submit" class="btn btn-primary btn-primary" id="submit-id-submitbtn" />
@@ -1075,15 +1066,6 @@ EDIT_REQUISITION_PRODUCT_FORM = """
                 Reason<span class="asteriskField">*</span> </label>
             <div class="controls ">
                 <textarea name="review_reason" cols="40" rows="10" class="textarea form-control" required id="id_review_reason">
-                </textarea>
-            </div>
-        </div>
-        <div id="div_id_comments" class="form-group">
-            <label for="id_comments" class="control-label ">
-                Comments
-            </label>
-            <div class="controls ">
-                <textarea name="comments" cols="40" rows="10" class="textarea form-control" id="id_comments">
                 </textarea>
             </div>
         </div>
