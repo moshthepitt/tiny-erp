@@ -1,4 +1,4 @@
-"""Forms module for tiny erp"""
+"""Forms module for tiny erp."""
 from django import forms
 from django.conf import settings
 from django.db import transaction
@@ -29,6 +29,7 @@ class CustomModelChoiceIterator(
     """Custom ModelChoiceIterator."""
 
     def choice(self, obj):
+        """Return choice."""
         return (self.field.prepare_value(obj), self.field.label_from_instance(obj), obj)
 
 
@@ -39,6 +40,8 @@ class CustomModelChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         """
+        Convert objects into strings and generate the labels for choices.
+
         Convert objects into strings and generate the labels for the choices
         presented by this object. Subclasses can override this method to
         customize the display of the choices.
@@ -129,9 +132,7 @@ class RequisitionLineItemProductForm(forms.ModelForm):
         fields = ["requisition", "product", "internal_price", "quantity"]
 
     def save(self, commit=False):  # pylint: disable=unused-argument
-        """
-        Custom save method
-        """
+        """Save the form."""
         obj = super().save(commit)
         if obj.product:
             obj.item = obj.product.name
@@ -160,13 +161,12 @@ RequisitionItemProductFormSet = inlineformset_factory(  # pylint: disable=invali
 
 
 class RequisitionFormMixin:
-    """Requisition Form mixin
-    """
+    """Requisition Form mixin."""
 
     formset_class = RequisitionItemFormSet
 
     def send_email(self, requisition):
-        """Send email"""
+        """Send email."""
         if not self.get_initial_for_field(self.fields["staff"], "staff"):
             # new requisition
             requisition_filed_email(requisition_obj=requisition)
@@ -177,7 +177,7 @@ class RequisitionFormMixin:
                 requisition_updated_email(requisition_obj=requisition)
 
     def clean(self):
-        """ModelForm clean method"""
+        """Clean the form."""
         cleaned_data = super().clean()
         self.formset = None
         if self.request:
@@ -189,9 +189,7 @@ class RequisitionFormMixin:
         return cleaned_data
 
     def save(self, commit=True):  # pylint: disable=unused-argument
-        """
-        Custom save method
-        """
+        """Save the form."""
         with transaction.atomic():
             requisition = super().save()
             if self.formset:
@@ -222,6 +220,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
+        """Initialize."""
         self.request = kwargs.pop("request", None)
         self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
         super().__init__(*args, **kwargs)
@@ -299,6 +298,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
+        """Initialize."""
         self.request = kwargs.pop("request", None)
         self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
         super().__init__(*args, **kwargs)

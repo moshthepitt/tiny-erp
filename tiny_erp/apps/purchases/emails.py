@@ -1,4 +1,4 @@
-""" tiny-erp purchases app email module"""
+"""tiny-erp purchases app email module."""
 from django.conf import settings
 from django.utils.translation import ugettext as _
 
@@ -12,9 +12,7 @@ def requisition_filed_email(  # pylint: disable=bad-continuation
     template: str = "generic",
     template_path: str = "tiny_erp/email",
 ):
-    """
-    Sends an email to admins when a purchase requisition is filed
-    """
+    """Send an email to admins when a purchase requisition is filed."""
     msg = getattr(
         settings,
         "TINY_ERP_REQUISITION_FILED_EMAIL_TXT",
@@ -46,9 +44,7 @@ def requisition_updated_email(  # pylint: disable=bad-continuation
     template: str = "generic",
     template_path: str = "tiny_erp/email",
 ):
-    """
-    Sends an email to admins when a purchase requisition is updated
-    """
+    """Send an email to admins when a purchase requisition is updated."""
     staff = requisition_obj.staff
     if staff.user.email:
         msg = getattr(
@@ -79,9 +75,7 @@ def requisition_approved_email(  # pylint: disable=bad-continuation
     template: str = "generic",
     template_path: str = "tiny_erp/email",
 ):
-    """
-    Sends an email to admins when a purchase requisition is approved
-    """
+    """Send an email to admins when a purchase requisition is approved."""
     msg = getattr(
         settings,
         "TINY_ERP_REQUISITION_APPROVED_EMAIL_TXT",
