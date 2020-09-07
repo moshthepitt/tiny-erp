@@ -1,4 +1,6 @@
 """Models module for locations app."""
+from typing import Optional
+
 from django.db import models
 from django.db.models.functions import Coalesce
 from django.utils.translation import ugettext as _
@@ -10,6 +12,7 @@ from model_reviews.models import AbstractReview
 from tiny_erp.abstract_models import TimeStampedAbstractLineItem
 from tiny_erp.apps.locations.models import Business, Department, Location
 from tiny_erp.apps.products.models import Product
+from tiny_erp.constants import EMAIL_TEMPLATE_PATH
 
 
 # pylint: disable=no-member
@@ -45,6 +48,17 @@ class Requisition(TimeStampedModel, AbstractReview):
     total = models.DecimalField(
         _("Total"), max_digits=64, decimal_places=2, blank=True, default=0
     )
+
+    # MODEL REVIEW OPTIONS
+    email_template_path = EMAIL_TEMPLATE_PATH
+    # path to function that will be used to send email to reviewers
+    request_for_review_function: Optional[
+        str
+    ] = "tiny_erp.apps.purchases.emails.send_requisition_filed_email"
+    # path to function that will be used to send email to user after review
+    review_complete_notify_function: Optional[
+        str
+    ] = "tiny_erp.apps.purchases.emails.requisition_approved_email"
 
     class Meta:
         """Meta definition for Requisition."""
