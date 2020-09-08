@@ -58,7 +58,7 @@ class Requisition(TimeStampedModel, AbstractReview):
     # path to function that will be used to send email to user after review
     review_complete_notify_function: Optional[
         str
-    ] = "tiny_erp.apps.purchases.emails.requisition_approved_email"
+    ] = "tiny_erp.apps.purchases.emails.send_requisition_approved_email"
 
     class Meta:
         """Meta definition for Requisition."""
