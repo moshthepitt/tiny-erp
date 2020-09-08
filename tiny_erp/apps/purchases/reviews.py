@@ -5,6 +5,8 @@ from django.db import models
 
 from model_reviews.models import Reviewer
 
+from tiny_erp.apps.purchases.emails import send_requisition_filed_email
+
 
 def set_reviewer_by_email(email: str, review_obj: models.Model, level: int = 0):
     """Set reviewer using email address."""
@@ -30,10 +32,13 @@ def set_requisition_reviewer(review_obj: models.Model):
                 set_reviewer_by_email(reviewer_email, review_obj, idx)
 
 
-# def set_next_reviewer(review_obj: models.Model):
-#     """Set the next reviewer."""
-#     reviewer_emails = settings.TINY_ERP_REQUISITION_REVIEWERS
-#     use_tiers = settings.TINY_ERP_REQUISITION_REVIEWS_TIERS
-#     if reviewer_emails and use_tiers:
-#         # first lets get all the reviewers who have already reviewed
-#         Reviewer.objects.filter(review=review_obj, )
+def set_next_reviewer(review_obj: models.Model):
+    """Set the next reviewer."""
+
+    next_reviewer = (
+        Reviewer.objects.filter(review=review_obj, reviewed=False)
+        .order_by("level")
+        .first()
+    )
+    if next_reviewer:
+        send_requisition_filed_email(reviewer=next_reviewer)
