@@ -7,8 +7,6 @@ from django.test import override_settings
 from model_bakery import baker
 from model_reviews.models import ModelReview, Reviewer
 
-from tiny_erp.apps.purchases.reviews import set_requisition_reviewer
-
 from .base import TestBase
 
 
@@ -26,6 +24,17 @@ class TestReviews(TestBase):
     @patch("tiny_erp.apps.purchases.reviews.send_requisition_filed_email")
     def test_set_requisition_reviewer(self, mock):
         """Test set_requisition_reviewer."""
+        reviewer1 = baker.make(
+            "auth.User", username="1@example.com", email="1@example.com"
+        )
+        reviewer2 = baker.make(
+            "auth.User", username="2@example.com", email="2@example.com"
+        )
+        reviewer3 = baker.make(
+            "auth.User", username="3@example.com", email="3@example.com"
+        )
+
+        # creating this object calls set_requisition_reviewer via a signal
         obj = baker.make(
             "purchases.Requisition",
             staff=self.staffprofile,
@@ -37,33 +46,16 @@ class TestReviews(TestBase):
             review_reason="Science, bitch",
         )
 
-        user = baker.make("auth.User", username="mosh")
-        reviewer1 = baker.make(
-            "auth.User", username="1@example.com", email="1@example.com"
-        )
-        reviewer2 = baker.make(
-            "auth.User", username="2@example.com", email="2@example.com"
-        )
-        reviewer3 = baker.make(
-            "auth.User", username="3@example.com", email="3@example.com"
-        )
         obj_type = ContentType.objects.get_for_model(obj)
 
-        # create without sending signals
-        ModelReview.objects.bulk_create(
-            [ModelReview(user=user, content_type=obj_type, object_id=obj.id)]
-        )
-        review = ModelReview.objects.get(
-            user=user, content_type=obj_type, object_id=obj.id
-        )
+        review = ModelReview.objects.get(content_type=obj_type, object_id=obj.id)
 
-        set_requisition_reviewer(review)
-
+        # test that set_requisition_reviewer resulted in 3 reviewers
         for idx, item in enumerate([reviewer1, reviewer2, reviewer3]):
             self.assertTrue(
                 Reviewer.objects.filter(user=item, review=review, level=idx,).exists()
             )
-
+        # test that set_requisition_reviewer resulted in only first reviewer getting email
         mock.assert_called_once_with(
             reviewer=Reviewer.objects.get(user=reviewer1, review=review, level=0,)
         )
