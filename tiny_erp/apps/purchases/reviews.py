@@ -2,8 +2,11 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Min
 
 from model_reviews.models import Reviewer
+
+from tiny_erp.apps.purchases.emails import send_requisition_filed_email
 
 
 def set_reviewer_by_email(email: str, review_obj: models.Model, level: int = 0):
@@ -34,3 +37,21 @@ def set_requisition_reviewer(review_obj: models.Model):
             set_reviewer_by_email(
                 email=reviewer_email, review_obj=review_obj, level=level
             )
+
+
+def initial_request_for_review_function(reviewer: Reviewer):
+    """
+    Send the initial request(s) for review.
+
+    This function is called when a Reviewer object is created (not updated).
+    """
+    if settings.TINY_ERP_REQUISITION_REVIEWS_TIERS:
+        # check if this reviewer is the lowest level and then send the email
+        min_lvl = Reviewer.objects.filter(review=reviewer.review).aggregate(
+            min_lvl=Min("level")
+        )["min_lvl"]
+        if reviewer.level == min_lvl:
+            send_requisition_filed_email(reviewer=reviewer)
+    else:
+        # proceed as normal
+        send_requisition_filed_email(reviewer=reviewer)
