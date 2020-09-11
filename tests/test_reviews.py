@@ -58,15 +58,11 @@ class TestReviews(TestBase):
         )
 
         set_requisition_reviewer(review)
-        self.assertTrue(
-            Reviewer.objects.filter(user=reviewer1, review=review, level=0,).exists()
-        )
-        self.assertTrue(
-            Reviewer.objects.filter(user=reviewer2, review=review, level=1,).exists()
-        )
-        self.assertTrue(
-            Reviewer.objects.filter(user=reviewer3, review=review, level=2,).exists()
-        )
+
+        for idx, item in enumerate([reviewer1, reviewer2, reviewer3]):
+            self.assertTrue(
+                Reviewer.objects.filter(user=item, review=review, level=idx,).exists()
+            )
 
         mock.assert_called_once_with(
             reviewer=Reviewer.objects.get(user=reviewer1, review=review, level=0,)
