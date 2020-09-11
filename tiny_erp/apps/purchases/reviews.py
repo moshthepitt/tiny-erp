@@ -5,8 +5,6 @@ from django.db import models
 
 from model_reviews.models import Reviewer
 
-from tiny_erp.apps.purchases.emails import send_requisition_filed_email
-
 
 def set_reviewer_by_email(email: str, review_obj: models.Model, level: int = 0):
     """Set reviewer using email address."""
@@ -20,25 +18,19 @@ def set_reviewer_by_email(email: str, review_obj: models.Model, level: int = 0):
 
 
 def set_requisition_reviewer(review_obj: models.Model):
-    """Set reviewer for purchase requisitions."""
+    """
+    Set reviewer for purchase requisitions.
+
+    If TINY_ERP_REQUISITION_REVIEWS_TIERS is false then every level = 0
+    otherwise reviewer levels correspond to their indices on the reviewer_emails array
+    """
     reviewer_emails = settings.TINY_ERP_REQUISITION_REVIEWERS
     if reviewer_emails:
         use_tiers = settings.TINY_ERP_REQUISITION_REVIEWS_TIERS
-        if use_tiers:
-            # set the first person as the reviewer
-            set_reviewer_by_email(reviewer_emails[0], review_obj)
-        else:
-            for idx, reviewer_email in enumerate(reviewer_emails):
-                set_reviewer_by_email(reviewer_email, review_obj, idx)
-
-
-def set_next_reviewer(review_obj: models.Model):
-    """Set the next reviewer."""
-
-    next_reviewer = (
-        Reviewer.objects.filter(review=review_obj, reviewed=False)
-        .order_by("level")
-        .first()
-    )
-    if next_reviewer:
-        send_requisition_filed_email(reviewer=next_reviewer)
+        for idx, reviewer_email in enumerate(reviewer_emails):
+            level = 0
+            if use_tiers:
+                level = idx
+            set_reviewer_by_email(
+                email=reviewer_email, review_obj=review_obj, level=level
+            )
