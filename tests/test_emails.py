@@ -4,7 +4,7 @@ Module to test tiny_erp Emails
 from unittest.mock import patch
 
 from django.core import mail
-from django.test import TestCase, override_settings
+from django.test import override_settings
 
 from model_bakery import baker
 
@@ -14,28 +14,16 @@ from tiny_erp.apps.purchases.emails import (
     requisition_updated_email,
 )
 
+from .base import TestBase
+
 
 @override_settings(
     TINY_ERP_ADMIN_EMAILS=["erp@example.com"],
     TINY_ERP_ACCOUNTS_EMAILS=["accounts@example.com"],
     TINY_ERP_ADMIN_NAME="mosh",
 )
-class TestEmails(TestCase):
-    """
-    Test class for emails
-    """
-
-    def setUp(self):
-        """
-        Set up
-        """
-        self.user = baker.make(
-            "auth.User", first_name="Bob", last_name="Ndoe", email="bob@example.com"
-        )
-        self.staffprofile = baker.make("small_small_hr.StaffProfile", user=self.user)
-        self.business = baker.make("locations.Business", name="X Inc")
-        self.location = baker.make("locations.Location", name="Voi")
-        self.department = baker.make("locations.Department", name="Science")
+class TestEmails(TestBase):
+    """Test class for emails."""
 
     def test_requisition_filed_email(self):
         """
