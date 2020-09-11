@@ -55,8 +55,8 @@ def send_requisition_filed_email(reviewer: Reviewer):
             message=source.review_request_email_body,
             obj=reviewer.review,
             cc_list=None,
-            template=source.email_template,
-            template_path=REQUISITION_FILED_EMAIL_TEMPLATE,
+            template=REQUISITION_FILED_EMAIL_TEMPLATE,
+            template_path=source.email_template_path,
         )
 
 
@@ -134,6 +134,6 @@ def send_requisition_approved_email(review_obj: ModelReview):
                 message=source.review_complete_email_body,
                 obj=review_obj,
                 cc_list=None,
-                template=source.email_template,
-                template_path=REQUISITION_COMPLETED_EMAIL_TEMPLATE,
+                template=REQUISITION_COMPLETED_EMAIL_TEMPLATE,
+                template_path=source.email_template_path,
             )
