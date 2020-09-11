@@ -16,8 +16,12 @@ def set_reviewer_by_email(email: str, review_obj: models.Model, level: int = 0):
     except User.DoesNotExist:
         pass
     else:
-        reviewer = Reviewer(review=review_obj, user=user, level=level)
-        reviewer.save()  # ensure save method is called
+        # pylint: disable=bad-continuation
+        if not Reviewer.objects.filter(
+            review=review_obj, user=user, level=level
+        ).exists():
+            reviewer = Reviewer(review=review_obj, user=user, level=level)
+            reviewer.save()  # ensure save method is called
 
 
 def set_requisition_reviewer(review_obj: models.Model):
