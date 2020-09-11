@@ -59,3 +59,12 @@ def initial_request_for_review_function(reviewer: Reviewer):
     else:
         # proceed as normal
         send_requisition_filed_email(reviewer=reviewer)
+
+
+def notify_next_reviewers(review_obj: models.Model):
+    """Get next level reviewers and notify them."""
+    next_lvl = Reviewer.objects.filter(reviewed=False, review=review_obj).aggregate(
+        next_lvl=Min("level")
+    )["next_lvl"]
+    for reviewer in Reviewer.objects.filter(reviewed=False, level=next_lvl):
+        send_requisition_filed_email(reviewer=reviewer)
