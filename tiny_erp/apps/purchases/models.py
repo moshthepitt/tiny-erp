@@ -58,7 +58,7 @@ class Requisition(TimeStampedModel, AbstractReview):
     # path to function that will be used to send email to reviewers
     request_for_review_function: Optional[
         str
-    ] = "tiny_erp.apps.purchases.emails.send_requisition_filed_email"
+    ] = "tiny_erp.apps.purchases.reviews.initial_request_for_review_function"
     # path to function that will be used to send email to user after review
     review_complete_notify_function: Optional[
         str
