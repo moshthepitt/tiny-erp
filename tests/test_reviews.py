@@ -27,8 +27,9 @@ class TestReviews(TestBase):
             "3@example.com",
         ],
     )
+    @patch("tiny_erp.apps.purchases.emails.send_email")
     @patch("tiny_erp.apps.purchases.reviews.send_requisition_filed_email")
-    def test_tiered_reviewers(self, reviewer_email_mock):
+    def test_tiered_reviewers(self, reviewer_email_mock, approved_email_mock):
         """Test that tiered reviewers work as expected."""
         reviewer1 = baker.make(
             "auth.User", username="1@example.com", email="1@example.com"
@@ -114,6 +115,9 @@ class TestReviews(TestBase):
             reviewer=Reviewer.objects.get(user=reviewer3, review=review, level=2,)
         )
 
+        # up to this point no approved email has been sent
+        self.assertEqual(0, approved_email_mock.call_count)
+
         # let reviewer3 approve it
         request = self.factory.get("/")
         request.session = {}
@@ -131,6 +135,18 @@ class TestReviews(TestBase):
 
         # test that another request to review email was not sent
         self.assertEqual(3, reviewer_email_mock.call_count)
+
+        # finally, approved email has been sent
+        approved_email_mock.assert_called_once_with(
+            name="Bob Ndoe",
+            email="bob@example.com",
+            subject="Your request has been processed",
+            message="Your request has been processed, please log in to view the status.",  # noqa  # pylint: disable=line-too-long
+            obj=review,
+            cc_list=None,
+            template="requisition_completed",
+            template_path="tiny_erp/email",
+        )
 
         review.refresh_from_db()
         self.assertEqual(ModelReview.APPROVED, review.review_status)
