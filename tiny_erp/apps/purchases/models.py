@@ -12,7 +12,11 @@ from model_reviews.models import AbstractReview
 from tiny_erp.abstract_models import TimeStampedAbstractLineItem
 from tiny_erp.apps.locations.models import Business, Department, Location
 from tiny_erp.apps.products.models import Product
-from tiny_erp.constants import EMAIL_TEMPLATE_PATH
+from tiny_erp.constants import (
+    EMAIL_TEMPLATE_PATH,
+    REQUISITION_FILED_EMAIL_SUBJ,
+    REQUISITION_FILED_EMAIL_TXT,
+)
 
 
 # pylint: disable=no-member
@@ -50,7 +54,12 @@ class Requisition(TimeStampedModel, AbstractReview):
     )
 
     # MODEL REVIEW OPTIONS
+    review_request_email_subject = _(REQUISITION_FILED_EMAIL_SUBJ)
+    review_request_email_body = _(REQUISITION_FILED_EMAIL_TXT)
+    # review_complete_email_subject = _(REVIEW_COMPLETE_EMAIL_SUBJ)
+    # review_complete_email_body = _(REVIEW_COMPLETE_EMAIL_TXT)
     email_template_path = EMAIL_TEMPLATE_PATH
+
     # path to function that will be used to determine the user for a review object
     set_user_function: Optional[
         str
