@@ -3,6 +3,7 @@ from datetime import date
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.contenttypes.models import ContentType
 from django.forms.models import inlineformset_factory
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
@@ -11,6 +12,7 @@ from small_small_hr.models import StaffProfile
 
 from crispy_forms.utils import render_crispy_form
 from model_bakery import baker
+from model_reviews.models import ModelReview
 from prices import Money
 
 from tiny_erp.apps.locations.models import Business, Department, Location
@@ -46,7 +48,10 @@ def make_staffprofile(attrs: dict):
 
 
 @override_settings(
-    TINY_ERP_REQUISITION_ITEMS_TXT="Requisition Items", TINY_ERP_SUBMIT_TXT="Submit"
+    TINY_ERP_REQUISITION_ITEMS_TXT="Requisition Items",
+    TINY_ERP_SUBMIT_TXT="Submit",
+    TINY_ERP_REQUISITION_REVIEWS_TIERS=True,
+    TINY_ERP_REQUISITION_REVIEWERS=["webmaster@localhost"],
 )
 class TestForms(TestCase):
     """Test class for forms."""
@@ -60,11 +65,16 @@ class TestForms(TestCase):
         Department.objects.all().delete()
         Location.objects.all().delete()
         self.user = baker.make("auth.User", first_name="Bob", last_name="Ndoe")
+        self.reviewer1 = baker.make(
+            "auth.User",
+            username="webmaster",
+            email="webmaster@localhost",
+            first_name="Web",
+            last_name="Master",
+        )
 
-    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
-    def test_requisition_form(self, filed_mock, updated_mock, approved_mock):
+    @patch("tiny_erp.apps.purchases.emails.send_email")
+    def test_requisition_form(self, email_mock):
         """Test RequisitionForm."""
         request = self.factory.get("/")
         request.session = {}
@@ -99,15 +109,36 @@ class TestForms(TestCase):
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
         self.assertEqual("Science, bitch", requisition.review_reason)
 
-        self.assertEqual(1, filed_mock.call_count)
-        self.assertEqual(0, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        filed_mock.assert_called_with(requisition_obj=requisition)
+        # check that a ModelReview object is created
+        obj_type = ContentType.objects.get_for_model(requisition)
+        self.assertEqual(
+            1,
+            ModelReview.objects.filter(
+                content_type=obj_type, object_id=requisition.id
+            ).count(),
+        )
+        review = ModelReview.objects.get(
+            content_type=obj_type, object_id=requisition.id
+        )
+        self.assertTrue(Requisition.PENDING, review.review_status)
 
-    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
-    def test_requisition_product_form(self, filed_mock, updated_mock, approved_mock):
+        self.assertEqual(1, email_mock.call_count)
+
+        email_mock.assert_called_once_with(
+            name="Web Master",
+            email="webmaster@localhost",
+            subject="New Purchase Requisition",
+            message=(
+                "There has been a new purchase requisition.  Please log in to process it."
+            ),
+            obj=review,
+            cc_list=None,
+            template="requisition_filed",
+            template_path="tiny_erp/email",
+        )
+
+    @patch("tiny_erp.apps.purchases.emails.send_email")
+    def test_requisition_product_form(self, email_mock):
         """Test RequisitionProductForm."""
         request = self.factory.get("/")
         request.session = {}
@@ -142,15 +173,10 @@ class TestForms(TestCase):
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
         self.assertEqual("Science, bitch", requisition.review_reason)
 
-        self.assertEqual(1, filed_mock.call_count)
-        self.assertEqual(0, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        filed_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual(1, email_mock.call_count)
 
-    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
-    def test_updated_requisition_form(self, filed_mock, updated_mock, approved_mock):
+    @patch("tiny_erp.apps.purchases.emails.send_email")
+    def test_updated_requisition_form(self, email_mock):
         """Test UpdateRequisitionForm."""
         request = self.factory.get("/")
         request.session = {}
@@ -188,10 +214,7 @@ class TestForms(TestCase):
 
         self.assertEqual("Subaru Supplies", requisition.title)
         self.assertEqual("changed this", requisition.review_reason)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(1, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        updated_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual(1, email_mock.call_count)
 
         data = {
             "title": "Shhh... Housekeeping!",
@@ -208,10 +231,7 @@ class TestForms(TestCase):
 
         self.assertEqual("Shhh... Housekeeping!", requisition.title)
         self.assertEqual("Not good", requisition.review_reason)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(2, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        updated_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual(1, email_mock.call_count)
 
         data = {
             "title": "Cheers Baba",
@@ -228,15 +248,11 @@ class TestForms(TestCase):
 
         self.assertEqual("Cheers Baba", requisition.title)
         self.assertEqual("Great", requisition.review_reason)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(3, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
+        self.assertEqual(1, email_mock.call_count)
 
-    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
+    @patch("tiny_erp.apps.purchases.emails.send_email")
     def test_updated_requisition_product_form(  # pylint: disable=bad-continuation
-        self, filed_mock, updated_mock, approved_mock
+        self, email_mock
     ):
         """Test UpdatedRequisitionProductForm."""
         request = self.factory.get("/")
@@ -275,10 +291,7 @@ class TestForms(TestCase):
 
         self.assertEqual("Subaru Supplies", requisition.title)
         self.assertEqual("changed this", requisition.review_reason)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(1, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        updated_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual(1, email_mock.call_count)
 
         data = {
             "title": "Shhh... Housekeeping!",
@@ -295,10 +308,7 @@ class TestForms(TestCase):
 
         self.assertEqual("Shhh... Housekeeping!", requisition.title)
         self.assertEqual("Not good", requisition.review_reason)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(2, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        updated_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual(1, email_mock.call_count)
 
         data = {
             "title": "Cheers Baba",
@@ -315,9 +325,7 @@ class TestForms(TestCase):
 
         self.assertEqual("Cheers Baba", requisition.title)
         self.assertEqual("Great", requisition.review_reason)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(3, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
+        self.assertEqual(1, email_mock.call_count)
 
     @override_settings(ROOT_URLCONF="tests.crud")
     def test_full_requisition_form(self):
