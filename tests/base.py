@@ -1,7 +1,6 @@
 """Base test module."""
-from django.test import TestCase
-
 from model_bakery import baker
+from snapshottest.django import TestCase
 
 
 class TestBase(TestCase):

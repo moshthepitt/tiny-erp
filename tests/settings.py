@@ -93,6 +93,8 @@ ROOT_URLCONF = "tests.crud"
 
 STATIC_URL = "/static/"
 
+TEST_RUNNER = "snapshottest.django.TestRunner"
+
 # try and load local_settings if present
 try:
     # pylint: disable=wildcard-import
