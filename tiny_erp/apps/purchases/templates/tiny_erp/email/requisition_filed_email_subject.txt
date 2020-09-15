@@ -1,0 +1,1 @@
+Purchase Requisition - #{{ object.content_object.id }}: {{ object.content_object.title }}
