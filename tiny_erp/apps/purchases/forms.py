@@ -12,11 +12,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout, Submit
 
 from tiny_erp.apps.products.models import Product
-from tiny_erp.apps.purchases.emails import (
-    requisition_approved_email,
-    requisition_filed_email,
-    requisition_updated_email,
-)
 from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
 from tiny_erp.layout import Formset
 from tiny_erp.widgets import MiniTextarea
@@ -165,17 +160,6 @@ class RequisitionFormMixin:
 
     formset_class = RequisitionItemFormSet
 
-    def send_email(self, requisition):
-        """Send email."""
-        if not self.get_initial_for_field(self.fields["staff"], "staff"):
-            # new requisition
-            requisition_filed_email(requisition_obj=requisition)
-        else:
-            if requisition.review_status == Requisition.APPROVED:
-                requisition_approved_email(requisition_obj=requisition)
-            else:
-                requisition_updated_email(requisition_obj=requisition)
-
     def clean(self):
         """Clean the form."""
         cleaned_data = super().clean()
@@ -196,7 +180,6 @@ class RequisitionFormMixin:
                 self.formset.save()
 
         requisition.set_total()
-        self.send_email(requisition)
 
         return requisition
 
