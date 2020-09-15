@@ -63,6 +63,10 @@ class Requisition(TimeStampedModel, AbstractReview):
     review_complete_notify_function: Optional[
         str
     ] = "tiny_erp.apps.purchases.emails.send_requisition_approved_email"
+    # path to function that will be used to determine reviewers
+    get_next_reviewers_function: Optional[
+        str
+    ] = "tiny_erp.apps.purchases.reviews.notify_next_reviewers"
 
     class Meta:
         """Meta definition for Requisition."""
