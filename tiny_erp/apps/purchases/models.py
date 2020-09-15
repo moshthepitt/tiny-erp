@@ -51,6 +51,10 @@ class Requisition(TimeStampedModel, AbstractReview):
 
     # MODEL REVIEW OPTIONS
     email_template_path = EMAIL_TEMPLATE_PATH
+    # path to function that will be used to determine the user for a review object
+    set_user_function: Optional[
+        str
+    ] = "tiny_erp.apps.purchases.reviews.set_requisition_review_user"
     # path to function that will be used to determine reviewers
     set_reviewers_function: Optional[
         str
