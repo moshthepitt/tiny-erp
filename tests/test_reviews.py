@@ -28,7 +28,7 @@ class TestReviews(TestBase):
         ],
     )
     @patch("tiny_erp.apps.purchases.reviews.send_requisition_filed_email")
-    def test_tiered_reviewers(self, mock):
+    def test_tiered_reviewers(self, reviewer_email_mock):
         """Test that tiered reviewers work as expected."""
         reviewer1 = baker.make(
             "auth.User", username="1@example.com", email="1@example.com"
@@ -62,7 +62,7 @@ class TestReviews(TestBase):
                 Reviewer.objects.filter(user=item, review=review, level=idx,).exists()
             )
         # test that set_requisition_reviewer resulted in only first reviewer getting email
-        mock.assert_called_once_with(
+        reviewer_email_mock.assert_called_once_with(
             reviewer=Reviewer.objects.get(user=reviewer1, review=review, level=0,)
         )
 
@@ -85,8 +85,8 @@ class TestReviews(TestBase):
         self.assertEqual(ModelReview.PENDING, review.review_status)
 
         # test that reviewer2 got email to go and review
-        self.assertEqual(2, mock.call_count)
-        mock.assert_called_with(
+        self.assertEqual(2, reviewer_email_mock.call_count)
+        reviewer_email_mock.assert_called_with(
             reviewer=Reviewer.objects.get(user=reviewer2, review=review, level=1,)
         )
 
@@ -109,8 +109,8 @@ class TestReviews(TestBase):
         self.assertEqual(ModelReview.PENDING, review.review_status)
 
         # test that reviewer3 got email to go and review
-        self.assertEqual(3, mock.call_count)
-        mock.assert_called_with(
+        self.assertEqual(3, reviewer_email_mock.call_count)
+        reviewer_email_mock.assert_called_with(
             reviewer=Reviewer.objects.get(user=reviewer3, review=review, level=2,)
         )
 
@@ -130,7 +130,7 @@ class TestReviews(TestBase):
         form.save()
 
         # test that another request to review email was not sent
-        self.assertEqual(3, mock.call_count)
+        self.assertEqual(3, reviewer_email_mock.call_count)
 
         review.refresh_from_db()
         self.assertEqual(ModelReview.APPROVED, review.review_status)
