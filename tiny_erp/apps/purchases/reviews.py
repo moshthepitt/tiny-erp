@@ -68,3 +68,10 @@ def notify_next_reviewers(review_obj: models.Model):
     )["next_lvl"]
     for reviewer in Reviewer.objects.filter(reviewed=False, level=next_lvl):
         send_requisition_filed_email(reviewer=reviewer)
+
+
+def set_requisition_review_user(review_obj: models.Model):
+    """Set user for review model object."""
+    if not review_obj.user:
+        requisition = review_obj.content_object
+        review_obj.user = requisition.staff.user
