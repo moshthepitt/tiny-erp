@@ -1,0 +1,17 @@
+{% load i18n %}{% trans "Your purchase requisition has been" %} {{ object.content_object.get_review_status_display|lower }}.
+
+{% trans "Date Placed" %}: {{ object.content_object.date_placed }}
+{% trans "Date Required" %}: {{ object.content_object.date_required }}
+{% trans "Business" %}: {{ object.content_object.business }}
+{% trans "Department" %}: {{ object.content_object.department }}
+{% trans "Location" %}: {{ object.content_object.location }}
+{% trans "Status" %}: {{ object.content_object.get_review_status_display }}
+
+{% trans "You can log in to view it at:" %} http://{{SITE.domain}}/reviews/{{ object.pk }}
+
+{% trans "Thank you," %}
+
+
+{{SITE.name}}
+------
+http://{{SITE.domain}}
