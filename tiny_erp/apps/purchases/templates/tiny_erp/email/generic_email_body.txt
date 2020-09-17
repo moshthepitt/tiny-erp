@@ -1,9 +1,0 @@
-Hello,
-
-{{message}}
-
-Thank you,
-
-{{SITE.name}}
-------
-http://{{SITE.domain}}
