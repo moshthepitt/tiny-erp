@@ -11,7 +11,7 @@ from model_reviews.models import ModelReview, Reviewer
 from .base import TestBase
 
 
-class TestReviews(TestBase):
+class TestReviews(TestBase):  # pylint: disable=too-many-ancestors
     """Test reviews stuff."""
 
     def setUp(self):
@@ -140,8 +140,8 @@ class TestReviews(TestBase):
         approved_email_mock.assert_called_once_with(
             name="Bob Ndoe",
             email="bob@example.com",
-            subject="Your request has been processed",
-            message="Your request has been processed, please log in to view the status.",  # noqa  # pylint: disable=line-too-long
+            subject="Purchase Requisition Processed",
+            message="The purchase requisition has been processed.  Please log in to view it.",  # noqa  # pylint: disable=line-too-long
             obj=review,
             cc_list=None,
             template="requisition_completed",
