@@ -10,7 +10,7 @@ from model_reviews.forms import PerformReview
 from model_reviews.models import ModelReview, Reviewer
 
 from tiny_erp.apps.purchases.emails import (
-    send_requisition_approved_email,
+    send_requisition_completed_email,
     send_requisition_filed_email,
 )
 
@@ -85,8 +85,8 @@ class TestEmails(TestBase):
         self.assertMatchSnapshot(mail.outbox[0].body)
         self.assertMatchSnapshot(mail.outbox[0].alternatives[0][0])
 
-    def test_requisition_approved_email(self):
-        """Test requisition_approved_email."""
+    def test_requisition_completed_email(self):
+        """Test requisition_completed_email."""
         requisition = baker.make(  # this sends an email
             "purchases.Requisition",
             title="Newer supplies",
@@ -116,7 +116,7 @@ class TestEmails(TestBase):
         self.assertEqual(ModelReview.APPROVED, review.review_status)
 
         with patch("tiny_erp.apps.purchases.emails.send_email") as mock:
-            send_requisition_approved_email(review)
+            send_requisition_completed_email(review)
             mock.assert_called_with(
                 name="Bob Ndoe",
                 email="bob@example.com",

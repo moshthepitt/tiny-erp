@@ -24,7 +24,7 @@ def send_requisition_filed_email(reviewer: Reviewer):
         )
 
 
-def send_requisition_approved_email(review_obj: ModelReview):
+def send_requisition_completed_email(review_obj: ModelReview):
     """Send notice that purchase requisition is approved."""
     if not review_obj.needs_review() and review_obj.user:
         if review_obj.user.email:
