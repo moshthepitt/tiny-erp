@@ -6,6 +6,7 @@ from django.core import mail
 from django.test import override_settings
 
 from model_bakery import baker
+from model_reviews.forms import PerformReview
 from model_reviews.models import ModelReview, Reviewer
 
 from tiny_erp.apps.purchases.emails import (
@@ -40,9 +41,7 @@ class TestEmails(TestBase):
         )
 
     def test_requisition_filed_email(self):
-        """
-        Test requisition_filed_email
-        """
+        """Test requisition_filed_email."""
         requisition = baker.make(
             "purchases.Requisition",
             title="New supplies",
@@ -87,11 +86,10 @@ class TestEmails(TestBase):
         self.assertMatchSnapshot(mail.outbox[0].alternatives[0][0])
 
     def test_requisition_approved_email(self):
-        """
-        Test requisition_approved_email
-        """
-        requisition = baker.make(
+        """Test requisition_approved_email."""
+        requisition = baker.make(  # this sends an email
             "purchases.Requisition",
+            title="Newer supplies",
             staff=self.staffprofile,
             location=self.location,
             business=self.business,
@@ -105,33 +103,36 @@ class TestEmails(TestBase):
             content_type=obj_type, object_id=requisition.id
         )
 
+        # approve it
+        data = {
+            "review": review.pk,
+            "reviewer": Reviewer.objects.get(user=self.reviewer1, review=review).pk,
+            "review_status": ModelReview.APPROVED,
+        }
+        form = PerformReview(data=data)
+        self.assertTrue(form.is_valid())
+        form.save()  # this sends an email
+        review.refresh_from_db()
+        self.assertEqual(ModelReview.APPROVED, review.review_status)
+
         with patch("tiny_erp.apps.purchases.emails.send_email") as mock:
             send_requisition_approved_email(review)
             mock.assert_called_with(
-                name="mosh",
-                email="accounts@example.com",
-                subject=f"Purchase Requisition Approved - #{requisition.id}",
-                message="The purchase requisition has been approved.  Please log in to view it.",  # noqa  pylint: disable=line-too-long
-                obj=requisition,
-                template="generic",
+                name="Bob Ndoe",
+                email="bob@example.com",
+                subject="Purchase Requisition Processed",
+                message="The purchase requisition has been processed.  Please log in to view it.",  # noqa  pylint: disable=line-too-long
+                obj=review,
+                template="requisition_completed",
                 template_path="tiny_erp/email",
+                cc_list=None,
             )
 
-        send_requisition_approved_email(review)
-        self.assertEqual(1, len(mail.outbox))
+        self.assertEqual(2, len(mail.outbox))
         self.assertEqual(
-            f"Purchase Requisition Approved - #{requisition.id}", mail.outbox[0].subject
+            f'Your purchase requisition #{requisition.id}: "{requisition.title}" has been approved',  # noqa  pylint: disable=line-too-long
+            mail.outbox[1].subject,
         )
-        self.assertEqual(["mosh <accounts@example.com>"], mail.outbox[0].to)
-        self.assertEqual(
-            "Hello,\n\nThe purchase requisition has been approved.  Please "
-            "log in to view it.\n\nThank you,\n\n"
-            "example.com\n------\nhttp://example.com\n",
-            mail.outbox[0].body,
-        )
-        self.assertEqual(
-            "Hello,<br/><br/><p>The purchase requisition has been approved."
-            "  Please log in to view it.</p><br/><br/>"
-            "Thank you,<br/>example.com<br/>------<br/>http://example.com",
-            mail.outbox[0].alternatives[0][0],
-        )
+        self.assertEqual(["Bob Ndoe <bob@example.com>"], mail.outbox[1].to)
+        self.assertMatchSnapshot(mail.outbox[1].body)
+        self.assertMatchSnapshot(mail.outbox[1].alternatives[0][0])
