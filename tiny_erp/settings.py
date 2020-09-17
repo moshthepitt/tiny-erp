@@ -5,13 +5,6 @@ from django.conf import settings
 
 TINY_ERP_DEFAULT_CURRENCY = "KES"
 TINY_ERP_AVAILABLE_CURRENCIES = [("KES", "Kenya Shilling")]
-
-# strings
-TINY_ERP_REQUISITION_ITEMS_TXT = "Requisition Items"
-TINY_ERP_SUBMIT_TXT = "Submit"
-TINY_ERP_REQUISITION_FORMSET_ERROR_TXT = (
-    "There is an error in the requisition line items."
-)
 # emails
 TINY_ERP_ADMIN_NAME = "ERP"
 # list of email addresses to review purchase requisitions

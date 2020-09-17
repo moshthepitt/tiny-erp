@@ -48,8 +48,6 @@ def make_staffprofile(attrs: dict):
 
 
 @override_settings(
-    TINY_ERP_REQUISITION_ITEMS_TXT="Requisition Items",
-    TINY_ERP_SUBMIT_TXT="Submit",
     TINY_ERP_REQUISITION_REVIEWS_TIERS=True,
     TINY_ERP_REQUISITION_REVIEWERS=["webmaster@localhost"],
 )

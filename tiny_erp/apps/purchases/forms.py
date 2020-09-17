@@ -1,6 +1,5 @@
 """Forms module for tiny erp."""
 from django import forms
-from django.conf import settings
 from django.db import transaction
 from django.forms.models import ModelChoiceIterator, inlineformset_factory
 from django.utils import timezone
@@ -13,6 +12,11 @@ from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout
 
 from tiny_erp.apps.products.models import Product
 from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
+from tiny_erp.constants import (
+    REQUISITION_FORMSET_ERROR_TXT,
+    REQUISITION_ITEMS_TXT,
+    SUBMIT_TXT,
+)
 from tiny_erp.layout import Formset
 from tiny_erp.widgets import MiniTextarea
 
@@ -167,9 +171,7 @@ class RequisitionFormMixin:
         if self.request:
             self.formset = self.formset_class(self.request.POST, instance=self.instance)
             if not self.formset.is_valid():
-                raise forms.ValidationError(
-                    settings.TINY_ERP_REQUISITION_FORMSET_ERROR_TXT
-                )
+                raise forms.ValidationError(REQUISITION_FORMSET_ERROR_TXT)
         return cleaned_data
 
     def save(self, commit=True):  # pylint: disable=unused-argument
@@ -237,7 +239,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Field("date_placed"),
                 Field("date_required"),
                 Fieldset(
-                    _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
+                    _(REQUISITION_ITEMS_TXT),
                     Formset(
                         formset_in_context=self.formset_class(instance=self.instance)
                     ),
@@ -245,11 +247,7 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Field("review_reason"),
                 HTML("<br>"),
                 ButtonHolder(
-                    Submit(
-                        "submitBtn",
-                        _(settings.TINY_ERP_SUBMIT_TXT),
-                        css_class="btn-primary",
-                    )
+                    Submit("submitBtn", _(SUBMIT_TXT), css_class="btn-primary",)
                 ),
             )
         )
@@ -306,7 +304,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Field("date_required"),
                 Field("review_status"),
                 Fieldset(
-                    _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
+                    _(REQUISITION_ITEMS_TXT),
                     Formset(
                         formset_in_context=self.formset_class(instance=self.instance)
                     ),
@@ -314,11 +312,7 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Field("review_reason"),
                 HTML("<br>"),
                 ButtonHolder(
-                    Submit(
-                        "submitBtn",
-                        _(settings.TINY_ERP_SUBMIT_TXT),
-                        css_class="btn-primary",
-                    )
+                    Submit("submitBtn", _(SUBMIT_TXT), css_class="btn-primary",)
                 ),
             )
         )

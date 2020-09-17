@@ -10,3 +10,6 @@ REQUISITION_COMPLETED_EMAIL_SUBJ = "Purchase Requisition Processed"
 REQUISITION_COMPLETED_EMAIL_TXT = (
     "The purchase requisition has been processed.  Please log in to view it."
 )
+REQUISITION_ITEMS_TXT = "Requisition Items"
+SUBMIT_TXT = "Submit"
+REQUISITION_FORMSET_ERROR_TXT = "There is an error in the requisition line items."
