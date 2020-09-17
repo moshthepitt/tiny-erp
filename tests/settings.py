@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django_prices",
     "vega_admin",
     # custom
+    "tiny_erp",
     "tiny_erp.apps.locations",
     "tiny_erp.apps.products",
     "tiny_erp.apps.purchases",
