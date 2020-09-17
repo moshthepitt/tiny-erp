@@ -1,4 +1,4 @@
-{% load i18n %}{{ object.content_object.staff.get_name }} sent this purchase requisition:<br /><br />
+{% load i18n %}{{ object.content_object.staff.get_name }} {% trans "sent this purchase requisition" %}:<br /><br />
 {% trans "Date Placed" %}: {{ object.content_object.date_placed }}<br />
 {% trans "Date Required" %}: {{ object.content_object.date_required }}<br />
 {% trans "Business" %}: {{ object.content_object.business }}<br />
