@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.forms.models import inlineformset_factory
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
 from small_small_hr.models import StaffProfile
@@ -14,6 +14,7 @@ from crispy_forms.utils import render_crispy_form
 from model_bakery import baker
 from model_reviews.models import ModelReview
 from prices import Money
+from snapshottest.django import TestCase
 
 from tiny_erp.apps.locations.models import Business, Department, Location
 from tiny_erp.apps.purchases.forms import (
@@ -25,13 +26,6 @@ from tiny_erp.apps.purchases.forms import (
     UpdateRequisitionForm,
 )
 from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
-
-from .html import (
-    CREATE_FORM,
-    CREATE_REQUISITION_PRODUCT_FORM,
-    EDIT_FORM,
-    EDIT_REQUISITION_PRODUCT_FORM,
-)
 
 
 def make_staffprofile(attrs: dict):
@@ -500,7 +494,7 @@ class TestForms(TestCase):
         user2 = baker.make("auth.User", first_name="Mosh", last_name="Pitt")
         make_staffprofile(dict(user=user2, id=999))
 
-        self.assertHTMLEqual(CREATE_FORM, render_crispy_form(RequisitionForm))
+        self.assertMatchSnapshot(render_crispy_form(RequisitionForm))
 
         business = baker.make("locations.Business", name="Abc Ltd", id=99)
         location = baker.make("locations.Location", name="Voi", id=99)
@@ -526,8 +520,8 @@ class TestForms(TestCase):
             id=557,
         )
 
-        self.assertHTMLEqual(
-            EDIT_FORM, render_crispy_form(UpdateRequisitionForm(instance=requisition))
+        self.assertMatchSnapshot(
+            render_crispy_form(UpdateRequisitionForm(instance=requisition))
         )
 
     @patch("tiny_erp.apps.purchases.forms.timezone")
@@ -560,9 +554,7 @@ class TestForms(TestCase):
             supplier=baker.make("products.Supplier", name="GAP"),
         )
 
-        self.assertHTMLEqual(
-            CREATE_REQUISITION_PRODUCT_FORM, render_crispy_form(RequisitionProductForm)
-        )
+        self.assertMatchSnapshot(render_crispy_form(RequisitionProductForm))
 
         business = baker.make("locations.Business", name="Abc Ltd", id=99)
         location = baker.make("locations.Location", name="Voi", id=99)
@@ -589,9 +581,8 @@ class TestForms(TestCase):
             id=556,
         )
 
-        self.assertHTMLEqual(
-            EDIT_REQUISITION_PRODUCT_FORM,
-            render_crispy_form(UpdatedRequisitionProductForm(instance=requisition)),
+        self.assertMatchSnapshot(
+            render_crispy_form(UpdatedRequisitionProductForm(instance=requisition))
         )
 
     def test_requisition_lineitem_form(self):
