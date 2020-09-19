@@ -1,5 +1,4 @@
 """Setup.py for django-tiny-erp."""
-# pylint: disable=bad-continuation
 import os
 import sys
 

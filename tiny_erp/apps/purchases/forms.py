@@ -22,7 +22,7 @@ from tiny_erp.widgets import MiniTextarea
 
 
 class CustomModelChoiceIterator(
-    # pylint: disable=too-few-public-methods,bad-continuation
+    # pylint: disable=too-few-public-methods
     ModelChoiceIterator
 ):
     """Custom ModelChoiceIterator."""

@@ -1,4 +1,5 @@
 """module to test tiny-erp forms."""
+# pylint: disable=hard-coded-auth-user
 from datetime import date
 from unittest.mock import MagicMock, patch
 
@@ -243,9 +244,7 @@ class TestForms(TestCase):
         self.assertEqual(1, email_mock.call_count)
 
     @patch("tiny_erp.apps.purchases.emails.send_email")
-    def test_updated_requisition_product_form(  # pylint: disable=bad-continuation
-        self, email_mock
-    ):
+    def test_updated_requisition_product_form(self, email_mock):
         """Test UpdatedRequisitionProductForm."""
         request = self.factory.get("/")
         request.session = {}

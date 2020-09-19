@@ -22,9 +22,7 @@ class Formset(LayoutObject):
         if template:
             self.template = template
 
-    def render(  # pylint: disable=unused-argument,bad-continuation
-        self, *args, **kwargs
-    ):
+    def render(self, *args, **kwargs):  # pylint: disable=unused-argument
         """the render method"""
 
         return render_to_string(self.template, {"formset": self.formset_in_context})

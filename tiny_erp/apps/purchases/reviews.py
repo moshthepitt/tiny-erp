@@ -1,6 +1,6 @@
 """Reviews module."""
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User  # pylint: disable=imported-auth-user
 from django.db import models
 from django.db.models import Min
 
@@ -16,7 +16,6 @@ def set_reviewer_by_email(email: str, review_obj: models.Model, level: int = 0):
     except User.DoesNotExist:
         pass
     else:
-        # pylint: disable=bad-continuation
         if not Reviewer.objects.filter(
             review=review_obj, user=user, level=level
         ).exists():
