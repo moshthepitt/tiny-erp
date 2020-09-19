@@ -7,12 +7,10 @@ from model_bakery import baker
 
 
 class TestLocationModels(TestCase):
-    """
-    Test class for purchase models
-    """
+    """Test class for purchase models."""
 
     def test_model_methods(self):
-        """Test model methods"""
+        """Test model methods."""
         business = baker.make("locations.Business", name="Abc Ltd")
         location = baker.make("locations.Location", name="Voi")
         department = baker.make("locations.Department", name="Science")
@@ -22,12 +20,10 @@ class TestLocationModels(TestCase):
 
 
 class TestPurchaseModels(TestCase):
-    """
-    Test class for purchase models
-    """
+    """Test class for purchase models."""
 
     def test_model_methods(self):
-        """Test model methods"""
+        """Test model methods."""
         requisition = baker.make(
             "purchases.Requisition",
             title="Super Duper Important",

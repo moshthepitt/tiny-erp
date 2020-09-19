@@ -22,3 +22,4 @@ black
 mypy
 ipdb
 urllib3>=1.24.2
+snapshottest

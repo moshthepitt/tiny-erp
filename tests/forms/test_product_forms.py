@@ -2,52 +2,13 @@
 from decimal import Decimal
 
 from django.conf import settings
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory
 
 from model_bakery import baker
 from prices import Money
+from snapshottest.django import TestCase
 
 from tiny_erp.apps.products.forms import ProductForm, SupplierForm
-
-CREATE_SUPPLIER_FORM = """
-<p>
-    <label for="id_name">Name:</label>
-    <input type="text" name="name" maxlength="2000" required id="id_name">
-</p>
-<p>
-    <label for="id_contact_person">Contact Person:</label>
-    <input type="text" name="contact_person" maxlength="2000" required id="id_contact_person">
-</p>
-<p>
-    <label for="id_emails">Email Address(es):</label>
-    <textarea name="emails" cols="40" rows="2" id="id_emails"></textarea>
-    <span class="helptext">Enter a comma-separated list of email addresses</span></p>
-<p>
-    <label for="id_phones">Phone Number(s):</label>
-    <textarea name="phones" cols="40" rows="2" id="id_phones"></textarea>
-    <span class="helptext">Enter a comma-separated list of phone numbers</span>
-</p>
-"""  # noqa
-
-UPDATE_SUPPLIER_FORM = """
-<p>
-    <label for="id_name">Name:</label>
-    <input type="text" name="name" value="Umbrella Inc" maxlength="2000" required id="id_name">
-</p>
-<p>
-    <label for="id_contact_person">Contact Person:</label>
-    <input type="text" name="contact_person" value="Alice" maxlength="2000" required id="id_contact_person">
-</p>
-<p>
-    <label for="id_emails">Email Address(es):</label>
-    <textarea name="emails" cols="40" rows="2" id="id_emails">b@example.com</textarea>
-    <span class="helptext">Enter a comma-separated list of email addresses</span></p>
-<p>
-    <label for="id_phones">Phone Number(s):</label>
-    <textarea name="phones" cols="40" rows="2" id="id_phones">+254711000000, +254722000000</textarea>
-    <span class="helptext">Enter a comma-separated list of phone numbers</span>
-</p>
-"""  # noqa
 
 
 class TestProductForms(TestCase):
@@ -56,7 +17,7 @@ class TestProductForms(TestCase):
     maxDiff = None
 
     def setUp(self):
-        """Setup test class."""
+        """Set up test class."""
         self.supplier = baker.make("products.Supplier", name="X Inc")
         self.supplier2 = baker.make("products.Supplier", name="Y Inc")
         self.unit = baker.make("products.MeasurementUnit", name="g")
@@ -68,7 +29,7 @@ class TestProductForms(TestCase):
     def test_supplier_form(self):
         """Test SupplierForm."""
         # test empty form output
-        self.assertHTMLEqual(CREATE_SUPPLIER_FORM, SupplierForm().as_p())
+        self.assertMatchSnapshot(SupplierForm().as_p())
 
         # test form when creating
         data = {
@@ -94,7 +55,7 @@ class TestProductForms(TestCase):
         }
 
         form = SupplierForm(instance=supplier, data=update_data)
-        self.assertHTMLEqual(UPDATE_SUPPLIER_FORM, form.as_p())
+        self.assertMatchSnapshot(form.as_p())
         self.assertTrue(form.is_valid())
         form.save()
         supplier.refresh_from_db()
@@ -134,8 +95,7 @@ class TestProductForms(TestCase):
         self.assertEqual(["+254722000000"], supplier.phones)
 
     def test_supplier_form_validation(self):
-        """Test SupplierForm vaidation."""
-
+        """Test SupplierForm validation."""
         # test name validation
         data = {
             "name": "",
@@ -203,7 +163,6 @@ class TestProductForms(TestCase):
 
     def test_product_form(self):
         """Test ProductForm."""
-
         # test form when creating
         data = {
             "name": "Pen",
@@ -255,7 +214,6 @@ class TestProductForms(TestCase):
 
     def test_product_form_validation(self):
         """Test ProductForm validation."""
-
         # test price
         data = {
             "name": "Pen",

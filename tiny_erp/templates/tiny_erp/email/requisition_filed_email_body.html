@@ -1,0 +1,13 @@
+{% load i18n %}{{ object.content_object.staff.get_name }} {% trans "sent this purchase requisition" %}:<br /><br />
+{% trans "Date Placed" %}: {{ object.content_object.date_placed }}<br />
+{% trans "Date Required" %}: {{ object.content_object.date_required }}<br />
+{% trans "Business" %}: {{ object.content_object.business }}<br />
+{% trans "Department" %}: {{ object.content_object.department }}<br />
+{% trans "Location" %}: {{ object.content_object.location }}<br />
+{% trans "Staff Member" %}: {{ object.content_object.staff.get_name }}<br />
+{% trans "Please log in to process the above:" %} http://{{SITE.domain}}/reviews/{{ object.pk }}
+<br /><br />
+{% trans "Thank you," %}<br />
+{{SITE.name}}<br />
+------<br />
+http://{{SITE.domain}}

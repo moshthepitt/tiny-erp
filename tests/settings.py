@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Settings for tests
-"""
+"""Settings for tests."""
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +26,7 @@ INSTALLED_APPS = [
     "django_prices",
     "vega_admin",
     # custom
+    "tiny_erp",
     "tiny_erp.apps.locations",
     "tiny_erp.apps.products",
     "tiny_erp.apps.purchases",
@@ -92,6 +91,8 @@ VEGA_TEMPLATE = "badmin"
 ROOT_URLCONF = "tests.crud"
 
 STATIC_URL = "/static/"
+
+TEST_RUNNER = "snapshottest.django.TestRunner"
 
 # try and load local_settings if present
 try:

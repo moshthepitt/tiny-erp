@@ -1,17 +1,21 @@
 """module to test tiny-erp forms."""
+# pylint: disable=hard-coded-auth-user
 from datetime import date
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import AnonymousUser
+from django.contrib.contenttypes.models import ContentType
 from django.forms.models import inlineformset_factory
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import RequestFactory, override_settings
 from django.urls import reverse
 
 from small_small_hr.models import StaffProfile
 
 from crispy_forms.utils import render_crispy_form
 from model_bakery import baker
+from model_reviews.models import ModelReview
 from prices import Money
+from snapshottest.django import TestCase
 
 from tiny_erp.apps.locations.models import Business, Department, Location
 from tiny_erp.apps.purchases.forms import (
@@ -23,13 +27,6 @@ from tiny_erp.apps.purchases.forms import (
     UpdateRequisitionForm,
 )
 from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
-
-from .html import (
-    CREATE_FORM,
-    CREATE_REQUISITION_PRODUCT_FORM,
-    EDIT_FORM,
-    EDIT_REQUISITION_PRODUCT_FORM,
-)
 
 
 def make_staffprofile(attrs: dict):
@@ -46,7 +43,8 @@ def make_staffprofile(attrs: dict):
 
 
 @override_settings(
-    TINY_ERP_REQUISITION_ITEMS_TXT="Requisition Items", TINY_ERP_SUBMIT_TXT="Submit"
+    TINY_ERP_REQUISITION_REVIEWS_TIERS=True,
+    TINY_ERP_REQUISITION_REVIEWERS=["webmaster@localhost"],
 )
 class TestForms(TestCase):
     """Test class for forms."""
@@ -54,19 +52,22 @@ class TestForms(TestCase):
     maxDiff = None
 
     def setUp(self):
-        """
-        Setup test class
-        """
+        """Set up test class."""
         self.factory = RequestFactory()
         Business.objects.all().delete()
         Department.objects.all().delete()
         Location.objects.all().delete()
         self.user = baker.make("auth.User", first_name="Bob", last_name="Ndoe")
+        self.reviewer1 = baker.make(
+            "auth.User",
+            username="webmaster",
+            email="webmaster@localhost",
+            first_name="Web",
+            last_name="Master",
+        )
 
-    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
-    def test_requisition_form(self, filed_mock, updated_mock, approved_mock):
+    @patch("tiny_erp.apps.purchases.emails.send_email")
+    def test_requisition_form(self, email_mock):
         """Test RequisitionForm."""
         request = self.factory.get("/")
         request.session = {}
@@ -86,7 +87,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "Science, bitch",
+            "review_reason": "Science, bitch",
         }
 
         form = RequisitionForm(data=data)
@@ -99,17 +100,38 @@ class TestForms(TestCase):
         self.assertEqual(department, requisition.department)
         self.assertEqual(date(2019, 1, 1), requisition.date_placed)
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
-        self.assertEqual("Science, bitch", requisition.reason)
+        self.assertEqual("Science, bitch", requisition.review_reason)
 
-        self.assertEqual(1, filed_mock.call_count)
-        self.assertEqual(0, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        filed_mock.assert_called_with(requisition_obj=requisition)
+        # check that a ModelReview object is created
+        obj_type = ContentType.objects.get_for_model(requisition)
+        self.assertEqual(
+            1,
+            ModelReview.objects.filter(
+                content_type=obj_type, object_id=requisition.id
+            ).count(),
+        )
+        review = ModelReview.objects.get(
+            content_type=obj_type, object_id=requisition.id
+        )
+        self.assertTrue(Requisition.PENDING, review.review_status)
 
-    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
-    def test_requisition_product_form(self, filed_mock, updated_mock, approved_mock):
+        self.assertEqual(1, email_mock.call_count)
+
+        email_mock.assert_called_once_with(
+            name="Web Master",
+            email="webmaster@localhost",
+            subject="New Purchase Requisition",
+            message=(
+                "There has been a new purchase requisition.  Please log in to process it."
+            ),
+            obj=review,
+            cc_list=None,
+            template="requisition_filed",
+            template_path="tiny_erp/email",
+        )
+
+    @patch("tiny_erp.apps.purchases.emails.send_email")
+    def test_requisition_product_form(self, email_mock):
         """Test RequisitionProductForm."""
         request = self.factory.get("/")
         request.session = {}
@@ -129,7 +151,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "Science, bitch",
+            "review_reason": "Science, bitch",
         }
 
         form = RequisitionProductForm(data=data)
@@ -142,17 +164,12 @@ class TestForms(TestCase):
         self.assertEqual(department, requisition.department)
         self.assertEqual(date(2019, 1, 1), requisition.date_placed)
         self.assertEqual(date(2019, 2, 2), requisition.date_required)
-        self.assertEqual("Science, bitch", requisition.reason)
+        self.assertEqual("Science, bitch", requisition.review_reason)
 
-        self.assertEqual(1, filed_mock.call_count)
-        self.assertEqual(0, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        filed_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual(1, email_mock.call_count)
 
-    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
-    def test_updated_requisition_form(self, filed_mock, updated_mock, approved_mock):
+    @patch("tiny_erp.apps.purchases.emails.send_email")
+    def test_updated_requisition_form(self, email_mock):
         """Test UpdateRequisitionForm."""
         request = self.factory.get("/")
         request.session = {}
@@ -183,17 +200,14 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "changed this",
+            "review_reason": "changed this",
         }
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Subaru Supplies", requisition.title)
-        self.assertEqual("changed this", requisition.reason)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(1, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        updated_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual("changed this", requisition.review_reason)
+        self.assertEqual(1, email_mock.call_count)
 
         data = {
             "title": "Shhh... Housekeeping!",
@@ -203,19 +217,14 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "status": Requisition.REJECTED,
-            "reason": "Not good",
+            "review_reason": "Not good",
         }
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Shhh... Housekeeping!", requisition.title)
-        self.assertEqual("Not good", requisition.reason)
-        self.assertEqual(Requisition.REJECTED, requisition.status)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(2, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        updated_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual("Not good", requisition.review_reason)
+        self.assertEqual(1, email_mock.call_count)
 
         data = {
             "title": "Cheers Baba",
@@ -225,26 +234,17 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "status": Requisition.APPROVED,
-            "reason": "Great",
+            "review_reason": "Great",
         }
         form = UpdateRequisitionForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Cheers Baba", requisition.title)
-        self.assertEqual("Great", requisition.reason)
-        self.assertEqual(Requisition.APPROVED, requisition.status)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(2, updated_mock.call_count)
-        self.assertEqual(1, approved_mock.call_count)
-        approved_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual("Great", requisition.review_reason)
+        self.assertEqual(1, email_mock.call_count)
 
-    @patch("tiny_erp.apps.purchases.forms.requisition_approved_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_updated_email")
-    @patch("tiny_erp.apps.purchases.forms.requisition_filed_email")
-    def test_updated_requisition_product_form(  # pylint: disable=bad-continuation
-        self, filed_mock, updated_mock, approved_mock
-    ):
+    @patch("tiny_erp.apps.purchases.emails.send_email")
+    def test_updated_requisition_product_form(self, email_mock):
         """Test UpdatedRequisitionProductForm."""
         request = self.factory.get("/")
         request.session = {}
@@ -275,17 +275,14 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "changed this",
+            "review_reason": "changed this",
         }
         form = UpdatedRequisitionProductForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Subaru Supplies", requisition.title)
-        self.assertEqual("changed this", requisition.reason)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(1, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        updated_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual("changed this", requisition.review_reason)
+        self.assertEqual(1, email_mock.call_count)
 
         data = {
             "title": "Shhh... Housekeeping!",
@@ -295,19 +292,14 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "status": Requisition.REJECTED,
-            "reason": "Not good",
+            "review_reason": "Not good",
         }
         form = UpdatedRequisitionProductForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Shhh... Housekeeping!", requisition.title)
-        self.assertEqual("Not good", requisition.reason)
-        self.assertEqual(Requisition.REJECTED, requisition.status)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(2, updated_mock.call_count)
-        self.assertEqual(0, approved_mock.call_count)
-        updated_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual("Not good", requisition.review_reason)
+        self.assertEqual(1, email_mock.call_count)
 
         data = {
             "title": "Cheers Baba",
@@ -317,19 +309,14 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "status": Requisition.APPROVED,
-            "reason": "Great",
+            "review_reason": "Great",
         }
         form = UpdatedRequisitionProductForm(instance=requisition, data=data)
         requisition = form.save()
 
         self.assertEqual("Cheers Baba", requisition.title)
-        self.assertEqual("Great", requisition.reason)
-        self.assertEqual(Requisition.APPROVED, requisition.status)
-        self.assertEqual(0, filed_mock.call_count)
-        self.assertEqual(2, updated_mock.call_count)
-        self.assertEqual(1, approved_mock.call_count)
-        approved_mock.assert_called_with(requisition_obj=requisition)
+        self.assertEqual("Great", requisition.review_reason)
+        self.assertEqual(1, email_mock.call_count)
 
     @override_settings(ROOT_URLCONF="tests.crud")
     def test_full_requisition_form(self):
@@ -348,7 +335,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
-            "reason": "I love oov",
+            "review_reason": "I love oov",
             "total": 0,
             "requisitionlineitem_set-TOTAL_FORMS": 2,
             "requisitionlineitem_set-INITIAL_FORMS": 0,
@@ -371,10 +358,9 @@ class TestForms(TestCase):
             2, RequisitionLineItem.objects.filter(requisition=requisition).count()
         )
         self.assertEqual(41, requisition.total)
-        self.assertEqual(Requisition.PENDING, requisition.status)
-        self.assertEqual("I love oov", requisition.reason)
+        self.assertEqual(Requisition.PENDING, requisition.review_status)
+        self.assertEqual("I love oov", requisition.review_reason)
         self.assertEqual("Kitchen Supplies", requisition.title)
-        self.assertEqual("", requisition.comments)
 
         url = reverse("purchases.requisition-update", kwargs={"pk": requisition.id})
         data = {
@@ -387,9 +373,7 @@ class TestForms(TestCase):
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
             "total": 0,
-            "reason": "Nice",
-            "comments": "Shall order on the 25th.",
-            "status": Requisition.APPROVED,
+            "review_reason": "Nice",
             "requisitionlineitem_set-TOTAL_FORMS": 3,
             "requisitionlineitem_set-INITIAL_FORMS": 2,
             "requisitionlineitem_set-MIN_NUM_FORMS": 0,
@@ -414,10 +398,8 @@ class TestForms(TestCase):
         res = self.client.post(url, data)
         requisition.refresh_from_db()
         self.assertEqual(157, requisition.total)
-        self.assertEqual(Requisition.APPROVED, requisition.status)
         self.assertEqual("Bar Supplies", requisition.title)
-        self.assertEqual("Nice", requisition.reason)
-        self.assertEqual("Shall order on the 25th.", requisition.comments)
+        self.assertEqual("Nice", requisition.review_reason)
 
     @override_settings(ROOT_URLCONF="tests.crud")
     def test_full_requisition_product_form(self):
@@ -442,7 +424,7 @@ class TestForms(TestCase):
             "department": department.id,
             "date_placed": "01/11/2019",
             "date_required": "02/12/2019",
-            "reason": "I love oov",
+            "review_reason": "I love oov",
             "total": 0,
             "requisitionlineitem_set-TOTAL_FORMS": 1,
             "requisitionlineitem_set-INITIAL_FORMS": 0,
@@ -462,10 +444,9 @@ class TestForms(TestCase):
             1, RequisitionLineItem.objects.filter(requisition=requisition).count()
         )
         self.assertEqual(750, requisition.total)
-        self.assertEqual(Requisition.PENDING, requisition.status)
-        self.assertEqual("I love oov", requisition.reason)
+        self.assertEqual(Requisition.PENDING, requisition.review_status)
+        self.assertEqual("I love oov", requisition.review_reason)
         self.assertEqual("Kitchen Supplies", requisition.title)
-        self.assertEqual("", requisition.comments)
 
         url = reverse("req-products-update", kwargs={"pk": requisition.id})
         data = {
@@ -478,9 +459,7 @@ class TestForms(TestCase):
             "date_placed": "01/01/2019",
             "date_required": "02/02/2019",
             "total": 0,
-            "reason": "Nice",
-            "comments": "Shall order on the 26th.",
-            "status": Requisition.APPROVED,
+            "review_reason": "Nice",
             "requisitionlineitem_set-TOTAL_FORMS": 2,
             "requisitionlineitem_set-INITIAL_FORMS": 1,
             "requisitionlineitem_set-MIN_NUM_FORMS": 0,
@@ -500,10 +479,8 @@ class TestForms(TestCase):
         res = self.client.post(url, data)
         requisition.refresh_from_db()
         self.assertEqual(850, requisition.total)
-        self.assertEqual(Requisition.APPROVED, requisition.status)
         self.assertEqual("Bar Supplies", requisition.title)
-        self.assertEqual("Nice", requisition.reason)
-        self.assertEqual("Shall order on the 26th.", requisition.comments)
+        self.assertEqual("Nice", requisition.review_reason)
 
     @patch("tiny_erp.apps.purchases.forms.timezone")
     def test_crispy_requisition_form(self, mocked):
@@ -516,7 +493,7 @@ class TestForms(TestCase):
         user2 = baker.make("auth.User", first_name="Mosh", last_name="Pitt")
         make_staffprofile(dict(user=user2, id=999))
 
-        self.assertHTMLEqual(CREATE_FORM, render_crispy_form(RequisitionForm))
+        self.assertMatchSnapshot(render_crispy_form(RequisitionForm))
 
         business = baker.make("locations.Business", name="Abc Ltd", id=99)
         location = baker.make("locations.Location", name="Voi", id=99)
@@ -542,8 +519,8 @@ class TestForms(TestCase):
             id=557,
         )
 
-        self.assertHTMLEqual(
-            EDIT_FORM, render_crispy_form(UpdateRequisitionForm(instance=requisition))
+        self.assertMatchSnapshot(
+            render_crispy_form(UpdateRequisitionForm(instance=requisition))
         )
 
     @patch("tiny_erp.apps.purchases.forms.timezone")
@@ -576,9 +553,7 @@ class TestForms(TestCase):
             supplier=baker.make("products.Supplier", name="GAP"),
         )
 
-        self.assertHTMLEqual(
-            CREATE_REQUISITION_PRODUCT_FORM, render_crispy_form(RequisitionProductForm)
-        )
+        self.assertMatchSnapshot(render_crispy_form(RequisitionProductForm))
 
         business = baker.make("locations.Business", name="Abc Ltd", id=99)
         location = baker.make("locations.Location", name="Voi", id=99)
@@ -605,9 +580,8 @@ class TestForms(TestCase):
             id=556,
         )
 
-        self.assertHTMLEqual(
-            EDIT_REQUISITION_PRODUCT_FORM,
-            render_crispy_form(UpdatedRequisitionProductForm(instance=requisition)),
+        self.assertMatchSnapshot(
+            render_crispy_form(UpdatedRequisitionProductForm(instance=requisition))
         )
 
     def test_requisition_lineitem_form(self):

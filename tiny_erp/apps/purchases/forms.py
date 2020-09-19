@@ -1,6 +1,5 @@
-"""Forms module for tiny erp"""
+"""Forms module for tiny erp."""
 from django import forms
-from django.conf import settings
 from django.db import transaction
 from django.forms.models import ModelChoiceIterator, inlineformset_factory
 from django.utils import timezone
@@ -12,23 +11,24 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, ButtonHolder, Div, Field, Fieldset, Layout, Submit
 
 from tiny_erp.apps.products.models import Product
-from tiny_erp.apps.purchases.emails import (
-    requisition_approved_email,
-    requisition_filed_email,
-    requisition_updated_email,
-)
 from tiny_erp.apps.purchases.models import Requisition, RequisitionLineItem
+from tiny_erp.constants import (
+    REQUISITION_FORMSET_ERROR_TXT,
+    REQUISITION_ITEMS_TXT,
+    SUBMIT_TXT,
+)
 from tiny_erp.layout import Formset
 from tiny_erp.widgets import MiniTextarea
 
 
 class CustomModelChoiceIterator(
-    # pylint: disable=too-few-public-methods,bad-continuation
+    # pylint: disable=too-few-public-methods
     ModelChoiceIterator
 ):
     """Custom ModelChoiceIterator."""
 
     def choice(self, obj):
+        """Return choice."""
         return (self.field.prepare_value(obj), self.field.label_from_instance(obj), obj)
 
 
@@ -39,6 +39,8 @@ class CustomModelChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         """
+        Convert objects into strings and generate the labels for choices.
+
         Convert objects into strings and generate the labels for the choices
         presented by this object. Subclasses can override this method to
         customize the display of the choices.
@@ -129,9 +131,7 @@ class RequisitionLineItemProductForm(forms.ModelForm):
         fields = ["requisition", "product", "internal_price", "quantity"]
 
     def save(self, commit=False):  # pylint: disable=unused-argument
-        """
-        Custom save method
-        """
+        """Save the form."""
         obj = super().save(commit)
         if obj.product:
             obj.item = obj.product.name
@@ -160,45 +160,28 @@ RequisitionItemProductFormSet = inlineformset_factory(  # pylint: disable=invali
 
 
 class RequisitionFormMixin:
-    """Requisition Form mixin
-    """
+    """Requisition Form mixin."""
 
     formset_class = RequisitionItemFormSet
 
-    def send_email(self, requisition):
-        """Send email"""
-        if not self.get_initial_for_field(self.fields["staff"], "staff"):
-            # new requisition
-            requisition_filed_email(requisition_obj=requisition)
-        else:
-            if requisition.status == Requisition.APPROVED:
-                requisition_approved_email(requisition_obj=requisition)
-            else:
-                requisition_updated_email(requisition_obj=requisition)
-
     def clean(self):
-        """ModelForm clean method"""
+        """Clean the form."""
         cleaned_data = super().clean()
         self.formset = None
         if self.request:
             self.formset = self.formset_class(self.request.POST, instance=self.instance)
             if not self.formset.is_valid():
-                raise forms.ValidationError(
-                    settings.TINY_ERP_REQUISITION_FORMSET_ERROR_TXT
-                )
+                raise forms.ValidationError(REQUISITION_FORMSET_ERROR_TXT)
         return cleaned_data
 
     def save(self, commit=True):  # pylint: disable=unused-argument
-        """
-        Custom save method
-        """
+        """Save the form."""
         with transaction.atomic():
             requisition = super().save()
             if self.formset:
                 self.formset.save()
 
         requisition.set_total()
-        self.send_email(requisition)
 
         return requisition
 
@@ -218,10 +201,11 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
             "department",
             "date_placed",
             "date_required",
-            "reason",
+            "review_reason",
         ]
 
     def __init__(self, *args, **kwargs):
+        """Initialize."""
         self.request = kwargs.pop("request", None)
         self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
         super().__init__(*args, **kwargs)
@@ -255,19 +239,15 @@ class RequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Field("date_placed"),
                 Field("date_required"),
                 Fieldset(
-                    _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
+                    _(REQUISITION_ITEMS_TXT),
                     Formset(
                         formset_in_context=self.formset_class(instance=self.instance)
                     ),
                 ),
-                Field("reason"),
+                Field("review_reason"),
                 HTML("<br>"),
                 ButtonHolder(
-                    Submit(
-                        "submitBtn",
-                        _(settings.TINY_ERP_SUBMIT_TXT),
-                        css_class="btn-primary",
-                    )
+                    Submit("submitBtn", _(SUBMIT_TXT), css_class="btn-primary",)
                 ),
             )
         )
@@ -294,12 +274,12 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
             "department",
             "date_placed",
             "date_required",
-            "reason",
-            "comments",
-            "status",
+            "review_reason",
+            "review_status",
         ]
 
     def __init__(self, *args, **kwargs):
+        """Initialize."""
         self.request = kwargs.pop("request", None)
         self.vega_extra_kwargs = kwargs.pop("vega_extra_kwargs", dict())
         super().__init__(*args, **kwargs)
@@ -322,22 +302,17 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Field("department"),
                 Field("date_placed"),
                 Field("date_required"),
-                Field("status"),
+                Field("review_status"),
                 Fieldset(
-                    _(settings.TINY_ERP_REQUISITION_ITEMS_TXT),
+                    _(REQUISITION_ITEMS_TXT),
                     Formset(
                         formset_in_context=self.formset_class(instance=self.instance)
                     ),
                 ),
-                Field("reason"),
-                Field("comments"),
+                Field("review_reason"),
                 HTML("<br>"),
                 ButtonHolder(
-                    Submit(
-                        "submitBtn",
-                        _(settings.TINY_ERP_SUBMIT_TXT),
-                        css_class="btn-primary",
-                    )
+                    Submit("submitBtn", _(SUBMIT_TXT), css_class="btn-primary",)
                 ),
             )
         )

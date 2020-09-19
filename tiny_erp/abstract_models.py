@@ -1,4 +1,4 @@
-"""module for abstract models"""
+"""module for abstract models."""
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -52,7 +52,7 @@ class MoneyModel(models.Model):
 
 
 class AbstractLineItem(MoneyModel):
-    """Model definition for abstract line item"""
+    """Model definition for abstract line item."""
 
     name = models.CharField(_("Name"), max_length=255)
     description = models.TextField(_("Description"), blank=True, default="")
@@ -73,7 +73,7 @@ class AbstractLineItem(MoneyModel):
     amount = None
 
     def _get_total(self):
-        """Get the total for this line item
+        """Get the total for this line item.
 
         Returns:
             Decimal -- the total for this line item
@@ -82,7 +82,7 @@ class AbstractLineItem(MoneyModel):
 
     @property
     def total(self):
-        """the total for this line item
+        """Get the total for this line item.
 
         Returns:
             Decimal -- the total for this line item
