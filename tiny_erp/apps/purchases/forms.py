@@ -275,7 +275,6 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
             "date_placed",
             "date_required",
             "review_reason",
-            "review_status",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -302,7 +301,6 @@ class UpdateRequisitionForm(RequisitionFormMixin, forms.ModelForm):
                 Field("department"),
                 Field("date_placed"),
                 Field("date_required"),
-                Field("review_status"),
                 Fieldset(
                     _(REQUISITION_ITEMS_TXT),
                     Formset(

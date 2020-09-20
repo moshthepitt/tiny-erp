@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User  # pylint: disable=imported-auth-user
 from django.db import models
 from django.db.models import Min
+from django.utils.module_loading import import_string
 
 from model_reviews.models import Reviewer
 
@@ -30,16 +31,24 @@ def set_requisition_reviewer(review_obj: models.Model):
     If TINY_ERP_REQUISITION_REVIEWS_TIERS is false then every level = 0
     otherwise reviewer levels correspond to their indices on the reviewer_emails array
     """
-    reviewer_emails = settings.TINY_ERP_REQUISITION_REVIEWERS
-    if reviewer_emails:
-        use_tiers = settings.TINY_ERP_REQUISITION_REVIEWS_TIERS
-        for idx, reviewer_email in enumerate(reviewer_emails):
-            level = 0
-            if use_tiers:
-                level = idx
-            set_reviewer_by_email(
-                email=reviewer_email, review_obj=review_obj, level=level
-            )
+    # check if a custom function has been set
+    if settings.TINY_ERP_REQUISITION_SET_REVIEWERS_FUNCTION:
+        custom_func = import_string(
+            settings.TINY_ERP_REQUISITION_SET_REVIEWERS_FUNCTION
+        )
+        custom_func(review_obj=review_obj)
+    # otherwise run the default
+    else:
+        reviewer_emails = settings.TINY_ERP_REQUISITION_REVIEWERS
+        if reviewer_emails:
+            use_tiers = settings.TINY_ERP_REQUISITION_REVIEWS_TIERS
+            for idx, reviewer_email in enumerate(reviewer_emails):
+                level = 0
+                if use_tiers:
+                    level = idx
+                set_reviewer_by_email(
+                    email=reviewer_email, review_obj=review_obj, level=level
+                )
 
 
 def initial_request_for_review_function(reviewer: Reviewer):
@@ -48,29 +57,49 @@ def initial_request_for_review_function(reviewer: Reviewer):
 
     This function is called when a Reviewer object is created (not updated).
     """
-    if settings.TINY_ERP_REQUISITION_REVIEWS_TIERS:
-        # check if this reviewer is the lowest level and then send the email
-        min_lvl = Reviewer.objects.filter(review=reviewer.review).aggregate(
-            min_lvl=Min("level")
-        )["min_lvl"]
-        if reviewer.level == min_lvl:
-            send_requisition_filed_email(reviewer=reviewer)
+    # check if a custom function has been set
+    if settings.TINY_ERP_REQUISITION_REQUEST_FOR_REVIEW_FUNCTION:
+        custom_func = import_string(
+            settings.TINY_ERP_REQUISITION_REQUEST_FOR_REVIEW_FUNCTION
+        )
+        custom_func(reviewer=reviewer)
+    # otherwise run the default
     else:
-        # proceed as normal
-        send_requisition_filed_email(reviewer=reviewer)
+        if settings.TINY_ERP_REQUISITION_REVIEWS_TIERS:
+            # check if this reviewer is the lowest level and then send the email
+            min_lvl = Reviewer.objects.filter(review=reviewer.review).aggregate(
+                min_lvl=Min("level")
+            )["min_lvl"]
+            if reviewer.level == min_lvl:
+                send_requisition_filed_email(reviewer=reviewer)
+        else:
+            # proceed as normal
+            send_requisition_filed_email(reviewer=reviewer)
 
 
 def notify_next_reviewers(review_obj: models.Model):
     """Get next level reviewers and notify them."""
-    next_lvl = Reviewer.objects.filter(reviewed=False, review=review_obj).aggregate(
-        next_lvl=Min("level")
-    )["next_lvl"]
-    for reviewer in Reviewer.objects.filter(reviewed=False, level=next_lvl):
-        send_requisition_filed_email(reviewer=reviewer)
+    # check if a custom function has been set
+    if settings.TINY_ERP_REQUISITION_GET_NEXT_REVIEWERS:
+        custom_func = import_string(settings.TINY_ERP_REQUISITION_GET_NEXT_REVIEWERS)
+        custom_func(review_obj=review_obj)
+    # otherwise run the default
+    else:
+        next_lvl = Reviewer.objects.filter(reviewed=False, review=review_obj).aggregate(
+            next_lvl=Min("level")
+        )["next_lvl"]
+        for reviewer in Reviewer.objects.filter(reviewed=False, level=next_lvl):
+            send_requisition_filed_email(reviewer=reviewer)
 
 
 def set_requisition_review_user(review_obj: models.Model):
     """Set user for review model object."""
-    if not review_obj.user:
-        requisition = review_obj.content_object
-        review_obj.user = requisition.staff.user
+    # check if a custom function has been set
+    if settings.TINY_ERP_REQUISITION_SET_USER_FUNCTION:
+        custom_func = import_string(settings.TINY_ERP_REQUISITION_SET_USER_FUNCTION)
+        custom_func(review_obj=review_obj)
+    # otherwise run the default
+    else:
+        if not review_obj.user:
+            requisition = review_obj.content_object
+            review_obj.user = requisition.staff.user

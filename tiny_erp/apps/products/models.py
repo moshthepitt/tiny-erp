@@ -10,6 +10,14 @@ from phonenumber_field.modelfields import PhoneNumberField
 from tiny_erp.abstract_models import MoneyModel
 
 
+class ProductManager(models.Manager):  # pylint: disable=too-few-public-methods
+    """Custom model manager for Product."""
+
+    def get_queryset(self):
+        """Get queryset."""
+        return super().get_queryset().select_related("unit", "supplier")
+
+
 class Supplier(TimeStampedModel):
     """Model definition for Supplier."""
 
@@ -101,6 +109,8 @@ class Product(TimeStampedModel, MoneyModel):
     supplier = models.ForeignKey(
         Supplier, verbose_name=_("Supplier"), on_delete=models.PROTECT
     )
+
+    objects = ProductManager()  # Change the default manager.
 
     class Meta:
         """Meta definition for Product."""
