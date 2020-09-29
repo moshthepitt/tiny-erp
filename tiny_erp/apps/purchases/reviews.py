@@ -17,9 +17,12 @@ def set_reviewer_by_email(email: str, review_obj: models.Model, level: int = 0):
     except User.DoesNotExist:
         pass
     else:
-        if not Reviewer.objects.filter(
-            review=review_obj, user=user, level=level
-        ).exists():
+        if (
+            not Reviewer.objects.filter(
+                review=review_obj, user=user, level=level
+            ).exists()
+            and not review_obj.user == user
+        ):
             reviewer = Reviewer(review=review_obj, user=user, level=level)
             reviewer.save()  # ensure save method is called
 
@@ -85,10 +88,9 @@ def notify_next_reviewers(review_obj: models.Model):
         custom_func(review_obj=review_obj)
     # otherwise run the default
     else:
-        next_lvl = Reviewer.objects.filter(reviewed=False, review=review_obj).aggregate(
-            next_lvl=Min("level")
-        )["next_lvl"]
-        for reviewer in Reviewer.objects.filter(reviewed=False, level=next_lvl):
+        queryset = Reviewer.objects.filter(reviewed=False, review=review_obj)
+        next_lvl = queryset.aggregate(next_lvl=Min("level"))["next_lvl"]
+        for reviewer in queryset.filter(level=next_lvl):
             send_requisition_filed_email(reviewer=reviewer)
 
 
