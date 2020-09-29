@@ -85,10 +85,9 @@ def notify_next_reviewers(review_obj: models.Model):
         custom_func(review_obj=review_obj)
     # otherwise run the default
     else:
-        next_lvl = Reviewer.objects.filter(reviewed=False, review=review_obj).aggregate(
-            next_lvl=Min("level")
-        )["next_lvl"]
-        for reviewer in Reviewer.objects.filter(reviewed=False, level=next_lvl):
+        queryset = Reviewer.objects.filter(reviewed=False, review=review_obj)
+        next_lvl = queryset.aggregate(next_lvl=Min("level"))["next_lvl"]
+        for reviewer in queryset.filter(level=next_lvl):
             send_requisition_filed_email(reviewer=reviewer)
 
 
