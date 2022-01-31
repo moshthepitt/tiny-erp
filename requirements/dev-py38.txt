@@ -76,7 +76,7 @@ pytz==2020.1              # via babel, django
 pyyaml==5.3.1             # via django-vega-admin, pre-commit
 regex==2020.10.15         # via black
 six==1.15.0               # via astroid, django-braces, packaging, pip-tools, snapshottest, tox, virtualenv
-small_small_hr==0.4.0     # via django-tiny-erp
+small_small_hr==0.4.1     # via django-tiny-erp
 snapshottest==0.6.0       # via -r requirements/dev.in
 snowballstemmer==2.0.0    # via pydocstyle
 sorl-thumbnail==12.6.3    # via small-small-hr
